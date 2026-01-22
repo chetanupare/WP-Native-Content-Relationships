@@ -1,0 +1,203 @@
+# Copyright (C) 2024 WP Native Content Relationships
+# This file is distributed under the same license as the WP Native Content Relationships plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Native Content Relationships 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/native-content-relationships\n"
+"POT-Creation-Date: 2024-01-22 12:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2024-01-22 12:00:00+00:00\n"
+"Language-Team: \n"
+"X-Generator: WP-CLI\n"
+
+#. Plugin Name of the plugin/theme
+msgid "WP Native Content Relationships"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://example.com/native-content-relationships"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "A native content relationship system for WordPress. Relate posts, pages, custom post types, and media with semantic relationship types."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Your Name"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "Related Content"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "Search content..."
+msgstr ""
+
+#: includes/class-admin.php
+msgid "Bidirectional"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "One-way"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Content Relationships"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Settings"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "General Settings"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Enable Relationships For"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Default Relationship Behavior"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Cleanup on Delete"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Relationship Limit"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Privacy"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Privacy Policy"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Data Storage"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "External Data Transmission"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Data Export & Deletion"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "What Data is Stored"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Note:"
+msgstr ""
+
+#: includes/class-api.php
+msgid "You do not have permission to create this relationship."
+msgstr ""
+
+#: includes/class-api.php
+msgid "Invalid content ID."
+msgstr ""
+
+#: includes/class-api.php
+msgid "Content cannot be related to itself."
+msgstr ""
+
+#: includes/class-api.php
+msgid "One or both posts do not exist."
+msgstr ""
+
+#: includes/class-api.php
+msgid "This relationship would create an infinite loop."
+msgstr ""
+
+#: includes/class-api.php
+msgid "Maximum relationships limit (%d) reached for this post."
+msgstr ""
+
+#: includes/class-api.php
+msgid "Invalid relationship type."
+msgstr ""
+
+#: includes/class-api.php
+msgid "This relationship type is not allowed between these post types."
+msgstr ""
+
+#: includes/class-overview.php
+msgid "Content Relationships"
+msgstr ""
+
+#: includes/class-overview.php
+msgid "Overview of all content relationships. To edit relationships, use the \"Related Content\" meta box on individual posts."
+msgstr ""
+
+#: includes/class-overview.php
+msgid "From"
+msgstr ""
+
+#: includes/class-overview.php
+msgid "Type"
+msgstr ""
+
+#: includes/class-overview.php
+msgid "To"
+msgstr ""
+
+#: includes/class-overview.php
+msgid "Direction"
+msgstr ""
+
+#: includes/class-overview.php
+msgid "Date"
+msgstr ""
+
+#: includes/class-overview.php
+msgid "Deleted"
+msgstr ""
+
+#: includes/class-overview.php
+msgid "No relationships found."
+msgstr ""
+
+#: includes/class-integrity.php
+msgid "%d invalid relationship was cleaned up."
+msgid_plural "%d invalid relationships were cleaned up."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-import-export.php
+msgid "Import/Export Relationships"
+msgstr ""
+
+#: includes/class-import-export.php
+msgid "Export Relationships"
+msgstr ""
+
+#: includes/class-import-export.php
+msgid "Import Relationships"
+msgstr ""
+
+#: includes/class-import-export.php
+msgid "Error uploading file."
+msgstr ""
+
+#: includes/class-import-export.php
+msgid "Invalid JSON file."
+msgstr ""
+
+#: includes/class-import-export.php
+msgid "Import Complete:"
+msgstr ""
+
+#: includes/class-import-export.php
+msgid "%d relationships imported, %d skipped."
+msgstr ""

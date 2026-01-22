@@ -1,0 +1,140 @@
+#wpncr-relationships {
+	margin: 20px 0;
+}
+
+.wpncr-relation-types {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 20px;
+}
+
+.wpncr-relation-type {
+	border: 1px solid #dcdcde;
+	border-radius: 2px;
+	padding: 15px;
+	background: #f6f7f7;
+}
+
+.wpncr-relation-type h4 {
+	margin: 0 0 15px 0;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #dcdcde;
+	color: #1d2327;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.wpncr-relations-list {
+	min-height: 50px;
+	margin-bottom: 15px;
+}
+
+.wpncr-relation-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	margin-bottom: 8px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 2px;
+}
+
+.wpncr-relation-item:hover {
+	background: #f6f7f7;
+}
+
+.wpncr-relation-title {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wpncr-direction-indicator {
+	color: #646970;
+	font-size: 16px;
+	font-weight: normal;
+}
+
+.wpncr-relation-title a {
+	text-decoration: none;
+	color: #2271b1;
+	font-weight: 500;
+}
+
+.wpncr-relation-title a:hover {
+	color: #135e96;
+}
+
+.wpncr-relation-title small {
+	color: #646970;
+	margin-left: 5px;
+}
+
+.wpncr-remove-relation {
+	margin-left: 10px;
+}
+
+.wpncr-add-relation {
+	position: relative;
+}
+
+.wpncr-search-input {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #dcdcde;
+	border-radius: 2px;
+	font-size: 13px;
+	background: #fff;
+}
+
+.wpncr-search-results {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-top: none;
+	border-radius: 0 0 2px 2px;
+	max-height: 200px;
+	overflow-y: auto;
+	z-index: 100;
+	box-shadow: none;
+}
+
+.wpncr-search-result {
+	padding: 10px;
+	cursor: pointer;
+	border-bottom: 1px solid #eee;
+}
+
+.wpncr-search-result:hover {
+	background: #f0f0f0;
+}
+
+.wpncr-search-result:last-child {
+	border-bottom: none;
+}
+
+.wpncr-search-result strong {
+	display: block;
+	color: #2271b1;
+}
+
+.wpncr-search-result small {
+	color: #646970;
+}
+
+.wpncr-loading,
+.wpncr-no-results,
+.wpncr-error {
+	padding: 10px;
+	text-align: center;
+	color: #646970;
+}
+
+.wpncr-error {
+	color: #d63638;
+}
