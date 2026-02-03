@@ -706,58 +706,41 @@ class NATICORE_API {
 			return $cached_result;
 		}
 
-		// Build SQL without interpolated WHERE fragments (scanner-friendly)
-		$has_to_type_filter = in_array( $to_type, array( 'post', 'user', 'term' ), true );
+		// Build SQL using array-based WHERE clause (scanner-friendly)
+		$table  = $wpdb->prefix . 'content_relations';
+		$where  = array( 'from_id = %d' );
+		$params = array( $post_id );
 
-		if ( $has_type && $has_limit ) {
-			if ( $has_to_type_filter ) {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s AND type = %s ORDER BY created_at DESC LIMIT %d",
-					$post_id, $to_type, $type, $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
-			} else {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s ORDER BY created_at DESC LIMIT %d",
-					$post_id, $type, $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
-			}
-		} elseif ( $has_type ) {
-			if ( $has_to_type_filter ) {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s AND type = %s ORDER BY created_at DESC",
-					$post_id, $to_type, $type
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
-			} else {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s ORDER BY created_at DESC",
-					$post_id, $type
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
-			}
-		} elseif ( $has_limit ) {
-			if ( $has_to_type_filter ) {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC LIMIT %d",
-					$post_id, $to_type, $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
-			} else {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY created_at DESC LIMIT %d",
-					$post_id, $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
-			}
-		} else {
-			if ( $has_to_type_filter ) {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC",
-					$post_id, $to_type
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
-			} else {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY created_at DESC",
-					$post_id
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
-			}
+		if ( $has_to_type_filter ) {
+			$where[]  = 'to_type = %s';
+			$params[] = $to_type;
 		}
+
+		if ( $has_type ) {
+			$where[]  = 'type = %s';
+			$params[] = $type;
+		}
+
+		$sql = "
+			SELECT to_id, type, to_type
+			FROM {$table}
+			WHERE " . implode( ' AND ', $where ) . "
+			ORDER BY created_at DESC
+		";
+
+		if ( $has_limit ) {
+			$sql .= ' LIMIT %d';
+			$params[] = $limit;
+		}
+
+		/**
+		 * Custom table query with manual caching.
+		 * WordPress.DB.DirectDatabaseQuery.DirectQuery is acceptable here
+		 * because WordPress core APIs do not support custom relationship tables.
+		 */
+		$results = $wpdb->get_results(
+			$wpdb->prepare( $sql, $params )
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 
 		if ( ! $results ) {
 			$related_items = array();
