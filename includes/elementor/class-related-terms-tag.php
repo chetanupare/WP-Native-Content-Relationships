@@ -6,7 +6,7 @@
  * @since 1.0.11
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -60,14 +60,14 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 * @return string Tag group
 	 */
 	public function get_group() {
-		return 'ncr-relationships';
+		return 'naticore-relationships';
 	}
 
 	/**
 	 * Register controls
 	 */
 	protected function register_controls() {
-		// Relationship type control
+		// Relationship type control.
 		$this->add_control(
 			'relationship_type',
 			array(
@@ -78,7 +78,7 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 			)
 		);
 
-		// Direction control
+		// Direction control.
 		$this->add_control(
 			'direction',
 			array(
@@ -92,7 +92,7 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 			)
 		);
 
-		// Taxonomy filter control
+		// Taxonomy filter control.
 		$this->add_control(
 			'taxonomy',
 			array(
@@ -106,7 +106,7 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 			)
 		);
 
-		// Output format control
+		// Output format control.
 		$this->add_control(
 			'output_format',
 			array(
