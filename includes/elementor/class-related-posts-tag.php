@@ -251,13 +251,13 @@ class NCR_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 		$sql = "SELECT DISTINCT p.ID, p.post_title, p.post_date
 				FROM {$wpdb->prefix}content_relations cr
 				INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
-				WHERE cr.to_id = %d AND cr.to_type = 'post' AND cr.type = %s
-				AND p.post_status = 'publish'
+				WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s
+				AND p.post_status = %s
 				{$order_clause}
 				LIMIT %d";
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
-		$results = $wpdb->get_results( $wpdb->prepare( $sql, $post_id, $type, $limit ) );
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, $post_id, 'post', $type, 'publish', $limit ) );
 
 		$posts = array();
 		foreach ( $results as $row ) {

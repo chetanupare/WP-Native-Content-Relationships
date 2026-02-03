@@ -875,20 +875,30 @@ class NATICORE_API {
 			return (bool) $cached_result;
 		}
 
-		$where = array(
-			'from_id' => $from_id,
-			'to_id'   => $to_id,
-			'to_type' => $to_type,
-		);
+		// Build WHERE clause with proper placeholders
+		$where_clauses = array();
+		$values = array();
+		
+		$where_clauses[] = 'from_id = %d';
+		$values[] = $from_id;
+		
+		$where_clauses[] = 'to_id = %d';
+		$values[] = $to_id;
+		
+		$where_clauses[] = 'to_type = %s';
+		$values[] = $to_type;
 
 		if ( $type ) {
-			$where['type'] = $type;
+			$where_clauses[] = 'type = %s';
+			$values[] = $type;
 		}
+
+		$where_sql = implode( ' AND ', $where_clauses );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 		$result = $wpdb->get_var( $wpdb->prepare(
-			"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE " . self::build_where_clause( $where ),
-			array_values( $where )
+			"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql}",
+			$values
 		) );
 
 		$exists = (int) $result > 0;
