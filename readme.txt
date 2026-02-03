@@ -307,7 +307,7 @@ No. This plugin stores all relationship data locally in your WordPress database 
 
 Contributions are welcome! Please feel free to submit a Pull Request on GitHub:
 
-**GitHub Repository:** https://github.com/chetanupare/WP-Native-Content-Relationships
+**GitHub Repository:** <https://github.com/chetanupare/WP-Native-Content-Relationships>
 
 For bug reports and feature requests, please use the GitHub Issues page.
 
