@@ -1,0 +1,30 @@
+# CodeQL configuration for this repository
+# This file controls the default CodeQL behavior
+
+# Disable automatic CodeQL setup
+disable-default-queries: true
+
+# Specify which queries to run
+queries:
+  - name: security-extended
+    uses: security-extended
+  - name: security-and-quality
+    uses: security-and-quality
+
+# Paths to include/exclude from analysis
+paths:
+  - includes/
+  - assets/
+  - native-content-relationships.php
+  - uninstall.php
+  - developer-guide.php
+  - readme.txt
+
+paths-ignore:
+  - vendor/
+  - node_modules/
+  - .github/
+  - tests/
+  - tmp/
+  - "*.min.js"
+  - "*.min.css"

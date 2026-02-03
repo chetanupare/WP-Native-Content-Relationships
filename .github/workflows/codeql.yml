@@ -1,4 +1,4 @@
-name: "CodeQL"
+name: "Custom CodeQL Analysis"
 
 on:
   push:
@@ -8,9 +8,16 @@ on:
   schedule:
     - cron: '30 1 * * 1' # Weekly on Monday
 
+# Disable default CodeQL to prevent duplicates
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     name: Analyze
+    # Only run if this is the main repository (prevent duplicates in forks)
+    if: github.event_name == 'schedule' || github.repository == 'chetanupare/WP-Native-Content-Relationships'
     runs-on: ubuntu-latest
     permissions:
       actions: read
