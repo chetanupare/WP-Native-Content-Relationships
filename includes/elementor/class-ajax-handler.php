@@ -41,7 +41,8 @@ class NCR_Elementor_Ajax_Handler {
 	 */
 	public function get_relationship_types() {
 		// Verify nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['nonce'] ), 'ncr_elementor_nonce' ) ) {
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'ncr_elementor_nonce' ) ) {
 			wp_send_json_error( array(
 				'success' => false,
 				'message' => __( 'Security check failed', 'native-content-relationships' )
