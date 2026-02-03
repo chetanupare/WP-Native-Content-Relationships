@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+<html class="light" lang="en">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Developer Documentation - Native Content Relationships</title>
@@ -47,68 +47,87 @@
     "mentions": [
       {
         "@type": "Thing",
-        "name": "API Reference",
-        "description": "Complete REST API and PHP function documentation"
+        "name": "API Reference"
+      },
+      {
+        "@type": "Thing", 
+        "name": "Code Examples"
       },
       {
         "@type": "Thing",
-        "name": "Code Examples",
-        "description": "Practical code examples and implementation patterns"
-      },
-      {
-        "@type": "Thing",
-        "name": "Hooks and Filters",
-        "description": "WordPress hooks and filters for extensibility"
-      },
-      {
-        "@type": "Thing",
-        "name": "Integration Guides",
-        "description": "Step-by-step integration with popular plugins"
+        "name": "Hooks & Filters"
       }
     ]
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Chetan Upare",
+    "url": "https://buymeacoffee.com/chetanupare"
+  },
+  "creator": {
+    "@type": "Person",
+    "name": "Chetan Upare",
+    "url": "https://buymeacoffee.com/chetanupare"
+  },
+  "datePublished": "2024-01-15",
+  "dateModified": "2024-02-03"
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif']
+      },
+      colors: {
+        primary: '#0ea5e9',
+        'surface-light': '#ffffff',
+        'surface-dark': '#0f172a',
+        'background-light': '#f8fafc',
+        'background-dark': '#020617',
+        'border-light': '#e2e8f0',
+        'border-dark': '#334155'
+      }
+    }
   }
 }
 </script>
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#0da6f2",
-                        "background-light": "#f5f7f8",
-                        "background-dark": "#101c22",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"],
-                        "mono": ["Fira Code", "monospace"],
-                    },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-                },
-            },
-        }
-    </script>
 <style>
-        body { font-family: 'Inter', sans-serif; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; font-size: 20px; }
-        .filled-icon { font-variation-settings: 'FILL' 1; }
-    </style>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.filled-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-[#111618] dark:text-white flex flex-col min-h-screen">
-<!-- Top Navigation -->
-<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#101c22]/90 backdrop-blur-md">
-<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-<div class="flex items-center gap-3 group">
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<!-- Header -->
+<header class="bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 backdrop-blur-lg bg-white/90 dark:bg-surface-dark/90">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="flex h-16 items-center justify-between">
+<div class="flex items-center">
 <a href="index.html" class="flex items-center gap-3 group">
 <img alt="Native Content Relationships Logo" class="h-8 w-8 rounded-md animate-float" data-alt="Native Content Relationships plugin logo icon" src="https://ps.w.org/native-content-relationships/assets/icon-128x128.png?rev=3452657"/>
 <span class="text-lg font-bold tracking-tight text-[#111618] dark:text-white transition-colors group-hover:text-primary">Native Content Relationships</span>
@@ -127,50 +146,53 @@
                 </button>
 </div>
 </div>
+</div>
 </header>
 <div class="flex flex-1 w-full max-w-[1440px] mx-auto">
-<!-- Left Sidebar -->
-<aside class="hidden lg:flex w-72 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-[#101c22] h-[calc(100vh-64px)] sticky top-[64px] overflow-y-auto">
-<div class="p-4 flex flex-col gap-6">
-<!-- Sidebar Search -->
-<div class="relative group">
-<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-<span class="material-symbols-outlined text-gray-400">search</span>
-</div>
-<input class="block w-full p-2.5 pl-10 text-sm text-gray-900 border border-gray-200 rounded-lg bg-gray-50 focus:ring-primary focus:border-primary dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white" placeholder="Search docs..." type="text"/>
-<div class="absolute inset-y-0 right-0 flex items-center pr-3">
-<kbd class="inline-flex items-center border border-gray-200 rounded px-1.5 text-[10px] font-mono text-gray-400 dark:border-gray-700">⌘K</kbd>
-</div>
-</div>
-<!-- Navigation Tree -->
-<nav class="flex flex-col gap-1">
-<div class="mb-2">
-<h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider dark:text-gray-400">Documentation</h3>
-</div>
-<!-- Active Item -->
-<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg group" href="#">
+<!-- Sidebar -->
+<aside class="hidden lg:block w-64 bg-surface-light dark:bg-surface-dark border-r border-slate-200 dark:border-slate-800">
+<div class="flex flex-col h-full">
+<div class="p-4">
+<nav class="space-y-1">
+<!-- Getting Started -->
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg group" href="#getting-started">
 <span class="material-symbols-outlined filled-icon text-[20px]">rocket_launch</span>
 <span class="text-sm font-medium">Getting Started</span>
 </a>
-<!-- Sub Items -->
 <div class="pl-10 pr-2 flex flex-col border-l border-gray-100 dark:border-gray-800 ml-5 my-1 gap-1">
-<a class="block py-1.5 text-sm font-medium text-primary pl-2 border-l-2 border-primary -ml-[1px]" href="#">Introduction</a>
-<a class="block py-1.5 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white pl-2 border-l-2 border-transparent hover:border-gray-300" href="#">Installation</a>
-<a class="block py-1.5 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white pl-2 border-l-2 border-transparent hover:border-gray-300" href="#">Configuration</a>
+<a class="block py-1.5 text-sm font-medium text-primary pl-2 border-l-2 border-primary -ml-[1px]" href="#installation">Installation</a>
+<a class="block py-1.5 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white pl-2 border-l-2 border-transparent hover:border-gray-300" href="#basic-usage">Basic Usage</a>
+<a class="block py-1.5 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white pl-2 border-l-2 border-transparent hover:border-gray-300" href="#relationship-types">Relationship Types</a>
 </div>
-<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors mt-1" href="#">
+</div>
+<!-- API Reference -->
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors mt-1" href="#api-reference">
 <span class="material-symbols-outlined text-[20px]">code</span>
 <span class="text-sm font-medium">API Reference</span>
 </a>
-<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors" href="#">
+<!-- Hooks & Filters -->
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors" href="#hooks-filters">
 <span class="material-symbols-outlined text-[20px]">webhook</span>
-<span class="text-sm font-medium">Hooks &amp; Filters</span>
+<span class="text-sm font-medium">Hooks & Filters</span>
 </a>
-<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors" href="#">
-<span class="material-symbols-outlined text-[20px]">lightbulb</span>
-<span class="text-sm font-medium">Examples</span>
+<!-- REST API -->
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors" href="#rest-api">
+<span class="material-symbols-outlined text-[20px]">api</span>
+<span class="text-sm font-medium">REST API</span>
+</a>
+<!-- WP-CLI -->
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors" href="#wp-cli">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+<span class="text-sm font-medium">WP-CLI</span>
+</a>
+<!-- Integrations -->
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors" href="#integrations">
+<span class="material-symbols-outlined text-[20px]">extension</span>
+<span class="text-sm font-medium">Integrations</span>
 </a>
 </nav>
+</div>
 </div>
 </aside>
 <!-- Main Content -->
@@ -178,7 +200,7 @@
 <div class="max-w-3xl mx-auto">
 <!-- Breadcrumbs -->
 <div class="flex items-center gap-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
-<a class="hover:text-primary transition-colors" href="#">Home</a>
+<a class="hover:text-primary transition-colors" href="index.html">Home</a>
 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
 <a class="hover:text-primary transition-colors" href="#">Developer</a>
 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
@@ -486,72 +508,11 @@ register_block_type( 'naticore/related-posts', array(
 </div>
 </div>
 </section>
-        <span class="text-green-400">'cardinality'</span> <span class="text-purple-400">=&gt;</span> <span class="text-green-400">'many-to-many'</span><span class="text-gray-400">,</span>
-        <span class="text-green-400">'reciprocal'</span>  <span class="text-purple-400">=&gt;</span> <span class="text-blue-400">true</span><span class="text-gray-400">,</span>
-        <span class="text-green-400">'meta'</span>        <span class="text-purple-400">=&gt;</span> <span class="text-gray-400">[</span>
-            <span class="text-green-400">'role'</span> <span class="text-purple-400">=&gt;</span> <span class="text-green-400">'string'</span>
-        <span class="text-gray-400">]</span>
-    <span class="text-gray-400">]);</span>
-<span class="text-gray-400">});</span></code></pre>
-</div>
-</div>
-<div class="mt-4">
-<a class="inline-flex items-center text-sm font-medium text-primary hover:underline" href="#">
-                                View full API documentation for ncr_register_relationship
-                                <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-</a>
-</div>
-</section>
-<!-- Next Steps -->
-<section class="border-t border-gray-200 dark:border-gray-800 pt-8">
-<h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Next Steps</h3>
-<div class="grid sm:grid-cols-2 gap-4">
-<a class="group block p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:shadow-md transition-all" href="#">
-<span class="material-symbols-outlined text-primary mb-3 text-3xl group-hover:scale-110 transition-transform">webhook</span>
-<h4 class="font-bold text-gray-900 dark:text-white mb-2">Explore Hooks</h4>
-<p class="text-sm text-gray-500 dark:text-gray-400">Customize behavior during save, update, and delete actions.</p>
-</a>
-<a class="group block p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:shadow-md transition-all" href="#">
-<span class="material-symbols-outlined text-purple-500 mb-3 text-3xl group-hover:scale-110 transition-transform">terminal</span>
-<h4 class="font-bold text-gray-900 dark:text-white mb-2">CLI Commands</h4>
-<p class="text-sm text-gray-500 dark:text-gray-400">Manage relationships directly from your terminal using WP-CLI.</p>
-</a>
-</div>
-</section>
-</div>
+
 </div>
 </main>
-<!-- Right Sidebar (TOC) -->
-<aside class="hidden xl:block w-64 p-8 sticky top-[64px] h-[calc(100vh-64px)] overflow-y-auto">
-<div class="mb-4">
-<h5 class="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">On this page</h5>
-<ul class="space-y-3 border-l border-gray-200 dark:border-gray-700">
-<li>
-<a class="block pl-4 text-sm font-medium border-l-2 border-primary -ml-[1px] text-primary" href="#introduction">Introduction</a>
-</li>
-<li>
-<a class="block pl-4 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-l-2 border-transparent hover:border-gray-300 transition-colors" href="#quick-start">Quick Start</a>
-</li>
-<li>
-<a class="block pl-4 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-l-2 border-transparent hover:border-gray-300 transition-colors" href="#parameters">Parameters</a>
-</li>
-<li>
-<a class="block pl-4 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-l-2 border-transparent hover:border-gray-300 transition-colors" href="#return-values">Return Values</a>
-</li>
-<li>
-<a class="block pl-4 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-l-2 border-transparent hover:border-gray-300 transition-colors" href="#troubleshooting">Troubleshooting</a>
-</li>
-</ul>
 </div>
-<div class="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-<p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Have questions?</p>
-<a class="text-sm font-bold text-primary hover:underline flex items-center gap-1" href="#">
-                    Join our Discord
-                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
-</a>
-</div>
-</aside>
-</div>
+
 <!-- Footer -->
 <footer class="bg-white dark:bg-[#101c22] border-t border-slate-200 dark:border-slate-800 mt-12">
 <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -568,8 +529,10 @@ register_block_type( 'naticore/related-posts', array(
 </div>
 </div>
 </footer>
+
 <script>
     // Set current year dynamically
     document.getElementById('current-year').textContent = new Date().getFullYear();
 </script>
-</body></html>
+</body>
+</html>
