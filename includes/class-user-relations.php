@@ -2,6 +2,9 @@
 /**
  * User Relationships Admin UI
  * Handles user profile and post editor interfaces for user relationships
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.10
  */
 
 // Exit if accessed directly
@@ -9,10 +12,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * User Relationships Admin UI
+ *
+ * Provides functionality for managing user relationships in the WordPress admin
+ * area, including user profile integration and post editor interfaces.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.10
+ */
 class NATICORE_User_Relations {
 
 	/**
 	 * Instance
+	 * @var NATICORE_User_Relations|null
 	 */
 	private static $instance = null;
 
@@ -30,21 +43,21 @@ class NATICORE_User_Relations {
 	 * Constructor
 	 */
 	private function __construct() {
-		// Add user profile metabox
+		// Add user profile metabox.
 		add_action( 'show_user_profile', array( $this, 'add_user_profile_metabox' ) );
 		add_action( 'edit_user_profile', array( $this, 'add_user_profile_metabox' ) );
 		add_action( 'personal_options_update', array( $this, 'save_user_profile' ) );
 		add_action( 'edit_user_profile_update', array( $this, 'save_user_profile' ) );
 
-		// Add post editor metabox for user relationships
+		// Add post editor metabox for user relationships.
 		add_action( 'add_meta_boxes', array( $this, 'add_post_user_metabox' ) );
 		add_action( 'save_post', array( $this, 'save_post_user_relations' ) );
 
-		// AJAX for searching users and posts
+		// AJAX for searching users and posts.
 		add_action( 'wp_ajax_naticore_search_users', array( $this, 'ajax_search_users' ) );
 		add_action( 'wp_ajax_naticore_search_posts_for_user', array( $this, 'ajax_search_posts_for_user' ) );
 
-		// Enqueue scripts
+		// Enqueue scripts.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 	}
 
@@ -52,15 +65,15 @@ class NATICORE_User_Relations {
 	 * Add user profile metabox
 	 */
 	public function add_user_profile_metabox( $user ) {
-		// Only show if user has permission
+		// Only show if user has permission.
 		if ( ! current_user_can( 'edit_user', $user->ID ) ) {
 			return;
 		}
 
-		// Get user's related posts
+		// Get user's related posts.
 		$related_posts = wp_get_user_related_posts( $user->ID );
 
-		// Get available relationship types that support user-to-post
+		// Get available relationship types that support user-to-post.
 		$available_types = $this->get_user_to_post_types();
 
 		if ( empty( $available_types ) ) {
@@ -122,13 +135,13 @@ class NATICORE_User_Relations {
 			return;
 		}
 
-		// Handle AJAX saves are handled separately
+		// Handle AJAX saves are handled separately.
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
 
-		// Nonce verification would be handled by WordPress for user profile saves
-		// Additional validation can be added here if needed
+		// Nonce verification would be handled by WordPress for user profile saves.
+		// Additional validation can be added here if needed.
 	}
 
 	/**
@@ -153,10 +166,10 @@ class NATICORE_User_Relations {
 	 * Render post editor metabox for user relationships
 	 */
 	public function render_post_user_metabox( $post ) {
-		// Get post's related users
+		// Get post's related users.
 		$related_users = wp_get_related_users( $post->ID );
 
-		// Get available relationship types that support post-to-user
+		// Get available relationship types that support post-to-user.
 		$available_types = $this->get_post_to_user_types();
 
 		if ( empty( $available_types ) ) {
