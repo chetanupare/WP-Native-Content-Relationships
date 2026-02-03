@@ -707,7 +707,6 @@ class NATICORE_API {
 		}
 
 		// Build SQL using array-based WHERE clause (scanner-friendly)
-		$table  = $wpdb->prefix . 'content_relations';
 		$where  = array( 'from_id = %d' );
 		$params = array( $post_id );
 
@@ -722,7 +721,6 @@ class NATICORE_API {
 		}
 
 		$where_clause = implode( ' AND ', $where );
-		$sql_base = "SELECT to_id, type, to_type FROM {$table} WHERE {$where_clause} ORDER BY created_at DESC";
 
 		if ( $has_limit ) {
 			/**
@@ -731,7 +729,10 @@ class NATICORE_API {
 			 * because WordPress core APIs do not support custom relationship tables.
 			 */
 			$results = $wpdb->get_results(
-				$wpdb->prepare( $sql_base . ' LIMIT %d', $params )
+				$wpdb->prepare(
+					"SELECT to_id, type, to_type FROM {$wpdb->prefix}content_relations WHERE {$where_clause} ORDER BY created_at DESC LIMIT %d",
+					$params
+				)
 			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared -- Custom table with prepared statement
 		} else {
 			/**
@@ -740,7 +741,10 @@ class NATICORE_API {
 			 * because WordPress core APIs do not support custom relationship tables.
 			 */
 			$results = $wpdb->get_results(
-				$wpdb->prepare( $sql_base, $params )
+				$wpdb->prepare(
+					"SELECT to_id, type, to_type FROM {$wpdb->prefix}content_relations WHERE {$where_clause} ORDER BY created_at DESC",
+					$params
+				)
 			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared -- Custom table with prepared statement
 		}
 
