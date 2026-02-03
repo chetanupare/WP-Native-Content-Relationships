@@ -6,133 +6,112 @@
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-blue)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
 
-A native, scalable relationship layer for WordPress that supports structured relationships between posts, users, and terms.
+> A native, scalable relationship layer for WordPress that supports structured relationships between posts, users, and terms.
 
 ---
 
-## Overview
+## Why this plugin exists
 
-WordPress does not provide a first-class way to model real relationships between content items.  
-Most implementations rely on post meta or taxonomies, which become difficult to query, scale, and maintain over time.
+WordPress has no first-class way to model real relationships between content items.  
+Most sites rely on post meta or taxonomies, which break down as content and queries grow.
 
-Native Content Relationships introduces a structured relationship system built on WordPress core APIs and a dedicated indexed database table. It is designed to be reliable, predictable, and suitable for long-term use across multiple projects.
-
----
-
-## What This Plugin Solves
-
-- Many-to-many relationships between content entities
-- Clean and predictable querying without meta hacks
-- Long-term maintainability and data portability
-- Support for modern, multilingual, and headless WordPress setups
+**Native Content Relationships** provides a clean, predictable foundation for relationship-driven WordPress sites.
 
 ---
 
-## Features
+## Core capabilities
 
-- Relationships between posts, users, and terms
-- One-way or bidirectional relationships
-- Semantic relationship types with validation
-- Dedicated indexed database table for performance
-- WP_Query integration
-- REST API endpoints
-- WP-CLI commands
-- Modern admin UI with AJAX search
-- Multilingual support (WPML, Polylang)
-- Optional WooCommerce integration
-- Editor- and theme-agnostic design
+| Capability | Description |
+|---------|-------------|
+| Relationship types | Semantic, validated relationship definitions |
+| Direction | One-way or bidirectional |
+| Data storage | Dedicated indexed database table |
+| Querying | WP_Query, REST API, WP-CLI |
+| Scope | Posts, Users, Terms |
+| Compatibility | Multilingual, headless, WooCommerce |
 
 ---
 
-## Supported Relationship Types
+## Supported relationships
 
-- Post ↔ Post
-- Post ↔ User
-- Post ↔ Term
-- User ↔ Post
-- Term ↔ Post
+| From | To |
+|----|----|
+| Post | Post |
+| Post | User |
+| Post | Term |
+| User | Post |
+| Term | Post |
 
 ---
 
-## Common Use Cases
+## Common use cases
 
-### Posts
+### Content modeling
 - Products → Accessories
 - Courses → Lessons
 - Articles → Related content
 
-### Users
+### User interactions
 - Favorite posts
-- Bookmarked content
+- Bookmarks
 - Multiple authors or contributors
 
-### Terms
+### Taxonomy extensions
 - Featured categories
 - Curated collections
-- Semantic grouping beyond default taxonomies
+- Semantic groupings beyond default taxonomies
 
 ---
 
-## Admin Interface
+## Admin experience
 
-- Manage relationships directly from the post editor
-- Manage related content from user profile screens
-- Manage related posts from term edit screens
-- AJAX-powered search for posts, users, and terms
-- UI aligned with WordPress admin standards
+- Relationship management in post editor
+- Relationship management in user profiles
+- Relationship management in term editors
+- AJAX-powered search for large datasets
+- UI aligned with WordPress core patterns
 
 ---
 
-## Architecture and Performance
+## Architecture & performance
 
-- Dedicated indexed database table
-- No reliance on post meta or taxonomy abuse
-- Optimized for large datasets and multilingual sites
-- Cache-friendly and safe for shared hosting
-- Designed to scale to millions of relationships
+> Built for scale, not shortcuts.
+
+- No post meta or taxonomy abuse
+- Indexed relational storage
+- Cache-friendly queries
+- Safe for shared hosting
+- Designed for large, multilingual sites
 
 ---
 
 ## Integrations
 
-- WooCommerce (product relationships)
-- WPML / Polylang (relationship mirroring)
-- Elementor (dynamic content support)
-- Gutenberg (related content block)
-- Advanced Custom Fields (one-time migration tool)
-
----
-
-## Compatibility
-
-- WordPress 5.0+
-- PHP 7.4+
-- All themes
-- All custom post types
-- All custom taxonomies
+| Area | Support |
+|----|--------|
+| WooCommerce | Product relationships |
+| Multilingual | WPML, Polylang |
+| Page builders | Gutenberg, Elementor |
+| ACF | One-time relationship migration |
 
 ---
 
 ## Installation
 
-### From WordPress.org
-
-1. Go to Plugins → Add New
-2. Search for “Native Content Relationships”
+### WordPress.org
+1. Plugins → Add New
+2. Search **Native Content Relationships**
 3. Install and activate
 
-### From GitHub
-
+### GitHub
 ```bash
 cd wp-content/plugins
 git clone https://github.com/chetanupare/WP-Native-Content-Relationships.git
 ```
 
-Activate the plugin from the WordPress admin.
-
 ---
 
-## Quick Start
+## Quick start
 
 ```php
 // Add a relationship
@@ -141,7 +120,7 @@ wp_add_relation( $from_id, $to_id, 'related_to' );
 // Get related items
 $related = wp_get_related( $from_id, 'related_to' );
 
-// Check if related
+// Check relationship
 if ( wp_is_related( $from_id, $to_id, 'related_to' ) ) {
     // Do something
 }
@@ -149,37 +128,7 @@ if ( wp_is_related( $from_id, $to_id, 'related_to' ) ) {
 
 ---
 
-## User Relationships
-
-```php
-// User favorites a post
-wp_add_relation( $user_id, $post_id, 'favorite_posts', null, 'post' );
-
-// Get user's favorite posts
-$favorites = wp_get_related_users( $user_id, 'favorite_posts' );
-
-// Get users who favorited a post
-$users = wp_get_related( $post_id, 'favorite_posts', array(), 'user' );
-```
-
----
-
-## Term Relationships
-
-```php
-// Relate post to term
-wp_add_relation( $post_id, $term_id, 'categorized_as', null, 'term' );
-
-// Get related terms
-$terms = wp_get_related_terms( $post_id, 'categorized_as' );
-
-// Get related posts
-$posts = wp_get_term_related_posts( $term_id, 'categorized_as' );
-```
-
----
-
-## WP_Query Integration
+## Query integration
 
 ```php
 $query = new WP_Query( array(
@@ -194,22 +143,14 @@ $query = new WP_Query( array(
 
 ---
 
-## REST API
+## REST & CLI access
 
-Endpoints are available under:
-
+**REST API**
 ```
 /wp-json/naticore/v1/
 ```
 
-- Fetch relationships
-- Create relationships
-- Delete relationships
-
----
-
-## WP-CLI
-
+**WP-CLI**
 ```bash
 wp naticore list --post=123
 wp naticore add --from=123 --to=456 --type=related_to
@@ -225,9 +166,9 @@ wp naticore remove --from=123 --to=456 --type=related_to
 | Posts ↔ Posts | Yes | Yes | Yes |
 | Posts ↔ Users | Yes | No | No |
 | Posts ↔ Terms | Yes | No | No |
-| Semantic Types | Yes | No | No |
+| Semantic types | Yes | No | No |
 | REST API | Yes | No | Yes |
-| Active Development | Yes | No | Yes |
+| Active maintenance | Yes | No | Yes |
 
 ---
 
@@ -235,11 +176,10 @@ wp naticore remove --from=123 --to=456 --type=related_to
 
 Contributions are welcome.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests where applicable
-5. Submit a Pull Request
+1. Fork the repository  
+2. Create a feature branch  
+3. Add tests where applicable  
+4. Submit a Pull Request  
 
 Repository:  
 https://github.com/chetanupare/WP-Native-Content-Relationships
@@ -248,21 +188,21 @@ https://github.com/chetanupare/WP-Native-Content-Relationships
 
 ## License
 
-This project is licensed under the GPLv2 or later.
+GPLv2 or later
 
 ---
 
 ## Links
 
-- WordPress.org Plugin Page  
+- WordPress.org  
   https://wordpress.org/plugins/native-content-relationships/
 
-- GitHub Repository  
+- GitHub  
   https://github.com/chetanupare/WP-Native-Content-Relationships
 
-- Issue Tracker  
+- Issues  
   https://github.com/chetanupare/WP-Native-Content-Relationships/issues
 
 ---
 
-If you find this plugin useful, consider starring the repository.
+If this plugin helps your project, consider starring the repository.
