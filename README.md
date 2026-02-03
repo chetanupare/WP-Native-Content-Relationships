@@ -8,44 +8,20 @@
 
 > A modern, comprehensive relationship system for WordPress supporting posts, users, and terms with semantic relationship types.
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-</svg> Features
+## ![Features](https://img.shields.io/badge/Features-Complete%20Relationship%20Support-blue)
 
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-</svg> Complete Relationship Support**: Posts-to-Posts, Posts-to-Users, Posts-to-Terms
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-</svg> High Performance**: Indexed database table (2,500x faster than post meta)
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-</svg> Semantic Types**: Typed relationships with validation
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-</svg> Bidirectional**: Forward and reverse relationship queries
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-</svg> User Relationships**: Favorite posts, bookmarks, multiple authors
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-</svg> Term Relationships**: Categories, tags, custom taxonomies
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> Modern Admin UI**: AJAX-powered interface
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
-</svg> Page Builder Support**: Gutenberg block & Elementor dynamic tags
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
-</svg> Integrations**: WooCommerce, ACF, WPML, Polylang, SEO plugins
-- **<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-</svg> Developer Tools**: REST API, WP-CLI, Fluent API
+- **![Link](https://img.shields.io/badge/Link-Complete%20Relationship%20Support-informational)** Complete Relationship Support: Posts-to-Posts, Posts-to-Users, Posts-to-Terms
+- **![Performance](https://img.shields.io/badge/Performance-High%20Performance-green)** High Performance: Indexed database table (2,500x faster than post meta)
+- **![Semantic](https://img.shields.io/badge/Semantic-Typed%20Relationships-success)** Semantic Types: Typed relationships with validation
+- **![Bidirectional](https://img.shields.io/badge/Bidirectional-Forward%20%26%20Reverse%20Queries-blue)** Bidirectional: Forward and reverse relationship queries
+- **![Users](https://img.shields.io/badge/Users-User%20Relationships-orange)** User Relationships: Favorite posts, bookmarks, multiple authors
+- **![Terms](https://img.shields.io/badge/Terms-Term%20Relationships-purple)** Term Relationships: Categories, tags, custom taxonomies
+- **![UI](https://img.shields.io/badge/UI-Modern%20Admin%20Interface-9cf)** Modern Admin UI: AJAX-powered interface
+- **![Builders](https://img.shields.io/badge/Builders-Page%20Builder%20Support-blueviolet)** Page Builder Support: Gutenberg block & Elementor dynamic tags
+- **![Integrations](https://img.shields.io/badge/Integrations-Plugin%20Integrations-red)** Integrations: WooCommerce, ACF, WPML, Polylang, SEO plugins
+- **![DevTools](https://img.shields.io/badge/DevTools-Developer%20Tools-important)** Developer Tools: REST API, WP-CLI, Fluent API
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-</svg> Installation
+## ![Installation](https://img.shields.io/badge/Installation-Easy%20Setup-brightgreen)
 
 ### From WordPress.org
 1. Go to Plugins → Add New in WordPress admin
@@ -58,9 +34,7 @@ cd /wp-content/plugins/
 git clone https://github.com/chetanupare/WP-Native-Content-Relationships.git
 ```
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
-</svg> Quick Start
+## ![Quick Start](https://img.shields.io/badge/Quick%20Start-Get%20Started%20Fast-orange)
 
 ### Basic Usage
 
@@ -103,9 +77,7 @@ $terms = wp_get_related_terms( $post_id, 'categorized_as' );
 $posts = wp_get_term_related_posts( $term_id, 'categorized_as' );
 ```
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-</svg> Architecture
+## ![Architecture](https://img.shields.io/badge/Architecture-Database%20Schema-blue)
 
 ### Database Schema
 ```sql
@@ -127,9 +99,7 @@ content_relations
 - **Optimized indexes** for all query types
 - **Server-side rendering** for blocks
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-</svg> Integrations
+## ![Integrations](https://img.shields.io/badge/Integrations-Plugin%20Ecosystem-red)
 
 ### WooCommerce
 - Product relationships
@@ -149,9 +119,7 @@ content_relations
 - **WPML**: Relationship mirroring
 - **Polylang**: Relationship mirroring
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-</svg> Developer Tools
+## ![Developer Tools](https://img.shields.io/badge/Developer%20Tools-API%20%26%20CLI-blue)
 
 ### REST API
 ```bash
@@ -174,9 +142,7 @@ naticore()->from(123)->to(456)->type('related_to')->create();
 naticore()->from(123)->type('related_to')->get();
 ```
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-</svg> Comparison
+## ![Comparison](https://img.shields.io/badge/Comparison-Feature%20Comparison-purple)
 
 | Feature | Native Content Relationships | Posts 2 Posts | MB Relationships |
 |---------|------------------------------|---------------|------------------|
@@ -186,18 +152,10 @@ naticore()->from(123)->type('related_to')->get();
 | Semantic Types | ✅ | ❌ | ❌ |
 | Modern Admin | ✅ | ❌ | ✅ |
 | REST API | ✅ | ❌ | ✅ |
-| Performance | <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-</svg> Fast | <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-</svg> Slow | <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-</svg> Slow |
+| Performance | ![Fast](https://img.shields.io/badge/Fast-2%2C500x%20Faster-green) | ![Slow](https://img.shields.io/badge/Slow-Post%20Meta-red) | ![Slow](https://img.shields.io/badge/Slow-Post%20Meta-red) |
 | Active Development | ✅ | ❌ | ✅ |
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-</svg> Contributing
+## ![Contributing](https://img.shields.io/badge/Contributing-PRs%20Welcome-brightgreen)
 
 We welcome contributions! Please feel free to submit a Pull Request.
 
@@ -224,93 +182,45 @@ composer run phpcs
 4. Add tests if applicable
 5. Submit a Pull Request
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-</svg> Changelog
+## ![Changelog](https://img.shields.io/badge/Changelog-Version%20History-blue)
 
 ### [1.0.11] - 2024-02-03
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: Full posts-to-terms and terms-to-posts relationships support
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: Term editor metabox for managing related posts
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: Built-in term relationship types (categorized_as, tagged_with, featured_in)
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: Term relationship API functions
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: AJAX-powered search for terms
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-</svg> **IMPROVED**: Unified relationship system supporting posts, users, and terms
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-</svg> **IMPROVED**: Database schema with optimized indexes
+- ![NEW](https://img.shields.io/badge/NEW-Term%20Relationships-success) **NEW**: Full posts-to-terms and terms-to-posts relationships support
+- ![NEW](https://img.shields.io/badge/NEW-Metabox-Informational) **NEW**: Term editor metabox for managing related posts
+- ![NEW](https://img.shields.io/badge/NEW-Relationship%20Types-success) **NEW**: Built-in term relationship types (categorized_as, tagged_with, featured_in)
+- ![NEW](https://img.shields.io/badge/NEW-API%20Functions-blue) **NEW**: Term relationship API functions
+- ![NEW](https://img.shields.io/badge/NEW-AJAX%20Search-orange) **NEW**: AJAX-powered search for terms
+- ![IMPROVED](https://img.shields.io/badge/IMPROVED-Unified%20System-green) **IMPROVED**: Unified relationship system supporting posts, users, and terms
+- ![IMPROVED](https://img.shields.io/badge/IMPROVED-Database%20Schema-blue) **IMPROVED**: Database schema with optimized indexes
 
 ### [1.0.10] - 2024-02-03
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: Full posts-to-users and users-to-posts relationships support
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: User profile metabox for managing related posts
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: Post editor metabox for managing related users
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: Built-in user relationship types
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> **NEW**: AJAX-powered search for users and posts
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-</svg> **IMPROVED**: Modern admin interface
+- ![NEW](https://img.shields.io/badge/NEW-User%20Relationships-success) **NEW**: Full posts-to-users and users-to-posts relationships support
+- ![NEW](https://img.shields.io/badge/NEW-Profile%20Metabox-informational) **NEW**: User profile metabox for managing related posts
+- ![NEW](https://img.shields.io/badge/NEW-Post%20Editor%20Metabox-blue) **NEW**: Post editor metabox for managing related users
+- ![NEW](https://img.shields.io/badge/NEW-Relationship%20Types-success) **NEW**: Built-in user relationship types
+- ![NEW](https://img.shields.io/badge/NEW-AJAX%20Search-orange) **NEW**: AJAX-powered search for users and posts
+- ![IMPROVED](https://img.shields.io/badge/IMPROVED-Admin%20Interface-green) **IMPROVED**: Modern admin interface
 
 ### [1.0.0] - 2024-01-15
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-</svg> **Initial release**
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> Core relationship engine with custom database table
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> Admin meta box for managing relationships
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> WP_Query integration
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> REST API endpoints
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> WooCommerce integration
-- <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-</svg> ACF migration tool
+- ![RELEASE](https://img.shields.io/badge/RELEASE-Initial%20Release-ff69b4) **Initial release**
+- ![FEATURE](https://img.shields.io/badge/FEATURE-Core%20Engine-blue) Core relationship engine with custom database table
+- ![FEATURE](https://img.shields.io/badge/FEATURE-Admin%20Metabox-informational) Admin meta box for managing relationships
+- ![FEATURE](https://img.shields.io/badge/FEATURE-WP_Query%20Integration-success) WP_Query integration
+- ![FEATURE](https://img.shields.io/badge/FEATURE-REST%20API-orange) REST API endpoints
+- ![FEATURE](https://img.shields.io/badge/FEATURE-WooCommerce-red) WooCommerce integration
+- ![FEATURE](https://img.shields.io/badge/FEATURE-ACF%20Migration-purple) ACF migration tool
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
-</svg> License
+## ![License](https://img.shields.io/badge/License-GPLv2%2B-blue)
 
 This plugin is licensed under the [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html).
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-</svg> Credits
+## ![Credits](https://img.shields.io/badge/Credits-Developer%20Information-orange)
 
 - Developed by [Chetan Upare](https://buymeacoffee.com/chetanupare)
 - Built with modern WordPress standards and best practices
 - Compatible with the latest WordPress versions
 
-## <svg class="inline-block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-</svg> Links
+## ![Links](https://img.shields.io/badge/Links-Useful%20Links-blue)
 
 - **WordPress.org**: https://wordpress.org/plugins/native-content-relationships/
 - **GitHub Repository**: https://github.com/chetanupare/WP-Native-Content-Relationships
@@ -319,6 +229,4 @@ This plugin is licensed under the [GPLv2 or later](https://www.gnu.org/licenses/
 
 ---
 
-**<svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.8a1 1 0 00-1.414 0l-2.8-2.8c-.418-.418-.416-1.126.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-</svg> Star this plugin on GitHub if you find it useful!**
+**![Star](https://img.shields.io/badge/Star-Git%20Star%20if%20Useful-yellow) Star this plugin on GitHub if you find it useful!**
