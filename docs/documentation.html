@@ -182,51 +182,310 @@
 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
 <a class="hover:text-primary transition-colors" href="#">Developer</a>
 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-<span class="font-medium text-gray-900 dark:text-white">Getting Started</span>
+<span class="font-medium text-gray-900 dark:text-white">Documentation</span>
 </div>
-<!-- Page Header -->
-<div class="mb-10 border-b border-gray-200 dark:border-gray-800 pb-8">
-<h1 class="text-4xl font-extrabold tracking-tight text-[#111618] dark:text-white mb-4">Developer Documentation</h1>
-<p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                        Welcome to the developer hub. Learn how to extend Native Content Relationships programmatically using our robust API and hooks system.
-                    </p>
+
+<!-- Getting Started -->
+<section id="getting-started" class="mb-12">
+<h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">Developer Documentation</h1>
+<p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+Complete guide to integrating Native Content Relationships into your WordPress projects. Learn how to create, manage, and query content relationships with our powerful API.
+</p>
+
+<!-- Installation -->
+<div id="installation" class="mb-8">
+<h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Installation</h2>
+<div class="prose prose-gray dark:prose-invert max-w-none">
+<h3>From WordPress.org</h3>
+<ol>
+<li>Navigate to <strong>Plugins → Add New</strong> in your WordPress admin</li>
+<li>Search for "Native Content Relationships"</li>
+<li>Click <strong>Install Now</strong> and then <strong>Activate</strong></li>
+</ol>
+
+<h3>From GitHub</h3>
+<ol>
+<li>Download the plugin from the <a href="https://github.com/chetanupare/WP-Native-Content-Relationships">GitHub repository</a></li>
+<li>Upload the <code>native-content-relationships</code> folder to <code>/wp-content/plugins/</code></li>
+<li>Activate the plugin in WordPress admin</li>
+</ol>
 </div>
-<!-- Content Sections -->
-<div class="space-y-12">
-<!-- Introduction Section -->
-<section id="introduction">
-<p class="text-base leading-7 text-gray-700 dark:text-gray-300 mb-4">
-                            The Native Content Relationships plugin allows you to define strict or loose relationships between any WordPress post types. While the UI offers extensive controls, the real power lies in the code-first approach for themes and complex integrations.
-                        </p>
-<div class="flex p-4 mb-4 text-sm text-blue-800 border border-blue-200 rounded-lg bg-blue-50 dark:bg-blue-900/20 dark:text-blue-200 dark:border-blue-800/50" role="alert">
-<span class="material-symbols-outlined mr-3 text-primary">info</span>
-<div>
-<span class="font-bold">Note:</span> Ensure you have version 2.4.0 or higher installed to use the functions described below.
-                            </div>
+</div>
+
+<!-- Basic Usage -->
+<div id="basic-usage" class="mb-8">
+<h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Basic Usage</h2>
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6 mb-6">
+<h3 class="text-lg font-semibold mb-3">Creating Relationships</h3>
+<div class="mb-4">
+<pre><code class="language-php">// Create a simple post-to-post relationship
+$relation_id = wp_add_relation( 123, 456, 'related_to' );
+
+// Create a user-to-post relationship
+$relation_id = wp_add_relation( 15, 123, 'favorite_posts', null, 'post' );
+
+// Create a post-to-term relationship
+$relation_id = wp_add_relation( 123, 25, 'categorized_as', null, 'term' );</code></pre>
+</div>
+
+<h3 class="text-lg font-semibold mb-3">Querying Related Content</h3>
+<div class="mb-4">
+<pre><code class="language-php">// Get related posts
+$related_posts = wp_get_related( 123, 'related_to' );
+
+// Get user's favorite posts
+$favorite_posts = wp_get_related( 15, 'favorite_posts', array(), 'post' );
+
+// Get posts categorized with a specific term
+$categorized_posts = wp_get_related( 25, 'categorized_as', array(), 'term' );</code></pre>
+</div>
+
+<h3 class="text-lg font-semibold mb-3">Removing Relationships</h3>
+<div class="mb-4">
+<pre><code class="language-php">// Remove a specific relationship
+wp_remove_relation( 123, 456, 'related_to' );
+
+// Remove all relationships of a type from a post
+wp_remove_relation( 123, null, 'related_to' );</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Relationship Types -->
+<div id="relationship-types" class="mb-8">
+<h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Relationship Types</h2>
+<div class="grid gap-4">
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-2">Built-in Types</h3>
+<ul class="space-y-2">
+<li><strong>related_to</strong> - Bidirectional relationship between posts</li>
+<li><strong>parent_of</strong> - Unidirectional parent-child relationship</li>
+<li><strong>references</strong> - Unidirectional reference relationship</li>
+</ul>
+</div>
+
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-2">Custom Types</h3>
+<p>You can register custom relationship types:</p>
+<pre><code class="language-php">function register_custom_relation_type() {
+    naticore_register_relation_type( 'sponsored_by', array(
+        'label' => 'Sponsored By',
+        'bidirectional' => false,
+        'allowed_post_types' => array( 'post', 'page' ),
+        'supports_users' => true,
+        'supports_terms' => false,
+    ) );
+}
+add_action( 'init', 'register_custom_relation_type' );</code></pre>
+</div>
+</div>
 </div>
 </section>
-<!-- Quick Start Section -->
-<section class="scroll-mt-24" id="quick-start">
-<div class="flex items-center gap-3 mb-6">
-<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Quick Start</h2>
-<span class="bg-primary/10 text-primary text-xs font-semibold px-2 py-1 rounded">Recommended</span>
+
+<!-- API Reference -->
+<section id="api-reference" class="mb-12">
+<h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">API Reference</h2>
+
+<div class="space-y-8">
+<!-- wp_add_relation -->
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">wp_add_relation()</h3>
+<p class="mb-4">Creates a new relationship between two content items.</p>
+<div class="mb-4">
+<pre><code class="language-php">wp_add_relation( $from_id, $to_id, $type, $direction, $to_type )</code></pre>
 </div>
-<p class="text-base leading-7 text-gray-700 dark:text-gray-300 mb-6">
-                            To register a relationship programmatically, use the <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-pink-600 dark:text-pink-400">ncr_register_relationship</code> function hooked into WordPress's <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-pink-600 dark:text-pink-400">init</code> action.
-                        </p>
-<!-- Code Block -->
-<div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-[#1e293b] shadow-lg">
-<div class="flex items-center justify-between px-4 py-2 bg-[#0f172a] border-b border-gray-700">
-<span class="text-xs font-mono text-gray-400">functions.php</span>
-<button class="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors">
-<span class="material-symbols-outlined text-[14px]">content_copy</span>
-                                    Copy
-                                </button>
+<div class="mb-4">
+<h4 class="font-semibold">Parameters</h4>
+<ul class="list-disc list-inside space-y-1">
+<li><strong>$from_id</strong> (int) - Source content ID</li>
+<li><strong>$to_id</strong> (int) - Target content ID</li>
+<li><strong>$type</strong> (string) - Relationship type</li>
+<li><strong>$direction</strong> (string) - Direction: 'unidirectional' or 'bidirectional'</li>
+<li><strong>$to_type</strong> (string) - Target type: 'post', 'user', or 'term'</li>
+</ul>
 </div>
-<div class="p-4 overflow-x-auto">
-<pre class="font-mono text-sm leading-6 text-gray-300"><code><span class="text-purple-400">add_action</span><span class="text-gray-400">(</span><span class="text-green-400">'init'</span><span class="text-gray-400">,</span> <span class="text-blue-400">function</span><span class="text-gray-400">() {</span>
-    <span class="text-gray-500">// Register a Many-to-Many relationship between Books and Authors</span>
-    <span class="text-blue-400">ncr_register_relationship</span><span class="text-gray-400">(</span><span class="text-green-400">'books'</span><span class="text-gray-400">,</span> <span class="text-green-400">'authors'</span><span class="text-gray-400">, [</span>
+<div class="mb-4">
+<h4 class="font-semibold">Return</h4>
+<p>int|WP_Error - Relationship ID on success, WP_Error on failure</p>
+</div>
+</div>
+
+<!-- wp_get_related -->
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">wp_get_related()</h3>
+<p class="mb-4">Retrieves related content items.</p>
+<div class="mb-4">
+<pre><code class="language-php">wp_get_related( $post_id, $type, $args, $to_type )</code></pre>
+</div>
+<div class="mb-4">
+<h4 class="font-semibold">Parameters</h4>
+<ul class="list-disc list-inside space-y-1">
+<li><strong>$post_id</strong> (int) - Source post ID</li>
+<li><strong>$type</strong> (string) - Relationship type</li>
+<li><strong>$args</strong> (array) - Query arguments</li>
+<li><strong>$to_type</strong> (string) - Target type: 'post', 'user', or 'term'</li>
+</ul>
+</div>
+<div class="mb-4">
+<h4 class="font-semibold">Return</h4>
+<p>array|WP_Error - Array of related items or WP_Error on failure</p>
+</div>
+</div>
+
+<!-- wp_remove_relation -->
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">wp_remove_relation()</h3>
+<p class="mb-4">Removes a relationship between content items.</p>
+<div class="mb-4">
+<pre><code class="language-php">wp_remove_relation( $from_id, $to_id, $type, $to_type )</code></pre>
+</div>
+<div class="mb-4">
+<h4 class="font-semibold">Parameters</h4>
+<ul class="list-disc list-inside space-y-1">
+<li><strong>$from_id</strong> (int) - Source content ID</li>
+<li><strong>$to_id</strong> (int) - Target content ID (null to remove all)</li>
+<li><strong>$type</strong> (string) - Relationship type</li>
+<li><strong>$to_type</strong> (string) - Target type: 'post', 'user', or 'term'</li>
+</ul>
+</div>
+<div class="mb-4">
+<h4 class="font-semibold">Return</h4>
+<p>bool|WP_Error - True on success, WP_Error on failure</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Hooks & Filters -->
+<section id="hooks-filters" class="mb-12">
+<h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Hooks & Filters</h2>
+
+<div class="space-y-8">
+<!-- Actions -->
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">Actions</h3>
+<div class="space-y-4">
+<div>
+<h4 class="font-semibold">naticore_relation_added</h4>
+<p>Fired after a relationship is created.</p>
+<pre><code class="language-php">do_action( 'naticore_relation_added', $relation_id, $from_id, $to_id, $type );</code></pre>
+</div>
+<div>
+<h4 class="font-semibold">naticore_relation_removed</h4>
+<p>Fired after a relationship is removed.</p>
+<pre><code class="language-php">do_action( 'naticore_relation_removed', $from_id, $to_id, $type );</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Filters -->
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">Filters</h3>
+<div class="space-y-4">
+<div>
+<h4 class="font-semibold">naticore_content_relations_allowed</h4>
+<p>Filter whether relationship queries are allowed.</p>
+<pre><code class="language-php">apply_filters( 'naticore_content_relations_allowed', $allowed, $post_id, $type );</code></pre>
+</div>
+<div>
+<h4 class="font-semibold">naticore_get_related_args</h4>
+<p>Filter query arguments for getting related content.</p>
+<pre><code class="language-php">apply_filters( 'naticore_get_related_args', $args, $post_id, $type );</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- REST API -->
+<section id="rest-api" class="mb-12">
+<h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">REST API</h2>
+
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">Endpoints</h3>
+<div class="space-y-4">
+<div>
+<h4 class="font-semibold">GET /naticore/v1/post/{id}</h4>
+<p>Get relationships for a specific post.</p>
+<pre><code class="language-bash">curl -X GET "https://example.com/wp-json/naticore/v1/post/123"</code></pre>
+</div>
+<div>
+<h4 class="font-semibold">POST /naticore/v1/relationships</h4>
+<p>Create a new relationship.</p>
+<pre><code class="language-bash">curl -X POST "https://example.com/wp-json/naticore/v1/relationships" \
+  -H "Content-Type: application/json" \
+  -d '{"from_id": 123, "to_id": 456, "type": "related_to"}'</code></pre>
+</div>
+<div>
+<h4 class="font-semibold">DELETE /naticore/v1/relationships</h4>
+<p>Remove a relationship.</p>
+<pre><code class="language-bash">curl -X DELETE "https://example.com/wp-json/naticore/v1/relationships" \
+  -H "Content-Type: application/json" \
+  -d '{"from_id": 123, "to_id": 456, "type": "related_to"}'</code></pre>
+</div>
+</div>
+</div>
+</section>
+
+<!-- WP-CLI -->
+<section id="wp-cli" class="mb-12">
+<h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">WP-CLI</h2>
+
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">Commands</h3>
+<div class="space-y-4">
+<div>
+<h4 class="font-semibold">List Relationships</h4>
+<pre><code class="language-bash">wp content-relations list --post=123 --type=related_to --format=json</code></pre>
+</div>
+<div>
+<h4 class="font-semibold">Add Relationship</h4>
+<pre><code class="language-bash">wp content-relations add 123 456 --type=related_to</code></pre>
+</div>
+<div>
+<h4 class="font-semibold">Remove Relationship</h4>
+<pre><code class="language-bash">wp content-relations remove 123 456 --type=related_to</code></pre>
+</div>
+<div>
+<h4 class="font-semibold">Count Relationships</h4>
+<pre><code class="language-bash">wp content-relations count --post=123</code></pre>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Integrations -->
+<section id="integrations" class="mb-12">
+<h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Integrations</h2>
+
+<div class="grid gap-6">
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">WooCommerce</h3>
+<p>Native integration with WooCommerce for product relationships:</p>
+<pre><code class="language-php">// Get related products
+$related_products = wp_get_related_products( $product_id, 'related_product' );
+
+// Add product to upsell collection
+wp_add_relation( $product_id, $upsell_id, 'upsell' );</code></pre>
+</div>
+
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">WPML</h3>
+<p>Full compatibility with WPML for multilingual sites:</p>
+<pre><code class="language-php">// Relationships automatically sync across translations
+// No additional configuration required</code></pre>
+</div>
+
+<div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-6">
+<h3 class="text-lg font-semibold mb-3">Gutenberg</h3>
+<p>Block editor integration with relationship blocks:</p>
+<pre><code class="language-php">// Register relationship block
+register_block_type( 'naticore/related-posts', array(
+    'editor_script' => 'naticore-blocks',
+) );</code></pre>
+</div>
+</div>
+</section>
         <span class="text-green-400">'cardinality'</span> <span class="text-purple-400">=&gt;</span> <span class="text-green-400">'many-to-many'</span><span class="text-gray-400">,</span>
         <span class="text-green-400">'reciprocal'</span>  <span class="text-purple-400">=&gt;</span> <span class="text-blue-400">true</span><span class="text-gray-400">,</span>
         <span class="text-green-400">'meta'</span>        <span class="text-purple-400">=&gt;</span> <span class="text-gray-400">[</span>
