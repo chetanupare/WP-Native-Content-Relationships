@@ -3,7 +3,7 @@
 ![WP Version](https://img.shields.io/wordpress/plugin/v/native-content-relationships)
 ![Active Installs](https://img.shields.io/wordpress/plugin/installs/native-content-relationships)
 ![WP Tested](https://img.shields.io/wordpress/plugin/tested/native-content-relationships)
-![PHP](https://img.shields.io/wordpress/plugin/php-version/native-content-relationships)
+![PHP](https://img.shields.io/badge/PHP-7.4%2B-blue)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
 
 > A modern, comprehensive relationship system for WordPress supporting posts, users, and terms with semantic relationship types.
