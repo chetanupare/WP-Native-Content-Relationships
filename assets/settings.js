@@ -37,10 +37,21 @@ jQuery(document).ready(function($) {
         }
     });
     
-    // Tab switching (if needed for future enhancements)
+    // Tab switching - enable AJAX tab switching
     $('.nav-tab').on('click', function(e) {
-        // This is handled by WordPress page reload, but ready for future AJAX tab switching
-        return true;
+        e.preventDefault();
+        
+        var $tab = $(this);
+        var tabId = $tab.data('tab') || $tab.attr('href').split('tab=')[1];
+        
+        // Update active tab styling
+        $('.nav-tab').removeClass('nav-tab-active');
+        $tab.addClass('nav-tab-active');
+        
+        // Update URL and reload page to show new tab content
+        var url = new URL(window.location.href);
+        url.searchParams.set('tab', tabId);
+        window.location.href = url.toString();
     });
     
     // Initialize selected states on page load
