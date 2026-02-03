@@ -2,6 +2,9 @@
 /**
  * Relationship Types System
  * Allows registering and managing relationship types
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.0
  */
 
 // Exit if accessed directly
@@ -9,6 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Relationship Types
+ *
+ * Provides functionality to register and manage relationship types
+ * between posts, users, and terms with support for different
+ * relationship directions and constraints.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.0
+ */
 class NATICORE_Relation_Types {
 
 	/**
@@ -22,35 +35,35 @@ class NATICORE_Relation_Types {
 	 * @var array
 	 */
 	private static $default_types = array(
-		'related_to' => array(
+		'related_to'    => array(
 			'label'              => 'Related To',
 			'bidirectional'      => true,
-			'allowed_post_types' => array(), // Empty = all
+			'allowed_post_types' => array(), // Empty = all.
 			'supports_users'     => false,
 			'supports_terms'     => false,
 		),
-		'parent_of'  => array(
+		'parent_of'     => array(
 			'label'              => 'Parent Of',
 			'bidirectional'      => false,
 			'allowed_post_types' => array(),
 			'supports_users'     => false,
 			'supports_terms'     => false,
 		),
-		'depends_on' => array(
+		'depends_on'    => array(
 			'label'              => 'Depends On',
 			'bidirectional'      => false,
 			'allowed_post_types' => array(),
 			'supports_users'     => false,
 			'supports_terms'     => false,
 		),
-		'references' => array(
+		'references'   => array(
 			'label'              => 'References',
 			'bidirectional'      => false,
 			'allowed_post_types' => array(),
 			'supports_users'     => false,
 			'supports_terms'     => false,
 		),
-		// User relationship types
+		// User relationship types.
 		'favorite_posts' => array(
 			'label'              => 'Favorite Posts',
 			'bidirectional'      => false,
@@ -60,7 +73,7 @@ class NATICORE_Relation_Types {
 			'from_type'          => 'user',
 			'to_type'            => 'post',
 		),
-		'bookmarked_by' => array(
+		'bookmarked_by'  => array(
 			'label'              => 'Bookmarked By',
 			'bidirectional'      => false,
 			'allowed_post_types' => array( 'post', 'page' ),
@@ -69,7 +82,7 @@ class NATICORE_Relation_Types {
 			'from_type'          => 'user',
 			'to_type'            => 'post',
 		),
-		'authored_by' => array(
+		'authored_by'    => array(
 			'label'              => 'Authored By',
 			'bidirectional'      => false,
 			'allowed_post_types' => array( 'post', 'page' ),
@@ -78,7 +91,7 @@ class NATICORE_Relation_Types {
 			'from_type'          => 'user',
 			'to_type'            => 'post',
 		),
-		// Term relationship types
+		// Term relationship types.
 		'categorized_as' => array(
 			'label'              => 'Categorized As',
 			'bidirectional'      => false,
@@ -88,7 +101,7 @@ class NATICORE_Relation_Types {
 			'from_type'          => 'post',
 			'to_type'            => 'term',
 		),
-		'tagged_with' => array(
+		'tagged_with'   => array(
 			'label'              => 'Tagged With',
 			'bidirectional'      => false,
 			'allowed_post_types' => array( 'post' ),
@@ -97,7 +110,7 @@ class NATICORE_Relation_Types {
 			'from_type'          => 'post',
 			'to_type'            => 'term',
 		),
-		'featured_in' => array(
+		'featured_in'   => array(
 			'label'              => 'Featured In',
 			'bidirectional'      => false,
 			'allowed_post_types' => array( 'post', 'page' ),
