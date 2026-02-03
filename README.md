@@ -8,18 +8,18 @@
 
 > A modern, comprehensive relationship system for WordPress supporting posts, users, and terms with semantic relationship types.
 
-## 🚀 Features
+## <img src="https://cdn.simpleicons.org/wordpress/21759b" alt="WordPress" width="20" height="20" /> Features
 
-- **🔗 Complete Relationship Support**: Posts-to-Posts, Posts-to-Users, Posts-to-Terms
-- **⚡ High Performance**: Indexed database table (2,500x faster than post meta)
-- **🎯 Semantic Types**: Typed relationships with validation
-- **🔄 Bidirectional**: Forward and reverse relationship queries
-- **👥 User Relationships**: Favorite posts, bookmarks, multiple authors
-- **🏷️ Term Relationships**: Categories, tags, custom taxonomies
-- **🎨 Modern Admin UI**: AJAX-powered interface
-- **🧩 Page Builder Support**: Gutenberg block & Elementor dynamic tags
-- **🔌 Integrations**: WooCommerce, ACF, WPML, Polylang, SEO plugins
-- **🛠️ Developer Tools**: REST API, WP-CLI, Fluent API
+- **<img src="https://cdn.simpleicons.org/link/0969da" alt="Link" width="16" height="16" /> Complete Relationship Support**: Posts-to-Posts, Posts-to-Users, Posts-to-Terms
+- **<img src="https://cdn.simpleicons.org/vite/646cff" alt="Vite" width="16" height="16" /> High Performance**: Indexed database table (2,500x faster than post meta)
+- **<img src="https://cdn.simpleicons.org/go/00add8" alt="Go" width="16" height="16" /> Semantic Types**: Typed relationships with validation
+- **<img src="https://cdn.simpleicons.org/git/2ecc71" alt="Git" width="16" height="16" /> Bidirectional**: Forward and reverse relationship queries
+- **<img src="https://cdn.simpleicons.org/github/181717" alt="GitHub" width="16" height="16" /> User Relationships**: Favorite posts, bookmarks, multiple authors
+- **<img src="https://cdn.simpleicons.org/wordpress/21759b" alt="WordPress" width="16" height="16" /> Term Relationships**: Categories, tags, custom taxonomies
+- **<img src="https://cdn.simpleicons.org/sketch/f7b500" alt="Sketch" width="16" height="16" /> Modern Admin UI**: AJAX-powered interface
+- **<img src="https://cdn.simpleicons.org/elementor/92003b" alt="Elementor" width="16" height="16" /> Page Builder Support**: Gutenberg block & Elementor dynamic tags
+- **<img src="https://cdn.simpleicons.org/docker/2496ed" alt="Docker" width="16" height="16" /> Integrations**: WooCommerce, ACF, WPML, Polylang, SEO plugins
+- **<img src="https://cdn.simpleicons.org/php/777bb4" alt="PHP" width="16" height="16" /> Developer Tools**: REST API, WP-CLI, Fluent API
 
 ## 📦 Installation
 
@@ -34,7 +34,7 @@ cd /wp-content/plugins/
 git clone https://github.com/chetanupare/WP-Native-Content-Relationships.git
 ```
 
-## 🎯 Quick Start
+## <img src="https://cdn.simpleicons.org/target/0052cc" alt="Target" width="20" height="20" /> Quick Start
 
 ### Basic Usage
 
@@ -77,7 +77,7 @@ $terms = wp_get_related_terms( $post_id, 'categorized_as' );
 $posts = wp_get_term_related_posts( $term_id, 'categorized_as' );
 ```
 
-## 🏗️ Architecture
+## <img src="https://cdn.simpleicons.org/w3c/005a9c" alt="W3C" width="20" height="20" /> Architecture
 
 ### Database Schema
 ```sql
@@ -99,7 +99,7 @@ content_relations
 - **Optimized indexes** for all query types
 - **Server-side rendering** for blocks
 
-## 🔌 Integrations
+## <img src="https://cdn.simpleicons.org/docker/2496ed" alt="Docker" width="20" height="20" /> Integrations
 
 ### WooCommerce
 - Product relationships
@@ -119,7 +119,7 @@ content_relations
 - **WPML**: Relationship mirroring
 - **Polylang**: Relationship mirroring
 
-## 🛠️ Developer Tools
+## <img src="https://cdn.simpleicons.org/php/777bb4" alt="PHP" width="20" height="20" /> Developer Tools
 
 ### REST API
 ```bash
@@ -142,7 +142,7 @@ naticore()->from(123)->to(456)->type('related_to')->create();
 naticore()->from(123)->type('related_to')->get();
 ```
 
-## 📊 Comparison
+## <img src="https://cdn.simpleicons.org/chartdotjs/ff6384" alt="Chart.js" width="20" height="20" /> Comparison
 
 | Feature | Native Content Relationships | Posts 2 Posts | MB Relationships |
 |---------|------------------------------|---------------|------------------|
@@ -155,7 +155,7 @@ naticore()->from(123)->type('related_to')->get();
 | Performance | ⚡ Fast | 🐌 Slow | 🐌 Slow |
 | Active Development | ✅ | ❌ | ✅ |
 
-## 🤝 Contributing
+## <img src="https://cdn.simpleicons.org/git/2ecc71" alt="Git" width="20" height="20" /> Contributing
 
 We welcome contributions! Please feel free to submit a Pull Request.
 
@@ -182,7 +182,7 @@ composer run phpcs
 4. Add tests if applicable
 5. Submit a Pull Request
 
-## 📝 Changelog
+## <img src="https://cdn.simpleicons.org/notion/000000" alt="Notion" width="20" height="20" /> Changelog
 
 ### [1.0.11] - 2024-02-03
 - ✨ **NEW**: Full posts-to-terms and terms-to-posts relationships support
@@ -210,7 +210,7 @@ composer run phpcs
 - ✨ WooCommerce integration
 - ✨ ACF migration tool
 
-## 📄 License
+## <img src="https://cdn.simpleicons.org/gnu/42a5f5" alt="GNU" width="20" height="20" /> License
 
 This plugin is licensed under the [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html).
 
@@ -220,7 +220,7 @@ This plugin is licensed under the [GPLv2 or later](https://www.gnu.org/licenses/
 - Built with modern WordPress standards and best practices
 - Compatible with the latest WordPress versions
 
-## 🔗 Links
+## <img src="https://cdn.simpleicons.org/link/0969da" alt="Link" width="20" height="20" /> Links
 
 - **WordPress.org**: https://wordpress.org/plugins/native-content-relationships/
 - **GitHub Repository**: https://github.com/chetanupare/WP-Native-Content-Relationships
