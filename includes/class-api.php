@@ -721,6 +721,7 @@ class NATICORE_API {
 			$where_sql = implode( ' AND ', $where_clauses );
 			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d";
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- WHERE clause is safely constructed with validated values
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		} elseif ( $has_type ) {
 			$where_clauses[] = 'type = %s';
@@ -729,6 +730,7 @@ class NATICORE_API {
 			$where_sql = implode( ' AND ', $where_clauses );
 			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql} ORDER BY created_at DESC";
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- WHERE clause is safely constructed with validated values
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		} elseif ( $has_limit ) {
 			$values[] = $limit;
@@ -736,11 +738,13 @@ class NATICORE_API {
 			$where_sql = implode( ' AND ', $where_clauses );
 			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d";
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- WHERE clause is safely constructed with validated values
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		} else {
 			$where_sql = implode( ' AND ', $where_clauses );
 			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql} ORDER BY created_at DESC";
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- WHERE clause is safely constructed with validated values
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		}
 
@@ -896,6 +900,8 @@ class NATICORE_API {
 		$where_sql = implode( ' AND ', $where_clauses );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- WHERE clause is safely constructed with validated values
+		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Placeholders are in $values array
 		$result = $wpdb->get_var( $wpdb->prepare(
 			"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql}",
 			$values
