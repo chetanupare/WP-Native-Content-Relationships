@@ -1,10 +1,10 @@
 # Native Content Relationships
 
-[![WordPress Version](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
-[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-blue.svg)](https://php.net/)
-[![License](https://img.shields.io/badge/License-GPLv2%2B-red.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![WordPress Plugin](https://img.shields.io/badge/WordPress%20Plugin-v1.0.11-green.svg)](https://wordpress.org/plugins/native-content-relationships/)
-[![Downloads](https://img.shields.io/badge/Downloads-Active%20on%20WP.org-orange.svg)](https://wordpress.org/plugins/native-content-relationships/)
+![WP Version](https://img.shields.io/wordpress/plugin/v/native-content-relationships)
+![Active Installs](https://img.shields.io/wordpress/plugin/installs/native-content-relationships)
+![WP Tested](https://img.shields.io/wordpress/plugin/tested/native-content-relationships)
+![PHP](https://img.shields.io/wordpress/plugin/php-version/native-content-relationships)
+![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
 
 > A modern, comprehensive relationship system for WordPress supporting posts, users, and terms with semantic relationship types.
 
