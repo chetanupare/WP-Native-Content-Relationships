@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms, many-to-many, architecture
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.11
+Stable tag: 1.0.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -88,13 +88,27 @@ This plugin is designed to be **core-friendly, developer-focused, and future-pro
 • Gutenberg (related content block)  
 • Advanced Custom Fields (one-time migration tool)  
 
-== Compatibility ==
+== Page Builder Integration =
 
-• WordPress 5.0+  
-• PHP 7.4+  
-• All themes  
-• All custom post types  
-• All custom taxonomies  
+**Elementor:**
+* **Compatible with:** Elementor 2.0+
+* **Features:** Comprehensive Dynamic Tags suite for relationships
+* **Auto-detected:** Yes (no configuration needed)
+* **Tested up to:** Elementor 3.20
+
+**Elementor Dynamic Tags:**
+* **Related Posts**: Display related posts with customizable output formats
+* **Related Users**: Display users with relationships (favorites, bookmarks, etc.)
+* **Related Terms**: Display taxonomy terms with relationships
+* **Flexible Output**: IDs, titles, links, avatars, count-only options
+* **Direction Support**: Both outgoing and incoming relationships
+* **Native Controls**: Relationship type selector with validation
+
+**Gutenberg:**
+* **Compatible with:** WordPress 5.0+ (Core)
+* **Features:** "Related Content" block with relationship filtering
+* **Always available:** Yes (core WordPress feature)
+* **Tested up to:** WordPress 6.5 
 
 == Installation ==
 
@@ -168,6 +182,65 @@ Filters:
 • `naticore_relation_is_allowed`
 • `naticore_get_related_args`
 
+= Elementor Integration =
+
+This plugin provides comprehensive Elementor Dynamic Tags for displaying relationships in Elementor-powered designs.
+
+**Available Dynamic Tags:**
+
+* **Related Posts** (ncr-related-posts)
+  - Display posts related to the current post
+  - Supports all post-to-post relationship types
+  - Output formats: IDs, titles, links, count
+  - Direction control: outgoing/incoming
+
+* **Related Users** (ncr-related-users)
+  - Display users with relationships to posts
+  - Supports user relationship types (favorites, bookmarks, etc.)
+  - Output formats: IDs, names, emails, avatars, profile links
+  - Direction control: posts-to-users/users-to-posts
+
+* **Related Terms** (ncr-related-terms)
+  - Display taxonomy terms with relationships
+  - Supports term relationship types (categories, tags, etc.)
+  - Output formats: IDs, names, slugs, archive links
+  - Direction control: posts-to-terms/terms-to-posts
+
+**Usage Examples:**
+
+*Display related post IDs:*
+```
+[ncr-related-posts relationship_type="related_to" output_format="ids" limit="5"]
+```
+
+*Display user avatars:*
+```
+[ncr-related-users relationship_type="favorite_posts" output_format="avatar_images" avatar_size="48"]
+```
+
+*Display term links:*
+```
+[ncr-related-terms relationship_type="categorized_as" output_format="term_links" limit="10"]
+```
+
+*Get count of related items:*
+```
+[ncr-related-posts relationship_type="related_to" output_format="count"]
+```
+
+**Advanced Features:**
+- **Context-aware**: Automatically detects current post, user, or term context
+- **Fallback content**: Display custom text when no relationships found
+- **Pagination support**: Limit results for performance
+- **Ordering options**: Sort by date, title, or random
+- **Multi-language**: Works with WPML/Polylang translations
+
+**Integration Benefits:**
+- **Native Elementor experience**: Tags appear in Elementor's Dynamic Tags panel
+- **No templates forced**: Users control output format and styling
+- **Performance optimized**: Uses cached relationship data
+- **Optional dependency**: Only loads when Elementor is active
+
 = WP-CLI =
 
 • List relationships  
@@ -183,6 +256,18 @@ Filters:
 5. Term editor relationships  
 
 == Changelog ==
+
+= 1.0.12 =
+* **NEW**: Comprehensive Elementor Dynamic Tags integration
+* **NEW**: Related Posts Dynamic Tag with multiple output formats
+* **NEW**: Related Users Dynamic Tag with avatar and profile support
+* **NEW**: Related Terms Dynamic Tag with taxonomy filtering
+* **NEW**: Direction control for all relationship types (outgoing/incoming)
+* **NEW**: Flexible output formats (IDs, titles, links, avatars, count)
+* **NEW**: Context-aware relationship detection
+* **NEW**: Performance optimized with caching integration
+* **IMPROVED**: Enhanced Elementor integration with native controls
+* **IMPROVED**: Updated documentation with Elementor examples  
 
 = 1.0.11 =
 • Added full post-to-term and term-to-post relationships  

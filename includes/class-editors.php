@@ -176,11 +176,17 @@ class NATICORE_Editors {
 
 	/**
 	 * Register Elementor dynamic tags
+	 *
+	 * @param \Elementor\Core\DynamicTags\Manager $dynamic_tags_manager Dynamic tags manager
 	 */
 	public function register_elementor_tags( $dynamic_tags_manager ) {
-		// Register "Related Content" dynamic tag
-		require_once NATICORE_PLUGIN_DIR . 'includes/elementor/class-related-content-tag.php';
-		$dynamic_tags_manager->register( new NATICORE_Elementor_Related_Content_Tag() );
+		// Only register if using the new Elementor integration
+		if ( ! class_exists( 'NCR_Elementor_Integration' ) ) {
+			// Fallback to old implementation for backward compatibility
+			require_once NATICORE_PLUGIN_DIR . 'includes/elementor/class-related-content-tag.php';
+			$dynamic_tags_manager->register( new NATICORE_Elementor_Related_Content_Tag() );
+		}
+		// New tags are registered automatically by NCR_Elementor_Integration
 	}
 }
 

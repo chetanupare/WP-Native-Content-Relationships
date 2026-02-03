@@ -36,12 +36,52 @@ class NATICORE_API {
 	/**
 	 * Add a relationship between two content items
 	 *
-	 * @param int    $from_id       The ID of the source content
-	 * @param int    $to_id         The ID of the target content
-	 * @param string $type          Type of relationship
+	 * Creates a new relationship between two content items with support for posts, users, and terms.
+	 * The relationship type determines the semantic meaning and default direction.
+	 *
+	 * @since 1.0.0
+	 * @since 1.0.10 Added support for user relationships ($to_type = 'user')
+	 * @since 1.0.11 Added support for term relationships ($to_type = 'term')
+	 *
+	 * @param int    $from_id       The ID of the source content (post, user, or term)
+	 * @param int    $to_id         The ID of the target content (post, user, or term)
+	 * @param string $type          Type of relationship (e.g., 'related_to', 'favorite_posts', 'categorized_as')
 	 * @param string $direction     Direction: 'unidirectional' or 'bidirectional' (auto-determined from type)
 	 * @param string $to_type       Target type: 'post', 'user', or 'term' (default: 'post')
+	 *
 	 * @return int|WP_Error Relationship ID on success, WP_Error on failure
+	 *
+	 * @throws WP_Error When:
+	 *         - User lacks permission to create relationships
+	 *         - Relationship type is not allowed
+	 *         - Invalid content IDs provided
+	 *         - Content cannot be related to itself (posts only)
+	 *         - Target content does not exist
+	 *         - Relationship would create infinite loop
+	 *         - Relationship already exists
+	 *         - Database operation fails
+	 *
+	 * @example Create a post-to-post relationship
+	 * ```php
+	 * $relation_id = NATICORE_API::add_relation( 123, 456, 'related_to' );
+	 * if ( is_wp_error( $relation_id ) ) {
+	 *     error_log( 'Failed to create relationship: ' . $relation_id->get_error_message() );
+	 * }
+	 * ```
+	 *
+	 * @example Create a user-to-post relationship
+	 * ```php
+	 * $relation_id = NATICORE_API::add_relation( 15, 123, 'favorite_posts', null, 'post' );
+	 * ```
+	 *
+	 * @example Create a post-to-term relationship
+	 * ```php
+	 * $relation_id = NATICORE_API::add_relation( 123, 25, 'categorized_as', null, 'term' );
+	 * ```
+	 *
+	 * @see NATICORE_Relation_Types::get_type() Get relationship type details
+	 * @see wp_is_related() Check if relationship exists
+	 * @see NATICORE_API::remove_relation() Remove a relationship
 	 */
 	public static function add_relation( $from_id, $to_id, $type = 'related_to', $direction = null, $to_type = 'post' ) {
 		global $wpdb;
@@ -253,6 +293,9 @@ class NATICORE_API {
 			}
 		}
 
+		// Clear cache
+		self::clear_cache( $from_id, $to_id, $type, $to_type );
+
 		return $relation_id;
 	}
 
@@ -334,13 +377,58 @@ class NATICORE_API {
 	}
 
 	/**
-	 * Remove a relationship
+	 * Remove a relationship between two content items
 	 *
-	 * @param int    $from_id The ID of the source content
-	 * @param int    $to_id   The ID of the target content
-	 * @param string $type    Type of relationship (optional)
-	 * @param string $to_type Target type: 'post' or 'user' (default: 'post')
+	 * Deletes an existing relationship between two content items. For bidirectional relationships,
+	 * both the forward and reverse relationships are removed. Automatically clears related cache.
+	 *
+	 * @since 1.0.0
+	 * @since 1.0.10 Added support for user relationships
+	 * @since 1.0.11 Added support for term relationships and cache clearing
+	 *
+	 * @param int    $from_id The ID of the source content (post, user, or term)
+	 * @param int    $to_id   The ID of the target content (post, user, or term)
+	 * @param string $type    Type of relationship to remove (optional, null for all types)
+	 * @param string $to_type Target type: 'post', 'user', 'term' (default: 'post')
+	 *
 	 * @return bool|WP_Error True on success, WP_Error on failure
+	 *
+	 * @throws WP_Error When:
+	 *         - User lacks permission to delete relationships
+	 *         - Invalid content IDs provided
+	 *         - Relationship does not exist
+	 *         - Database operation fails
+	 *
+	 * @example Remove a specific relationship
+	 * ```php
+	 * $result = NATICORE_API::remove_relation( 123, 456, 'related_to' );
+	 * if ( is_wp_error( $result ) ) {
+	 *     error_log( 'Failed to remove relationship: ' . $result->get_error_message() );
+	 * }
+	 * ```
+	 *
+	 * @example Remove all relationships between two items
+	 * ```php
+	 * $result = NATICORE_API::remove_relation( 123, 456 );
+	 * ```
+	 *
+	 * @example Remove user relationship
+	 * ```php
+	 * $result = NATICORE_API::remove_relation( 15, 123, 'favorite_posts', 'post' );
+	 * ```
+	 *
+	 * @example Remove term relationship
+	 * ```php
+	 * $result = NATICORE_API::remove_relation( 123, 25, 'categorized_as', 'term' );
+	 * ```
+	 *
+	 * @see NATICORE_API::add_relation() Create a relationship
+	 * @see NATICORE_API::is_related() Check if relationship exists
+	 * @see NATICORE_API::clear_cache() Clear relationship cache
+	 *
+	 * @action naticore_relation_removed Fires after relationship is removed
+	 * @action wp_content_relation_removed Backward compatibility hook
+	 * @action wpcr_relation_deleted Extended relationship object hook
 	 */
 	public static function remove_relation( $from_id, $to_id, $type = null, $to_type = 'post' ) {
 		global $wpdb;
@@ -436,17 +524,157 @@ class NATICORE_API {
 			error_log( sprintf( 'WPNCR: Relation removed - from_id: %d, to_id: %d, type: %s', $from_id, $to_id, $type ) );
 		}
 
+		// Clear cache
+		self::clear_cache( $from_id, $to_id, $type, $to_type );
+
 		return true;
 	}
 
 	/**
-	 * Get related content
+	 * Clear relationship cache for specific items
 	 *
-	 * @param int    $post_id The ID of the content
-	 * @param string $type    Type of relationship (optional)
-	 * @param array  $args    Additional query arguments
+	 * Clears cached relationship data to ensure fresh queries after relationship modifications.
+	 * Automatically called by add_relation() and remove_relation() methods.
+	 *
+	 * @since 1.0.11
+	 *
+	 * @param int    $from_id  The ID of the source content
+	 * @param int    $to_id    The ID of the target content (optional)
+	 * @param string $type     Type of relationship (optional)
+	 * @param string $to_type  Target type (optional)
+	 *
+	 * @return void
+	 *
+	 * @example Clear cache for specific relationship
+	 * ```php
+	 * NATICORE_API::clear_cache( 123, 456, 'related_to', 'post' );
+	 * ```
+	 *
+	 * @example Clear all cache for a content item
+	 * ```php
+	 * NATICORE_API::clear_cache( 123 );
+	 * ```
+	 *
+	 * @example Clear cache after bulk operations
+	 * ```php
+	 * foreach ( $relationships as $rel ) {
+	 *     NATICORE_API::clear_cache( $rel['from_id'], $rel['to_id'], $rel['type'], $rel['to_type'] );
+	 * }
+	 * ```
+	 *
+	 * @see NATICORE_API::is_related() Uses caching for performance
+	 * @see wp_cache_delete() WordPress cache function
+	 */
+	public static function clear_cache( $from_id, $to_id = null, $type = null, $to_type = null ) {
+		// Clear specific relationship cache
+		if ( $to_id && $to_type ) {
+			$cache_key = "naticore_exists_{$from_id}_{$to_id}_{$type}_{$to_type}";
+			wp_cache_delete( $cache_key, 'naticore_relationships' );
+		}
+
+		// Clear all related caches for from_id
+		$group = 'naticore_relationships';
+		wp_cache_delete( "naticore_related_{$from_id}_{$type}_{$to_type}", $group );
+		
+		// Clear reverse cache if bidirectional
+		if ( $to_id ) {
+			wp_cache_delete( "naticore_related_{$to_id}_{$type}_post", $group );
+		}
+	}
+
+	/**
+	 * Build WHERE clause for prepared statements
+	 *
+	 * @param array $where Array of where conditions
+	 * @return string WHERE clause string
+	 */
+	private static function build_where_clause( $where ) {
+		$clauses = array();
+		foreach ( array_keys( $where ) as $key ) {
+			$clauses[] = "`{$key}` = %s";
+		}
+		return implode( ' AND ', $clauses );
+	}
+
+	/**
+	 * Get related content with advanced filtering and pagination support
+	 *
+	 * Retrieves related content items for a given source with support for filtering by type,
+	 * target type, pagination, ordering, and search. Supports posts, users, and terms.
+	 *
+	 * @since 1.0.0
+	 * @since 1.0.10 Added support for user relationships
+	 * @since 1.0.11 Added support for term relationships and advanced filtering
+	 *
+	 * @param int   $post_id The ID of the source content (post, user, or term)
+	 * @param string $type    Type of relationship to filter by (optional, null for all types)
+	 * @param array $args    {
+	 *     Optional. Array of query arguments.
+	 *
+	 *     @type int    $limit    Maximum number of results to return (default: no limit)
+	 *     @type int    $offset   Number of results to skip (for pagination)
+	 *     @type string $orderby  Field to order by: 'created_at', 'title', 'type' (default: 'created_at')
+	 *     @type string $order    Sort order: 'ASC' or 'DESC' (default: 'DESC')
+	 *     @type string $search   Search term to filter results by
+	 *     @type bool   $count_only Return only count instead of results (default: false)
+	 * }
 	 * @param string $to_type Target type filter: 'post', 'user', 'term', or 'all' (default: 'post')
-	 * @return array Array of related items
+	 *
+	 * @return array Array of related items with enhanced data, or empty array if no results
+	 *
+	 * @return array[] Each item contains:
+	 *     - @type int    $id          The target content ID
+	 *     - @type string $type        Relationship type
+	 *     - @type string $to_type     Target content type ('post', 'user', 'term')
+	 *     - @type string $created_at  Creation timestamp (ISO 8601 format)
+	 *     - @type string $title       Post title (for posts)
+	 *     - @type string $post_type   Post type (for posts)
+	 *     - @type string $permalink   Post URL (for posts)
+	 *     - @type string $display_name User display name (for users)
+	 *     - @type string $user_email   User email (for users)
+	 *     - @type string $term_name    Term name (for terms)
+	 *     - @type string $taxonomy     Term taxonomy (for terms)
+	 *
+	 * @example Get all related posts
+	 * ```php
+	 * $related = NATICORE_API::get_related( 123 );
+	 * foreach ( $related as $item ) {
+	 *     echo $item['title'] . '<br>';
+	 * }
+	 * ```
+	 *
+	 * @example Get related users with pagination
+	 * ```php
+	 * $args = array(
+	 *     'limit' => 10,
+	 *     'offset' => 0,
+	 *     'orderby' => 'display_name'
+	 * );
+	 * $users = NATICORE_API::get_related( 123, 'favorite_posts', $args, 'user' );
+	 * ```
+	 *
+	 * @example Get related terms with search
+	 * ```php
+	 * $args = array(
+	 *     'search' => 'featured',
+	 *     'limit' => 5
+	 * );
+	 * $terms = NATICORE_API::get_related( 123, 'categorized_as', $args, 'term' );
+	 * ```
+	 *
+	 * @example Get count only
+	 * ```php
+	 * $args = array( 'count_only' => true );
+	 * $count = NATICORE_API::get_related( 123, 'related_to', $args );
+	 * ```
+	 *
+	 * @see wp_get_related() Global wrapper function
+	 * @see wp_get_related_users() Get user relationships helper
+	 * @see wp_get_related_terms() Get term relationships helper
+	 * @see NATICORE_API::is_related() Check if specific relationship exists
+	 *
+	 * @filter naticore_content_relations_allowed Allow/disallow relationship queries
+	 * @filter naticore_get_related_args Filter query arguments
 	 */
 	public static function get_related( $post_id, $type = null, $args = array(), $to_type = 'post' ) {
 		// Apply filters for extensibility
@@ -579,42 +807,96 @@ class NATICORE_API {
 	}
 
 	/**
-	 * Check if two items are related
+	 * Check if two items are related with caching support
 	 *
-	 * @param int    $from_id The ID of the source content
-	 * @param int    $to_id   The ID of the target content
-	 * @param string $type    Type of relationship (optional)
-	 * @return bool True if related, false otherwise
+	 * Determines whether a specific relationship exists between two content items.
+	 * Uses WordPress object caching for improved performance on repeated checks.
+	 * Results are cached for 1 hour by default.
+	 *
+	 * @since 1.0.0
+	 * @since 1.0.10 Added support for user relationships
+	 * @since 1.0.11 Added support for term relationships and caching
+	 *
+	 * @param int    $from_id  The ID of the source content (post, user, or term)
+	 * @param int    $to_id    The ID of the target content (post, user, or term)
+	 * @param string $type     Type of relationship to check (optional, null for any type)
+	 * @param string $direction Direction of relationship (optional, for future use)
+	 * @param string $to_type  Target type: 'post', 'user', 'term' (default: 'post')
+	 *
+	 * @return bool True if relationship exists, false otherwise
+	 *
+	 * @example Check if posts are related
+	 * ```php
+	 * if ( NATICORE_API::is_related( 123, 456, 'related_to' ) ) {
+	 *     echo 'Posts are related!';
+	 * }
+	 * ```
+	 *
+	 * @example Check if user favorited a post
+	 * ```php
+	 * if ( NATICORE_API::is_related( 15, 123, 'favorite_posts', null, 'post' ) ) {
+	 *     echo 'User favorited this post';
+	 * }
+	 * ```
+	 *
+	 * @example Check if post is in category
+	 * ```php
+	 * if ( NATICORE_API::is_related( 123, 25, 'categorized_as', null, 'term' ) ) {
+	 *     echo 'Post is in this category';
+	 * }
+	 * ```
+	 *
+	 * @example Check any relationship type
+	 * ```php
+	 * if ( NATICORE_API::is_related( 123, 456 ) ) {
+	 *     echo 'Some relationship exists';
+	 * }
+	 * ```
+	 *
+	 * @see wp_is_related() Global wrapper function
+	 * @see NATICORE_API::get_related() Get all related items
+	 * @see NATICORE_API::clear_cache() Clear relationship cache
+	 *
+	 * @filter naticore_relation_is_allowed Allow/disallow relationship checks
 	 */
-	public static function is_related( $from_id, $to_id, $type = null ) {
+	public static function is_related( $from_id, $to_id, $type = null, $direction = null, $to_type = 'post' ) {
 		global $wpdb;
 
 		$from_id = absint( $from_id );
 		$to_id   = absint( $to_id );
+		$to_type = in_array( $to_type, array( 'post', 'user', 'term' ), true ) ? $to_type : 'post';
 
-		// Use conditional queries for PHPCS compliance
-		if ( $type ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$count = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND type = %s",
-					$from_id,
-					$to_id,
-					$type
-				)
-			);
-		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$count = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d",
-					$from_id,
-					$to_id
-				)
-			);
+		// Create cache key
+		$cache_key = "naticore_exists_{$from_id}_{$to_id}_{$type}_{$to_type}";
+		
+		// Check cache first
+		$cached_result = wp_cache_get( $cache_key, 'naticore_relationships' );
+		if ( false !== $cached_result ) {
+			return (bool) $cached_result;
 		}
 
-		return $count > 0;
+		$where = array(
+			'from_id' => $from_id,
+			'to_id'   => $to_id,
+			'to_type' => $to_type,
+		);
+
+		if ( $type ) {
+			$where['type'] = $type;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
+		$result = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE " . self::build_where_clause( $where ),
+			array_values( $where )
+		) );
+
+		$exists = (int) $result > 0;
+
+		// Cache the result for 1 hour
+		wp_cache_set( $cache_key, $exists, 'naticore_relationships', HOUR_IN_SECONDS );
+
+		return $exists;
 	}
 }
 

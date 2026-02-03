@@ -3,7 +3,7 @@
  * Plugin Name: Native Content Relationships
  * Plugin URI: https://wordpress.org/plugins/native-content-relationships
  * Description: A native content relationship system for WordPress. Relate posts, pages, custom post types, users, and terms with semantic relationship types.
- * Version: 1.0.11
+ * Version: 1.0.12
  * Author: Chetan Upare
  * Author URI: https://github.com/chetanupare
  * License: GPL v2 or later
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'NATICORE_VERSION', '1.0.11' );
+define( 'NATICORE_VERSION', '1.0.12' );
 define( 'NATICORE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NATICORE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'NATICORE_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -146,6 +146,23 @@ class NATICORE_Plugin {
 
 		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/class-wp-cli.php' ) ) {
 			require_once NATICORE_PLUGIN_DIR . 'includes/class-wp-cli.php';
+		}
+
+		// Initialize Elementor Integration (only if Elementor is active)
+		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/elementor/class-elementor-integration.php' ) ) {
+			require_once NATICORE_PLUGIN_DIR . 'includes/elementor/class-elementor-integration.php';
+			NCR_Elementor_Integration::get_instance();
+		}
+
+		// Initialize Elementor AJAX Handler
+		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/elementor/class-ajax-handler.php' ) ) {
+			require_once NATICORE_PLUGIN_DIR . 'includes/elementor/class-ajax-handler.php';
+			NCR_Elementor_Ajax_Handler::get_instance();
+		}
+
+		// Load Elementor templates
+		if ( file_exists( NATICORE_PLUGIN_DIR . 'assets/templates/elementor-controls.php' ) ) {
+			require_once NATICORE_PLUGIN_DIR . 'assets/templates/elementor-controls.php';
 		}
 
 		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/class-orphaned.php' ) ) {

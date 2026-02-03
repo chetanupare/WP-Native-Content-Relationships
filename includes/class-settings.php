@@ -308,6 +308,14 @@ class NATICORE_Settings {
 			$page,
 			'naticore_developer'
 		);
+
+		add_settings_field(
+			'readonly_mode',
+			'', // No title, will be rendered manually
+			array( $this, 'render_readonly_mode' ),
+			$page,
+			'naticore_developer'
+		);
 	}
 
 	/**
@@ -789,31 +797,63 @@ class NATICORE_Settings {
 					<span class="naticore-toggle-slider"></span>
 					<span class="naticore-toggle-label"><?php esc_html_e( 'Query Debug Mode', 'native-content-relationships' ); ?></span>
 				</label>
-				<p class="description"><?php esc_html_e( 'Log SQL, index usage, and execution time (Console + debug.log)', 'native-content-relationships' ); ?></p>
-				
-				<?php
-				$rest_api = isset( $settings['enable_rest_api'] ) ? $settings['enable_rest_api'] : 0;
-				?>
-				<label class="naticore-toggle">
-					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[enable_rest_api]" value="1" <?php checked( $rest_api, 1 ); ?>>
-					<span class="naticore-toggle-slider"></span>
-					<span class="naticore-toggle-label"><?php esc_html_e( 'REST API', 'native-content-relationships' ); ?></span>
-				</label>
-				<p class="description"><?php esc_html_e( 'Enable REST API endpoints for headless WordPress', 'native-content-relationships' ); ?></p>
-			</div>
-			
-			<div class="naticore-notice">
-				<p><?php esc_html_e( 'Developer options may impact performance. Use with caution.', 'native-content-relationships' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Show query performance in admin', 'native-content-relationships' ); ?></p>
 			</div>
 		</div>
 		<?php
 	}
 
 	/**
-	 * Placeholder render methods
+	 * Render read-only mode field
 	 */
-	public function render_query_debug() {
-		return $this->render_debug_logging(); }
+	public function render_readonly_mode() {
+		$settings = $this->get_settings();
+		$enabled  = isset( $settings['readonly_mode'] ) ? $settings['readonly_mode'] : 0;
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Read-Only Mode', 'native-content-relationships' ); ?></h3>
+			
+			<div class="naticore-toggles">
+				<label class="naticore-toggle">
+					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[readonly_mode]" value="1" <?php checked( $enabled, 1 ); ?>>
+					<span class="naticore-toggle-slider"></span>
+					<span class="naticore-toggle-label"><?php esc_html_e( 'Enable Read-Only Mode', 'native-content-relationships' ); ?></span>
+				</label>
+				<p class="description"><?php esc_html_e( 'Prevent all modifications to relationships (create, update, delete). Only read operations will be allowed.', 'native-content-relationships' ); ?></p>
+			</div>
+			
+			<div class="naticore-warning">
+				<p><strong><?php esc_html_e( '⚠️ Warning:', 'native-content-relationships' ); ?></strong></p>
+				<ul>
+					<li><?php esc_html_e( 'Users will not be able to create, edit, or delete relationships', 'native-content-relationships' ); ?></li>
+					<li><?php esc_html_e( 'REST API write operations will be blocked', 'native-content-relationships' ); ?></li>
+					<li><?php esc_html_e( 'Admin interface will be view-only', 'native-content-relationships' ); ?></li>
+					<li><?php esc_html_e( 'Use this for maintenance or to freeze relationship data', 'native-content-relationships' ); ?></li>
+				</ul>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render REST API field
+	 */
 	public function render_enable_rest_api() {
-		return $this->render_debug_logging(); }
+		$settings = $this->get_settings();
+		$enabled  = isset( $settings['enable_rest_api'] ) ? $settings['enable_rest_api'] : 0;
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'REST API', 'native-content-relationships' ); ?></h3>
+			
+			<div class="naticore-toggles">
+				<label class="naticore-toggle">
+					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[enable_rest_api]" value="1" <?php checked( $enabled, 1 ); ?>>
+					<span class="naticore-toggle-slider"></span>
+					<span class="naticore-toggle-label"><?php esc_html_e( 'Enable REST API', 'native-content-relationships' ); ?></span>
+				</label>
+				<p class="description"><?php esc_html_e( 'Enable REST API endpoints for headless WordPress and external applications.', 'native-content-relationships' ); ?></p>
+			</div>
+		</div>
+		<?php
+	}
 }
