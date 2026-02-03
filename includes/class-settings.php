@@ -45,7 +45,7 @@ class NATICORE_Settings {
 	 * Constructor
 	 */
 	private function __construct() {
-		// Only load admin functionality in admin context
+		// Only load admin functionality in admin context.
 		if ( ! is_admin() ) {
 			return;
 		}
@@ -54,10 +54,10 @@ class NATICORE_Settings {
 		add_action( 'admin_init', array( $this, 'register_settings' ), 20 );
 		add_filter( 'plugin_action_links_' . NATICORE_PLUGIN_BASENAME, array( $this, 'add_settings_link' ) );
 
-		// Handle tab navigation
+		// Handle tab navigation.
 		add_action( 'admin_init', array( $this, 'handle_tab_action' ), 5 );
 
-		// Enqueue admin styles
+		// Enqueue admin styles.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
 	}
 
@@ -65,7 +65,7 @@ class NATICORE_Settings {
 	 * Handle tab navigation
 	 */
 	public function handle_tab_action() {
-		// Simple tab detection without nonce for WordPress standard approach
+		// Simple tab detection without nonce for WordPress standard approach.
 		if ( isset( $_GET['tab'] ) && in_array( sanitize_key( $_GET['tab'] ), array_keys( $this->get_tabs() ), true ) ) {
 			$this->current_tab = sanitize_key( $_GET['tab'] );
 		}

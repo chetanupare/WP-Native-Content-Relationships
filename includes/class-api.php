@@ -100,7 +100,7 @@ class NATICORE_API {
 	public static function add_relation( $from_id, $to_id, $type = 'related_to', $direction = null, $to_type = 'post' ) {
 		global $wpdb;
 
-		// Apply filter to check if relation is allowed
+		// Apply filter to check if relation is allowed.
 		$context    = array(
 			'from_id' => $from_id,
 			'to_id'   => $to_id,
@@ -111,7 +111,7 @@ class NATICORE_API {
 			return new WP_Error( 'relation_not_allowed', __( 'This relationship is not allowed.', 'native-content-relationships' ) );
 		}
 
-		// Check capabilities
+		// Check capabilities.
 
 		$can_create = current_user_can( 'naticore_create_relation', $from_id, $to_id );
 
@@ -123,17 +123,17 @@ class NATICORE_API {
 		$to_id   = absint( $to_id );
 		$to_type = in_array( $to_type, array( 'post', 'user', 'term' ), true ) ? $to_type : 'post';
 
-		// Validate inputs
+		// Validate inputs.
 		if ( 0 === $from_id || 0 === $to_id ) {
 			return new WP_Error( 'invalid_id', __( 'Invalid content ID.', 'native-content-relationships' ) );
 		}
 
-		// Prevent self-linking (only for post-to-post)
+		// Prevent self-linking (only for post-to-post).
 		if ( $from_id === $to_id && 'post' === $to_type ) {
 			return new WP_Error( 'self_relation', __( 'Content cannot be related to itself.', 'native-content-relationships' ) );
 		}
 
-		// Validate target exists
+		// Validate target exists.
 		if ( 'post' === $to_type ) {
 			$to_post = get_post( $to_id );
 			if ( ! $to_post ) {
@@ -151,25 +151,25 @@ class NATICORE_API {
 			}
 		}
 
-		// Validate source post exists
+		// Validate source post exists.
 		$from_post = get_post( $from_id );
 		if ( ! $from_post ) {
 			return new WP_Error( 'post_not_found', __( 'Source post does not exist.', 'native-content-relationships' ) );
 		}
 
-		// Check immutable mode (lock relationships after publish)
+		// Check immutable mode (lock relationships after publish).
 		$settings = NATICORE_Settings::get_instance();
 		if ( $settings->get_setting( 'immutable_mode', 0 ) ) {
-			// Check if posts are published
-			if ( $from_post->post_status === 'publish' ) {
-				// Only allow changes via admin or WP-CLI
+			// Check if posts are published.
+			if ( 'publish' === $from_post->post_status ) {
+				// Only allow changes via admin or WP-CLI.
 				if ( ! is_admin() && ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 					return new WP_Error( 'immutable_mode', __( 'Relationships for published posts are locked. Use the admin interface or WP-CLI to modify.', 'native-content-relationships' ) );
 				}
 			}
 		}
 
-		// Check if relation already exists FIRST (before other checks)
+		// Check if relation already exists FIRST (before other checks).
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 		$existing = $wpdb->get_var(
 			$wpdb->prepare(
@@ -222,7 +222,7 @@ class NATICORE_API {
 			// Default direction is derived from type, but can be overridden by global setting
 			$settings          = NATICORE_Settings::get_instance();
 			$default_direction = $settings->get_setting( 'default_direction', $type_supports_bidirectional ? 'bidirectional' : 'unidirectional' );
-			$direction         = $default_direction === 'bidirectional' ? 'bidirectional' : 'unidirectional';
+			$direction         = 'bidirectional' === $default_direction ? 'bidirectional' : 'unidirectional';
 		}
 
 		// Validate direction value
