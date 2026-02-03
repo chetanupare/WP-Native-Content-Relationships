@@ -133,6 +133,8 @@ class NATICORE_Integrity {
 			if ( ! empty( $ids ) ) {
 				$placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Safe delete with prepared placeholders
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Placeholders are safely constructed with validated values
+				// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Placeholders are in $ids array
 				$wpdb->query(
 					$wpdb->prepare(
 						"DELETE FROM `{$wpdb->prefix}content_relations` WHERE id IN ( $placeholders )",
