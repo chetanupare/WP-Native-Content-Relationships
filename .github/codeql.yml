@@ -1,24 +1,22 @@
 # CodeQL configuration for this repository
 # This file controls the default CodeQL behavior
+# Note: Only JavaScript is supported for CodeQL analysis
 
 # Disable automatic CodeQL setup
 disable-default-queries: true
 
-# Specify which queries to run
+# Specify which queries to run for JavaScript
 queries:
   - name: security-extended
     uses: security-extended
   - name: security-and-quality
     uses: security-and-quality
 
-# Paths to include/exclude from analysis
+# Paths to include/exclude from analysis (JavaScript only)
 paths:
-  - includes/
-  - assets/
-  - native-content-relationships.php
-  - uninstall.php
-  - developer-guide.php
-  - readme.txt
+  - assets/js/
+  - assets/settings.js
+  - assets/user-relations.js
 
 paths-ignore:
   - vendor/
@@ -28,3 +26,5 @@ paths-ignore:
   - tmp/
   - "*.min.js"
   - "*.min.css"
+  - includes/
+  - "*.php"
