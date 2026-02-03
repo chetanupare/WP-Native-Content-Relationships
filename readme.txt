@@ -9,6 +9,8 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
 
+[![Good First Issues](https://img.shields.io/github/issues/chetanupare/WP-Native-Content-Relationships/good%20first%20issue)](https://github.com/chetanupare/WP-Native-Content-Relationships/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+
 Add first-class relationships between posts, users, and terms using a fast, structured, and scalable architecture.
 
 == Description ==
