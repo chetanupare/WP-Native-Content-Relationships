@@ -721,26 +721,28 @@ class NATICORE_API {
 			$params[] = $type;
 		}
 
-		$sql = "
-			SELECT to_id, type, to_type
-			FROM {$table}
-			WHERE " . implode( ' AND ', $where ) . "
-			ORDER BY created_at DESC
-		";
+		$where_clause = implode( ' AND ', $where );
+		$sql_base = "SELECT to_id, type, to_type FROM {$table} WHERE {$where_clause} ORDER BY created_at DESC";
 
 		if ( $has_limit ) {
-			$sql .= ' LIMIT %d';
-			$params[] = $limit;
+			/**
+			 * Custom table query with manual caching.
+			 * WordPress.DB.DirectDatabaseQuery.DirectQuery is acceptable here
+			 * because WordPress core APIs do not support custom relationship tables.
+			 */
+			$results = $wpdb->get_results(
+				$wpdb->prepare( $sql_base . ' LIMIT %d', $params )
+			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared -- Custom table with prepared statement
+		} else {
+			/**
+			 * Custom table query with manual caching.
+			 * WordPress.DB.DirectDatabaseQuery.DirectQuery is acceptable here
+			 * because WordPress core APIs do not support custom relationship tables.
+			 */
+			$results = $wpdb->get_results(
+				$wpdb->prepare( $sql_base, $params )
+			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared -- Custom table with prepared statement
 		}
-
-		/**
-		 * Custom table query with manual caching.
-		 * WordPress.DB.DirectDatabaseQuery.DirectQuery is acceptable here
-		 * because WordPress core APIs do not support custom relationship tables.
-		 */
-		$results = $wpdb->get_results(
-			$wpdb->prepare( $sql, $params )
-		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 
 		if ( ! $results ) {
 			$related_items = array();
