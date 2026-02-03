@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Localize script for Elementor controls
-function ncr_localize_elementor_scripts() {
+function naticore_localize_elementor_scripts() {
 	if ( ! class_exists( '\Elementor\Plugin' ) ) {
 		return;
 	}
@@ -22,4 +22,4 @@ function ncr_localize_elementor_scripts() {
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 	) );
 }
-add_action( 'elementor/editor/before_enqueue_scripts', 'ncr_localize_elementor_scripts' );
+add_action( 'elementor/editor/before_enqueue_scripts', 'naticore_localize_elementor_scripts' );

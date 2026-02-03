@@ -78,10 +78,10 @@ class NATICORE_Overview_Table extends WP_List_Table {
 		$order           = in_array( strtoupper( $order ), $allowed_order, true ) ? strtoupper( $order ) : 'DESC';
 
 		// ORDER BY column and direction are whitelisted, LIMIT/OFFSET use prepare()
-		// Build ORDER BY clause safely using sprintf with strict whitelist
+		// Build ORDER BY clause safely using strict whitelist
 		$order_clause = 'ORDER BY created_at DESC'; // default
 		if ( in_array( $orderby, $allowed_orderby, true ) && in_array( $order, $allowed_order, true ) ) {
-			$order_clause = sprintf( 'ORDER BY %s %s', $orderby, $order );
+			$order_clause = 'ORDER BY ' . sanitize_sql_orderby( "{$orderby} {$order}" );
 		}
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with safe ORDER BY
 		$items = $wpdb->get_results(

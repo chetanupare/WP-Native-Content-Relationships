@@ -698,50 +698,50 @@ class NATICORE_API {
 		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
 
 		// Build WHERE clause for to_type filter
-		$to_type_clause = '';
+		$where_clauses = array( 'from_id = %d' );
+		$values = array( $post_id );
+		
 		if ( 'post' === $to_type ) {
-			$to_type_clause = ' AND to_type = %s';
+			$where_clauses[] = 'to_type = %s';
+			$values[] = 'post';
 		} elseif ( 'user' === $to_type ) {
-			$to_type_clause = ' AND to_type = %s';
+			$where_clauses[] = 'to_type = %s';
+			$values[] = 'user';
 		} elseif ( 'term' === $to_type ) {
-			$to_type_clause = ' AND to_type = %s';
+			$where_clauses[] = 'to_type = %s';
+			$values[] = 'term';
 		}
 		// 'all' means no filter on to_type
 
 		if ( $has_type && $has_limit ) {
-			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s{$to_type_clause} ORDER BY created_at DESC LIMIT %d";
-			$params = array( $post_id, $type );
-			if ( $to_type_clause ) {
-				$params[] = $to_type;
-			}
-			$params[] = $limit;
+			$where_clauses[] = 'type = %s';
+			$values[] = $type;
+			$values[] = $limit;
+			
+			$where_sql = implode( ' AND ', $where_clauses );
+			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d";
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		} elseif ( $has_type ) {
-			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s{$to_type_clause} ORDER BY created_at DESC";
-			$params = array( $post_id, $type );
-			if ( $to_type_clause ) {
-				$params[] = $to_type;
-			}
+			$where_clauses[] = 'type = %s';
+			$values[] = $type;
+			
+			$where_sql = implode( ' AND ', $where_clauses );
+			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql} ORDER BY created_at DESC";
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		} elseif ( $has_limit ) {
-			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d{$to_type_clause} ORDER BY created_at DESC LIMIT %d";
-			$params = array( $post_id );
-			if ( $to_type_clause ) {
-				$params[] = $to_type;
-			}
-			$params[] = $limit;
+			$values[] = $limit;
+			
+			$where_sql = implode( ' AND ', $where_clauses );
+			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d";
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		} else {
-			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d{$to_type_clause} ORDER BY created_at DESC";
-			$params = array( $post_id );
-			if ( $to_type_clause ) {
-				$params[] = $to_type;
-			}
+			$where_sql = implode( ' AND ', $where_clauses );
+			$sql = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_sql} ORDER BY created_at DESC";
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		}
 
 		if ( ! $results ) {

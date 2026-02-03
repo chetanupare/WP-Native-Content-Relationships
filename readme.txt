@@ -1,6 +1,6 @@
 === Native Content Relationships ===
 Contributors: chetanupare
-Tags: relationships, content, posts, users, terms, many-to-many, architecture
+Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4

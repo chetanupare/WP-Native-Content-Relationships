@@ -15,7 +15,7 @@ if ( ! class_exists( '\Elementor\Core\DynamicTags\Tag' ) ) {
 	return;
 }
 
-class NCR_Related_Users_Tag extends \Elementor\Core\DynamicTags\Tag {
+class NATICORE_Related_Users_Tag extends \Elementor\Core\DynamicTags\Tag {
 
 	/**
 	 * Get tag name

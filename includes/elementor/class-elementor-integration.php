@@ -61,16 +61,16 @@ class NCR_Elementor_Integration {
 	 */
 	public function register_dynamic_tags( $dynamic_tags ) {
 		// Only register if class exists
-		if ( class_exists( 'NCR_Related_Posts_Tag' ) ) {
-			$dynamic_tags->register( new NCR_Related_Posts_Tag() );
+		if ( class_exists( 'NATICORE_Related_Posts_Tag' ) ) {
+			$dynamic_tags->register( new NATICORE_Related_Posts_Tag() );
 		}
 
-		if ( class_exists( 'NCR_Related_Users_Tag' ) ) {
-			$dynamic_tags->register( new NCR_Related_Users_Tag() );
+		if ( class_exists( 'NATICORE_Related_Users_Tag' ) ) {
+			$dynamic_tags->register( new NATICORE_Related_Users_Tag() );
 		}
 
-		if ( class_exists( 'NCR_Related_Terms_Tag' ) ) {
-			$dynamic_tags->register( new NCR_Related_Terms_Tag() );
+		if ( class_exists( 'NATICORE_Related_Terms_Tag' ) ) {
+			$dynamic_tags->register( new NATICORE_Related_Terms_Tag() );
 		}
 	}
 
@@ -95,7 +95,7 @@ class NCR_Elementor_Integration {
 	 */
 	public function register_controls( $controls_manager ) {
 		// Register Relationship Type control
-		$controls_manager->register_control( 'ncr_relationship_type', new NCR_Relationship_Type_Control() );
+		$controls_manager->register_control( 'ncr_relationship_type', new NATICORE_Relationship_Type_Control() );
 	}
 
 	/**
@@ -133,7 +133,7 @@ class NCR_Elementor_Integration {
  * Custom Relationship Type Control for Elementor
  */
 if ( class_exists( '\Elementor\Base_Control' ) ) {
-	class NCR_Relationship_Type_Control extends \Elementor\Base_Control {
+	class NATICORE_Relationship_Type_Control extends \Elementor\Base_Control {
 
 		/**
 		 * Get control type

@@ -15,7 +15,7 @@ if ( ! class_exists( '\Elementor\Core\DynamicTags\Tag' ) ) {
 	return;
 }
 
-class NCR_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
+class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 
 	/**
 	 * Get tag name
@@ -236,28 +236,48 @@ class NCR_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 		global $wpdb;
 
 		$limit = isset( $args['limit'] ) ? absint( $args['limit'] ) : 10;
-		$orderby = isset( $args['orderby'] ) ? $args['orderby'] : 'date';
-		$order = isset( $args['order'] ) ? $args['order'] : 'desc';
+		$orderby = isset( $args['orderby'] ) ? sanitize_sql_orderby( $args['orderby'] ) : 'date';
+		$order = isset( $args['order'] ) ? sanitize_key( $args['order'] ) : 'desc';
 
-		// Build ORDER BY clause
-		$order_clause = 'ORDER BY cr.created_at DESC';
+		// Validate order values
+		$allowed_orderby = array( 'date', 'title', 'random' );
+		$orderby = in_array( $orderby, $allowed_orderby, true ) ? $orderby : 'date';
+		
+		$allowed_order = array( 'asc', 'desc' );
+		$order = in_array( $order, $allowed_order, true ) ? $order : 'desc';
+
+		// Build ORDER BY clause safely
 		if ( 'title' === $orderby ) {
 			$order_clause = 'ORDER BY p.post_title ' . strtoupper( $order );
 		} elseif ( 'date' === $orderby ) {
 			$order_clause = 'ORDER BY p.post_date ' . strtoupper( $order );
+		} else {
+			$order_clause = 'ORDER BY cr.created_at ' . strtoupper( $order );
 		}
+
+		// Build query with proper placeholders
+		$where_clauses = array(
+			'cr.to_id = %d',
+			'cr.to_type = %s', 
+			'cr.type = %s',
+			'p.post_status = %s'
+		);
+		$values = array( $post_id, 'post', $type, 'publish' );
+
+		$where_sql = implode( ' AND ', $where_clauses );
 
 		// Query for posts that have relationships to this post
 		$sql = "SELECT DISTINCT p.ID, p.post_title, p.post_date
 				FROM {$wpdb->prefix}content_relations cr
 				INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
-				WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s
-				AND p.post_status = %s
+				WHERE {$where_sql}
 				{$order_clause}
 				LIMIT %d";
 
+		$values[] = $limit;
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
-		$results = $wpdb->get_results( $wpdb->prepare( $sql, $post_id, 'post', $type, 'publish', $limit ) );
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 
 		$posts = array();
 		foreach ( $results as $row ) {

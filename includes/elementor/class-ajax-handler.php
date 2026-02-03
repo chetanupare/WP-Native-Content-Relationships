@@ -41,14 +41,14 @@ class NCR_Elementor_Ajax_Handler {
 	 */
 	public function get_relationship_types() {
 		// Verify nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ncr_elementor_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['nonce'] ), 'ncr_elementor_nonce' ) ) {
 			wp_send_json_error( array(
 				'success' => false,
 				'message' => __( 'Security check failed', 'native-content-relationships' )
 			) );
 		}
 
-		$target_type = isset( $_POST['target_type'] ) ? sanitize_text_field( $_POST['target_type'] ) : 'post';
+		$target_type = isset( $_POST['target_type'] ) ? sanitize_text_field( wp_unslash( $_POST['target_type'] ) ) : 'post';
 
 		// Get relationship types
 		$types = NCR_Elementor_Integration::get_relationship_types_for_elementor( $target_type );

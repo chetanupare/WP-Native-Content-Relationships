@@ -129,15 +129,17 @@ class NATICORE_Integrity {
 
 		// Delete invalid relationships
 		if ( ! empty( $to_delete ) ) {
-			$ids          = array_map( 'absint', $to_delete );
-			$placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Safe delete with prepared placeholders
-			$wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM `{$wpdb->prefix}content_relations` WHERE id IN ( $placeholders )",
-					$ids
-				)
-			);
+			$ids = array_map( 'absint', $to_delete );
+			if ( ! empty( $ids ) ) {
+				$placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Safe delete with prepared placeholders
+				$wpdb->query(
+					$wpdb->prepare(
+						"DELETE FROM `{$wpdb->prefix}content_relations` WHERE id IN ( $placeholders )",
+						$ids
+					)
+				);
+			}
 		}
 
 		return array(
