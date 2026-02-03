@@ -151,13 +151,13 @@ class NATICORE_Plugin {
 		// Initialize Elementor Integration (only if Elementor is active)
 		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/elementor/class-elementor-integration.php' ) ) {
 			require_once NATICORE_PLUGIN_DIR . 'includes/elementor/class-elementor-integration.php';
-			NCR_Elementor_Integration::get_instance();
+			NATICORE_Elementor_Integration::get_instance();
 		}
 
 		// Initialize Elementor AJAX Handler
 		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/elementor/class-ajax-handler.php' ) ) {
 			require_once NATICORE_PLUGIN_DIR . 'includes/elementor/class-ajax-handler.php';
-			NCR_Elementor_Ajax_Handler::get_instance();
+			NATICORE_Elementor_Ajax_Handler::get_instance();
 		}
 
 		// Load Elementor templates

@@ -2,7 +2,7 @@
 /**
  * AJAX Handler for Elementor Integration
  *
- * @package Native Content Relationships
+ * @package NativeContentRelationships
  * @since 1.0.11
  */
 
@@ -11,10 +11,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NCR_Elementor_Ajax_Handler {
+/**
+ * AJAX Handler for Elementor Integration
+ *
+ * Handles AJAX requests for Elementor dynamic tags and controls.
+ * Provides secure AJAX endpoints for relationship management in Elementor.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.11
+ */
+class NATICORE_Elementor_Ajax_Handler {
 
 	/**
 	 * Instance
+	 * @var NATICORE_Elementor_Ajax_Handler|null
 	 */
 	private static $instance = null;
 
