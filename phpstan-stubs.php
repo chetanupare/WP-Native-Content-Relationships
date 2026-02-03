@@ -51,28 +51,27 @@ namespace {
 		}
 	}
 
-if ( ! function_exists( 'wc_get_product' ) ) {
-	function wc_get_product( $product_id ) {
-		return null;
+	if ( ! function_exists( 'wc_get_product' ) ) {
+		function wc_get_product( $product_id ) {
+			return null;
+		}
 	}
-}
 
-if ( ! function_exists( 'wc_get_order' ) ) {
-	function wc_get_order( $order_id ) {
-		return null;
+	if ( ! function_exists( 'wc_get_order' ) ) {
+		function wc_get_order( $order_id ) {
+			return null;
+		}
 	}
-}
 
-if ( ! function_exists( 'pll_languages_list' ) ) {
-	function pll_languages_list() {
-		return array();
+	if ( ! function_exists( 'pll_languages_list' ) ) {
+		function pll_languages_list() {
+			return array();
+		}
 	}
-}
 
-if ( ! function_exists( 'pll_get_post' ) ) {
-	function pll_get_post( $post_id, $lang = null ) {
-		return $post_id;
+	if ( ! function_exists( 'pll_get_post' ) ) {
+		function pll_get_post( $post_id, $lang = null ) {
+			return $post_id;
+		}
 	}
-}
-
 }
