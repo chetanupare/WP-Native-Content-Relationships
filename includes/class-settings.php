@@ -62,7 +62,8 @@ class NATICORE_Settings {
 	 * Handle tab navigation
 	 */
 	public function handle_tab_action() {
-		if ( isset( $_GET['tab'] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'naticore_tab_nonce' ) && in_array( sanitize_key( $_GET['tab'] ), array_keys( $this->get_tabs() ), true ) ) {
+		// Simple tab detection without nonce for WordPress standard approach
+		if ( isset( $_GET['tab'] ) && in_array( sanitize_key( $_GET['tab'] ), array_keys( $this->get_tabs() ), true ) ) {
 			$this->current_tab = sanitize_key( $_GET['tab'] );
 		}
 	}
