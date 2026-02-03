@@ -26,6 +26,7 @@ class NATICORE_Integrity {
 
 	/**
 	 * Instance
+	 *
 	 * @var NATICORE_Integrity|null
 	 */
 	private static $instance = null;

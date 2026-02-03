@@ -157,7 +157,7 @@ class NATICORE_Database {
 		// Add to_type column
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Table name is safe (from $wpdb->prefix), schema migration requires direct queries
 		$wpdb->query( "ALTER TABLE `{$table_name}` ADD COLUMN to_type enum('post','user') NOT NULL DEFAULT 'post'" );
-		
+
 		// Add to_user_id column
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Table name is safe (from $wpdb->prefix), schema migration requires direct queries
 		$wpdb->query( "ALTER TABLE `{$table_name}` ADD COLUMN to_user_id bigint(20) unsigned NULL" );
@@ -188,7 +188,7 @@ class NATICORE_Database {
 		// Update to_type enum to include 'term'
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Table name is safe (from $wpdb->prefix), schema migration requires direct queries
 		$wpdb->query( "ALTER TABLE `{$table_name}` MODIFY COLUMN to_type enum('post','user','term') NOT NULL DEFAULT 'post'" );
-		
+
 		// Add to_term_id column
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Table name is safe (from $wpdb->prefix), schema migration requires direct queries
 		$wpdb->query( "ALTER TABLE `{$table_name}` ADD COLUMN to_term_id bigint(20) unsigned NULL" );

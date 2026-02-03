@@ -11,15 +11,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Localize script for Elementor controls
+/**
+ * Localize script for Elementor controls
+ *
+ * @return void
+ */
 function naticore_localize_elementor_scripts() {
 	if ( ! class_exists( '\Elementor\Plugin' ) ) {
 		return;
 	}
 
-	wp_localize_script( 'ncr-elementor-controls', 'ncr_vars', array(
-		'nonce' => wp_create_nonce( 'ncr_elementor_nonce' ),
-		'ajaxurl' => admin_url( 'admin-ajax.php' ),
-	) );
+	wp_localize_script(
+		'ncr-elementor-controls',
+		'ncr_vars',
+		array(
+			'nonce'   => wp_create_nonce( 'ncr_elementor_nonce' ),
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		)
+	);
 }
 add_action( 'elementor/editor/before_enqueue_scripts', 'naticore_localize_elementor_scripts' );

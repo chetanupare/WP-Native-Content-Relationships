@@ -347,11 +347,11 @@
 	.naticore-checkbox-grid {
 		grid-template-columns: repeat(2, minmax(140px, 1fr));
 	}
-	
+
 	.naticore-radio-cards {
 		grid-template-columns: 1fr;
 	}
-	
+
 	.wrap .nav-tab {
 		padding: 6px 12px 8px;
 		font-size: 13px;

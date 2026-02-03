@@ -15,6 +15,7 @@ class NATICORE_Elementor_Integration {
 
 	/**
 	 * Instance
+	 *
 	 * @var NATICORE_Elementor_Integration|null
 	 */
 	private static $instance = null;
@@ -115,7 +116,7 @@ class NATICORE_Elementor_Integration {
 	 * @return array Relationship types options
 	 */
 	public static function get_relationship_types_for_elementor( $target_type = 'post' ) {
-		$types = NATICORE_Relation_Types::get_types();
+		$types   = NATICORE_Relation_Types::get_types();
 		$options = array();
 
 		foreach ( $types as $slug => $type_info ) {
@@ -152,7 +153,7 @@ if ( class_exists( '\Elementor\Base_Control' ) ) {
 		 */
 		protected function get_default_settings() {
 			return array(
-				'options' => array(),
+				'options'     => array(),
 				'target_type' => 'post',
 			);
 		}
@@ -179,6 +180,7 @@ if ( class_exists( '\Elementor\Base_Control' ) ) {
 		 */
 		public function content_template() {
 			$control_uid = $this->get_control_uid();
+			ob_start();
 			?>
 			<div class="elementor-control-field">
 				<label class="elementor-control-title"><?php echo esc_html( $this->get_label() ); ?></label>
@@ -191,6 +193,7 @@ if ( class_exists( '\Elementor\Base_Control' ) ) {
 				</div>
 			</div>
 			<?php
+			return ob_get_clean();
 		}
 
 		/**

@@ -126,11 +126,11 @@ class NATICORE_Related_Users_Tag extends \Elementor\Core\DynamicTags\Tag {
 		$this->add_control(
 			'avatar_size',
 			array(
-				'label'   => __( 'Avatar Size', 'native-content-relationships' ),
-				'type'    => \Elementor\Controls_Manager::NUMBER,
-				'min'     => 16,
-				'max'     => 512,
-				'default' => 32,
+				'label'     => __( 'Avatar Size', 'native-content-relationships' ),
+				'type'      => \Elementor\Controls_Manager::NUMBER,
+				'min'       => 16,
+				'max'       => 512,
+				'default'   => 32,
 				'condition' => array(
 					'output_format' => 'avatar_images',
 				),
@@ -162,7 +162,7 @@ class NATICORE_Related_Users_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 * @return array User relationship types options
 	 */
 	private function get_user_relationship_types() {
-		$types = NATICORE_Relation_Types::get_post_to_user_types();
+		$types   = NATICORE_Relation_Types::get_post_to_user_types();
 		$options = array();
 
 		foreach ( $types as $slug => $type_info ) {
@@ -186,7 +186,7 @@ class NATICORE_Related_Users_Tag extends \Elementor\Core\DynamicTags\Tag {
 		}
 
 		// Get current context
-		$context = $this->get_context();
+		$context       = $this->get_context();
 		$related_users = array();
 
 		if ( 'incoming' === $settings['direction'] ) {
@@ -265,9 +265,9 @@ class NATICORE_Related_Users_Tag extends \Elementor\Core\DynamicTags\Tag {
 
 			case 'avatar_images':
 				$avatars = array();
-				$size = $settings['avatar_size'] ?? 32;
+				$size    = $settings['avatar_size'] ?? 32;
 				foreach ( $related_users as $user ) {
-					$avatar = get_avatar( $user['id'], $size, '', false, array( 'class' => 'ncr-user-avatar' ) );
+					$avatar    = get_avatar( $user['id'], $size, '', false, array( 'class' => 'ncr-user-avatar' ) );
 					$avatars[] = $avatar;
 				}
 				return implode( ' ', $avatars );

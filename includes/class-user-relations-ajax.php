@@ -25,6 +25,7 @@ class NATICORE_User_Relations_Ajax {
 
 	/**
 	 * Instance
+	 *
 	 * @var NATICORE_User_Relations_Ajax|null
 	 */
 	private static $instance = null;

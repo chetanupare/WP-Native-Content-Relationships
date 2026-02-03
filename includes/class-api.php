@@ -409,10 +409,10 @@ class NATICORE_API {
 	 * @return bool|WP_Error True on success, WP_Error on failure
 	 *
 	 * @throws WP_Error When:
-	 *         - User lacks permission to delete relationships
-	 *         - Invalid content IDs provided
-	 *         - Relationship does not exist
-	 *         - Database operation fails
+	 *         - User lacks permission to delete relationships.
+	 *         - Invalid content IDs provided.
+	 *         - Relationship does not exist.
+	 *         - Database operation fails.
 	 *
 	 * @example Remove a specific relationship
 	 * ```php
@@ -629,9 +629,8 @@ class NATICORE_API {
 	 * }
 	 * @param string $to_type Target type filter: 'post', 'user', 'term', or 'all' (default: 'post')
 	 *
-	 * @return array Array of related items with enhanced data, or empty array if no results
-	 *
-	 * @return array[] Each item contains:
+	 * @return array Array of related items with enhanced data, or empty array if no results.
+	 *     Each item contains:
 	 *     - @type int    $id          The target content ID
 	 *     - @type string $type        Relationship type
 	 *     - @type string $to_type     Target content type ('post', 'user', 'term')

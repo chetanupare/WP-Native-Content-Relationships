@@ -24,6 +24,7 @@ class NATICORE_Elementor_Ajax_Handler {
 
 	/**
 	 * Instance
+	 *
 	 * @var NATICORE_Elementor_Ajax_Handler|null
 	 */
 	private static $instance = null;
@@ -53,10 +54,12 @@ class NATICORE_Elementor_Ajax_Handler {
 		// Verify nonce
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'naticore_elementor_nonce' ) ) {
-			wp_send_json_error( array(
-				'success' => false,
-				'message' => __( 'Security check failed', 'native-content-relationships' )
-			) );
+			wp_send_json_error(
+				array(
+					'success' => false,
+					'message' => __( 'Security check failed', 'native-content-relationships' ),
+				)
+			);
 		}
 
 		$target_type = isset( $_POST['target_type'] ) ? sanitize_text_field( wp_unslash( $_POST['target_type'] ) ) : 'post';
@@ -64,9 +67,11 @@ class NATICORE_Elementor_Ajax_Handler {
 		// Get relationship types
 		$types = NATICORE_Elementor_Integration::get_relationship_types_for_elementor( $target_type );
 
-		wp_send_json_success( array(
-			'success' => true,
-			'data' => $types
-		) );
+		wp_send_json_success(
+			array(
+				'success' => true,
+				'data'    => $types,
+			)
+		);
 	}
 }

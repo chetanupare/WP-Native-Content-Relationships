@@ -181,7 +181,7 @@ class NATICORE_REST_API {
 				'callback'            => array( $this, 'bulk_relationships' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
 				'args'                => array(
-					'operation' => array(
+					'operation'     => array(
 						'required'          => true,
 						'sanitize_callback' => 'sanitize_text_field',
 						'type'              => 'string',
@@ -190,7 +190,7 @@ class NATICORE_REST_API {
 					'relationships' => array(
 						'required'          => true,
 						'type'              => 'array',
-						'validate_callback' => function( $param ) {
+						'validate_callback' => function ( $param ) {
 							return is_array( $param );
 						},
 					),
@@ -294,10 +294,10 @@ class NATICORE_REST_API {
 			} elseif ( 'term' === $rel['to_type'] ) {
 				$term = get_term( $rel['id'] );
 				if ( $term && ! is_wp_error( $term ) ) {
-					$item['term_name']   = $term->name;
-					$item['term_slug']   = $term->slug;
-					$item['taxonomy']    = $term->taxonomy;
-					$item['edit_link']   = get_edit_term_link( $rel['id'], $term->taxonomy );
+					$item['term_name'] = $term->name;
+					$item['term_slug'] = $term->slug;
+					$item['taxonomy']  = $term->taxonomy;
+					$item['edit_link'] = get_edit_term_link( $rel['id'], $term->taxonomy );
 				}
 			} else {
 				$post = get_post( $rel['id'] );
@@ -478,20 +478,20 @@ class NATICORE_REST_API {
 				);
 			} else {
 				$results[] = array(
-					'index' => $index,
+					'index'   => $index,
 					'success' => true,
-					'data'   => $result,
+					'data'    => $result,
 				);
 			}
 		}
 
 		return rest_ensure_response(
 			array(
-				'success'  => empty( $errors ),
-				'processed' => count( $relationships ),
-				'created'  => count( $results ),
-				'errors'   => count( $errors ),
-				'results'  => $results,
+				'success'       => empty( $errors ),
+				'processed'     => count( $relationships ),
+				'created'       => count( $results ),
+				'errors'        => count( $errors ),
+				'results'       => $results,
 				'error_details' => $errors,
 			)
 		);
@@ -533,7 +533,7 @@ class NATICORE_REST_API {
 	public function permissions_check( $request ) {
 		$method = $request->get_method();
 		$route  = $request->get_route();
-		
+
 		// Check if read-only mode is enabled
 		$settings = NATICORE_Settings::get_instance();
 		$readonly = $settings->get_setting( 'readonly_mode', false );

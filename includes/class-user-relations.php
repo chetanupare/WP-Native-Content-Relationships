@@ -25,6 +25,7 @@ class NATICORE_User_Relations {
 
 	/**
 	 * Instance
+	 *
 	 * @var NATICORE_User_Relations|null
 	 */
 	private static $instance = null;
@@ -149,7 +150,7 @@ class NATICORE_User_Relations {
 	 */
 	public function add_post_user_metabox() {
 		$post_types = $this->get_supported_post_types();
-		
+
 		foreach ( $post_types as $post_type ) {
 			add_meta_box(
 				'naticore-user-relations',
@@ -316,19 +317,21 @@ class NATICORE_User_Relations {
 			wp_die();
 		}
 
-		$users = get_users( array(
-			'search' => '*' . $search . '*',
-			'search_columns' => array( 'user_login', 'user_nicename', 'user_email', 'display_name' ),
-			'number' => 20,
-		) );
+		$users = get_users(
+			array(
+				'search'         => '*' . $search . '*',
+				'search_columns' => array( 'user_login', 'user_nicename', 'user_email', 'display_name' ),
+				'number'         => 20,
+			)
+		);
 
 		$results = array();
 		foreach ( $users as $user ) {
 			$results[] = array(
-				'id' => $user->ID,
+				'id'           => $user->ID,
 				'display_name' => $user->display_name,
-				'user_email' => $user->user_email,
-				'user_login' => $user->user_login,
+				'user_email'   => $user->user_email,
+				'user_login'   => $user->user_login,
 			);
 		}
 
@@ -350,23 +353,23 @@ class NATICORE_User_Relations {
 		}
 
 		$args = array(
-			's' => $search,
-			'post_type' => $this->get_supported_post_types(),
-			'post_status' => 'publish',
+			's'              => $search,
+			'post_type'      => $this->get_supported_post_types(),
+			'post_status'    => 'publish',
 			'posts_per_page' => 20,
 		);
 
-		$query = new WP_Query( $args );
+		$query   = new WP_Query( $args );
 		$results = array();
 
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
 				$results[] = array(
-					'id' => get_the_ID(),
+					'id'         => get_the_ID(),
 					'post_title' => get_the_title(),
-					'post_type' => get_post_type(),
-					'edit_link' => get_edit_post_link(),
+					'post_type'  => get_post_type(),
+					'edit_link'  => get_edit_post_link(),
 				);
 			}
 		}
@@ -383,24 +386,28 @@ class NATICORE_User_Relations {
 
 		// Only load on relevant pages
 		$is_user_profile = in_array( $pagenow, array( 'profile.php', 'user-edit.php' ), true );
-		$is_post_editor = in_array( $hook, array( 'post.php', 'post-new.php' ), true );
+		$is_post_editor  = in_array( $hook, array( 'post.php', 'post-new.php' ), true );
 
 		if ( ! $is_user_profile && ! $is_post_editor ) {
 			return;
 		}
 
 		wp_enqueue_script( 'naticore-user-relations', plugins_url( '../assets/user-relations.js', __FILE__ ), array( 'jquery' ), NATICORE_VERSION, true );
-		
-		wp_localize_script( 'naticore-user-relations', 'naticoreUserRelations', array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'nonce' => wp_create_nonce( 'naticore_search_nonce' ),
-			'strings' => array(
-				'addRelation' => __( 'Add Relation', 'native-content-relationships' ),
-				'removeRelation' => __( 'Remove', 'native-content-relationships' ),
-				'noResults' => __( 'No results found', 'native-content-relationships' ),
-				'confirmRemove' => __( 'Are you sure you want to remove this relationship?', 'native-content-relationships' ),
-			),
-		) );
+
+		wp_localize_script(
+			'naticore-user-relations',
+			'naticoreUserRelations',
+			array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'nonce'   => wp_create_nonce( 'naticore_search_nonce' ),
+				'strings' => array(
+					'addRelation'    => __( 'Add Relation', 'native-content-relationships' ),
+					'removeRelation' => __( 'Remove', 'native-content-relationships' ),
+					'noResults'      => __( 'No results found', 'native-content-relationships' ),
+					'confirmRemove'  => __( 'Are you sure you want to remove this relationship?', 'native-content-relationships' ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -422,10 +429,13 @@ class NATICORE_User_Relations {
 	 */
 	private function get_supported_post_types() {
 		// Get all public post types except attachments
-		$post_types = get_post_types( array(
-			'public' => true,
-			'exclude_from_search' => false,
-		), 'objects' );
+		$post_types = get_post_types(
+			array(
+				'public'              => true,
+				'exclude_from_search' => false,
+			),
+			'objects'
+		);
 
 		$supported = array();
 		foreach ( $post_types as $post_type ) {

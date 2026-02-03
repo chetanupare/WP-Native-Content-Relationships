@@ -96,10 +96,10 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 		$this->add_control(
 			'taxonomy',
 			array(
-				'label'   => __( 'Taxonomy Filter', 'native-content-relationships' ),
-				'type'    => \Elementor\Controls_Manager::SELECT2,
-				'options' => $this->get_taxonomy_options(),
-				'default' => '',
+				'label'     => __( 'Taxonomy Filter', 'native-content-relationships' ),
+				'type'      => \Elementor\Controls_Manager::SELECT2,
+				'options'   => $this->get_taxonomy_options(),
+				'default'   => '',
 				'condition' => array(
 					'direction' => 'incoming',
 				),
@@ -113,11 +113,11 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 				'label'   => __( 'Output Format', 'native-content-relationships' ),
 				'type'    => \Elementor\Controls_Manager::SELECT,
 				'options' => array(
-					'ids'       => __( 'Term IDs (comma-separated)', 'native-content-relationships' ),
-					'names'     => __( 'Term Names (comma-separated)', 'native-content-relationships' ),
-					'slugs'     => __( 'Term Slugs (comma-separated)', 'native-content-relationships' ),
-					'count'     => __( 'Count Only', 'native-content-relationships' ),
-					'links'     => __( 'Term Archive Links', 'native-content-relationships' ),
+					'ids'        => __( 'Term IDs (comma-separated)', 'native-content-relationships' ),
+					'names'      => __( 'Term Names (comma-separated)', 'native-content-relationships' ),
+					'slugs'      => __( 'Term Slugs (comma-separated)', 'native-content-relationships' ),
+					'count'      => __( 'Count Only', 'native-content-relationships' ),
+					'links'      => __( 'Term Archive Links', 'native-content-relationships' ),
 					'term_links' => __( 'Term Links (with taxonomy)', 'native-content-relationships' ),
 				),
 				'default' => 'names',
@@ -161,7 +161,7 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 * @return array Term relationship types options
 	 */
 	private function get_term_relationship_types() {
-		$types = NATICORE_Relation_Types::get_post_to_term_types();
+		$types   = NATICORE_Relation_Types::get_post_to_term_types();
 		$options = array();
 
 		foreach ( $types as $slug => $type_info ) {
@@ -178,7 +178,7 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 */
 	private function get_taxonomy_options() {
 		$taxonomies = get_taxonomies( array( 'public' => true ), 'objects' );
-		$options = array( '' => __( 'All Taxonomies', 'native-content-relationships' ) );
+		$options    = array( '' => __( 'All Taxonomies', 'native-content-relationships' ) );
 
 		foreach ( $taxonomies as $taxonomy ) {
 			$options[ $taxonomy->name ] = $taxonomy->label;
@@ -201,7 +201,7 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 		}
 
 		// Get current context
-		$context = $this->get_context();
+		$context       = $this->get_context();
 		$related_terms = array();
 
 		if ( 'incoming' === $settings['direction'] ) {
@@ -279,7 +279,7 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 				$links = array();
 				foreach ( $related_terms as $term ) {
 					$taxonomy_label = get_taxonomy( $term['taxonomy'] )->labels->singular_name;
-					$links[] = '<a href="' . esc_url( get_term_link( $term['id'] ) ) . '">' . esc_html( $taxonomy_label ) . ': ' . esc_html( $term['term_name'] ) . '</a>';
+					$links[]        = '<a href="' . esc_url( get_term_link( $term['id'] ) ) . '">' . esc_html( $taxonomy_label ) . ': ' . esc_html( $term['term_name'] ) . '</a>';
 				}
 				return implode( ', ', $links );
 

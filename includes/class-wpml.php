@@ -26,18 +26,21 @@ class NATICORE_WPML {
 
 	/**
 	 * Instance
+	 *
 	 * @var NATICORE_WPML|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * Is WPML/Polylang active
+	 *
 	 * @var bool
 	 */
 	private $is_multilingual_active = false;
 
 	/**
 	 * Plugin type (wpml or polylang)
+	 *
 	 * @var string
 	 */
 	private $plugin_type = '';
