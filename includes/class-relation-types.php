@@ -13,11 +13,13 @@ class NATICORE_Relation_Types {
 
 	/**
 	 * Registered relation types
+	 * @var array
 	 */
 	private static $types = array();
 
 	/**
 	 * Default relation types
+	 * @var array
 	 */
 	private static $default_types = array(
 		'related_to' => array(

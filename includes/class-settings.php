@@ -13,16 +13,19 @@ class NATICORE_Settings {
 
 	/**
 	 * Instance
+	 * @var NATICORE_Settings|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * Option name
+	 * @var string
 	 */
 	private $option_name = 'naticore_settings';
 
 	/**
 	 * Current tab
+	 * @var string
 	 */
 	private $current_tab = 'general';
 

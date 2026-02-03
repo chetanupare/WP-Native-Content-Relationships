@@ -2,6 +2,9 @@
 /**
  * Relationship API
  * Core functions for managing content relationships
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.0
  */
 
 // Exit if accessed directly
@@ -9,10 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Relationship API
+ *
+ * Core functions for managing content relationships between posts, users, and terms.
+ * Provides methods for creating, removing, and querying relationships with
+ * support for different relationship types and directions.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.0
+ */
 class NATICORE_API {
 
 	/**
 	 * Instance
+	 * @var NATICORE_API|null
 	 */
 	private static $instance = null;
 
@@ -30,7 +44,7 @@ class NATICORE_API {
 	 * Constructor
 	 */
 	private function __construct() {
-		// Nothing to do
+		// Nothing to do.
 	}
 
 	/**
@@ -43,23 +57,23 @@ class NATICORE_API {
 	 * @since 1.0.10 Added support for user relationships ($to_type = 'user')
 	 * @since 1.0.11 Added support for term relationships ($to_type = 'term')
 	 *
-	 * @param int    $from_id       The ID of the source content (post, user, or term)
-	 * @param int    $to_id         The ID of the target content (post, user, or term)
-	 * @param string $type          Type of relationship (e.g., 'related_to', 'favorite_posts', 'categorized_as')
-	 * @param string $direction     Direction: 'unidirectional' or 'bidirectional' (auto-determined from type)
-	 * @param string $to_type       Target type: 'post', 'user', or 'term' (default: 'post')
+	 * @param int    $from_id       The ID of the source content (post, user, or term).
+	 * @param int    $to_id         The ID of the target content (post, user, or term).
+	 * @param string $type          Type of relationship (e.g., 'related_to', 'favorite_posts', 'categorized_as').
+	 * @param string $direction     Direction: 'unidirectional' or 'bidirectional' (auto-determined from type).
+	 * @param string $to_type       Target type: 'post', 'user', or 'term' (default: 'post').
 	 *
-	 * @return int|WP_Error Relationship ID on success, WP_Error on failure
+	 * @return int|WP_Error Relationship ID on success, WP_Error on failure.
 	 *
 	 * @throws WP_Error When:
-	 *         - User lacks permission to create relationships
-	 *         - Relationship type is not allowed
-	 *         - Invalid content IDs provided
-	 *         - Content cannot be related to itself (posts only)
-	 *         - Target content does not exist
-	 *         - Relationship would create infinite loop
-	 *         - Relationship already exists
-	 *         - Database operation fails
+	 *         - User lacks permission to create relationships.
+	 *         - Relationship type is not allowed.
+	 *         - Invalid content IDs provided.
+	 *         - Content cannot be related to itself (posts only).
+	 *         - Target content does not exist.
+	 *         - Relationship would create infinite loop.
+	 *         - Relationship already exists.
+	 *         - Database operation fails.
 	 *
 	 * @example Create a post-to-post relationship
 	 * ```php

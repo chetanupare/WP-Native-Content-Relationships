@@ -11,10 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NCR_Elementor_Integration {
+class NATICORE_Elementor_Integration {
 
 	/**
 	 * Instance
+	 * @var NATICORE_Elementor_Integration|null
 	 */
 	private static $instance = null;
 
