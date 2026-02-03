@@ -84,6 +84,7 @@ class NATICORE_Overview_Table extends WP_List_Table {
 			$order_clause = 'ORDER BY ' . sanitize_sql_orderby( "{$orderby} {$order}" );
 		}
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with safe ORDER BY
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- ORDER BY clause is safely constructed with validated values
 		$items = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM `{$wpdb->prefix}content_relations` {$order_clause} LIMIT %d OFFSET %d",
