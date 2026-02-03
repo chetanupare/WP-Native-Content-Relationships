@@ -857,4 +857,32 @@ class NATICORE_Settings {
 		</div>
 		<?php
 	}
+
+	/**
+	 * Render query debug field
+	 */
+	public function render_query_debug() {
+		$settings = $this->get_settings();
+		$enabled  = isset( $settings['query_debug'] ) ? $settings['query_debug'] : 0;
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Query Debug', 'native-content-relationships' ); ?></h3>
+			
+			<div class="naticore-toggles">
+				<label class="naticore-toggle">
+					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[query_debug]" value="1" <?php checked( $enabled, 1 ); ?>>
+					<span class="naticore-toggle-slider"></span>
+					<span class="naticore-toggle-label"><?php esc_html_e( 'Query Debug Mode', 'native-content-relationships' ); ?></span>
+				</label>
+				<p class="description"><?php esc_html_e( 'Log all database queries for debugging relationship operations.', 'native-content-relationships' ); ?></p>
+			</div>
+			
+			<?php if ( $enabled && defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
+				<div class="naticore-notice">
+					<p><?php esc_html_e( 'Query debug mode is active. Check your debug.log file for detailed query information.', 'native-content-relationships' ); ?></p>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
 }
