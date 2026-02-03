@@ -2,7 +2,7 @@
 /**
  * Elementor Dynamic Tag: Related Posts
  *
- * @package Native Content Relationships
+ * @package NativeContentRelationships
  * @since 1.0.11
  */
 
@@ -15,6 +15,16 @@ if ( ! class_exists( '\Elementor\Core\DynamicTags\Tag' ) ) {
 	return;
 }
 
+/**
+ * Elementor Dynamic Tag: Related Posts
+ *
+ * Provides an Elementor dynamic tag to display related posts for a given post.
+ * Integrates with the Native Content Relationships plugin to query and
+ * display post relationships in Elementor templates.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.11
+ */
 class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 
 	/**
@@ -50,14 +60,14 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 * @return string Tag group
 	 */
 	public function get_group() {
-		return 'ncr-relationships';
+		return 'naticore-relationships';
 	}
 
 	/**
 	 * Register controls
 	 */
 	protected function register_controls() {
-		// Relationship type control
+		// Relationship type control.
 		$this->add_control(
 			'relationship_type',
 			array(
@@ -68,7 +78,7 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 			)
 		);
 
-		// Direction control
+		// Direction control.
 		$this->add_control(
 			'direction',
 			array(
@@ -82,23 +92,23 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 			)
 		);
 
-		// Output format control
+		// Output format control.
 		$this->add_control(
 			'output_format',
 			array(
 				'label'   => __( 'Output Format', 'native-content-relationships' ),
 				'type'    => \Elementor\Controls_Manager::SELECT,
 				'options' => array(
-					'ids'     => __( 'Post IDs (comma-separated)', 'native-content-relationships' ),
-					'titles'  => __( 'Post Titles (comma-separated)', 'native-content-relationships' ),
-					'count'   => __( 'Count Only', 'native-content-relationships' ),
-					'links'   => __( 'HTML Links', 'native-content-relationships' ),
+					'ids'    => __( 'Post IDs (comma-separated)', 'native-content-relationships' ),
+					'titles' => __( 'Post Titles (comma-separated)', 'native-content-relationships' ),
+					'count'  => __( 'Count Only', 'native-content-relationships' ),
+					'links'  => __( 'HTML Links', 'native-content-relationships' ),
 				),
 				'default' => 'ids',
 			)
 		);
 
-		// Limit control
+		// Limit control.
 		$this->add_control(
 			'limit',
 			array(
@@ -110,22 +120,22 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 			)
 		);
 
-		// Order by control
+		// Order by control.
 		$this->add_control(
 			'orderby',
 			array(
 				'label'   => __( 'Order By', 'native-content-relationships' ),
 				'type'    => \Elementor\Controls_Manager::SELECT,
 				'options' => array(
-					'date'    => __( 'Date', 'native-content-relationships' ),
-					'title'   => __( 'Title', 'native-content-relationships' ),
-					'random'  => __( 'Random', 'native-content-relationships' ),
+					'date'   => __( 'Date', 'native-content-relationships' ),
+					'title'  => __( 'Title', 'native-content-relationships' ),
+					'random' => __( 'Random', 'native-content-relationships' ),
 				),
 				'default' => 'date',
 			)
 		);
 
-		// Order control
+		// Order control.
 		$this->add_control(
 			'order',
 			array(
