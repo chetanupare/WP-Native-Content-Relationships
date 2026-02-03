@@ -340,7 +340,7 @@
 <div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm shrink-0">1</div>
 <div>
 <h4 class="font-bold text-gray-800 dark:text-gray-200">Bidirectional</h4>
-<p class="text-sm text-gray-600 dark:text-gray-500">Relationships work both ways automatically. Query related items from either side.</p>
+<p class="text-sm text-slate-500">Relationships work both ways automatically. Query related items from either side.</p>
 </div>
 </div>
 <div class="flex gap-4">
@@ -448,8 +448,12 @@ add_action(<span class="text-green-400">'init'</span>, <span class="text-purple-
 <a class="hover:text-primary" href="#">License</a>
 </div>
 <div class="text-xs text-gray-400">
-                © 2023 NCR Plugin. Open Source.
+                &copy; <span id="current-year"></span> NCR Plugin. Open Source.
             </div>
 </div>
 </footer>
+<script>
+    // Set current year dynamically
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
 </body></html>

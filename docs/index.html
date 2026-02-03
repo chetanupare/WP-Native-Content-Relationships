@@ -440,7 +440,7 @@
 <div class="flex flex-col md:flex-row justify-between items-center gap-6">
 <div class="flex items-center gap-2">
 <img alt="Logo" class="h-6 w-6 rounded opacity-80" data-alt="Small footer logo" src="https://ps.w.org/native-content-relationships/assets/icon-128x128.png?rev=3452657"/>
-<p class="text-sm text-slate-500"> 2024 Native Content Relationships.</p>
+<p class="text-sm text-slate-500">© <span id="current-year"></span> Native Content Relationships.</p>
 </div>
 <div class="flex gap-6">
 <a class="text-sm text-slate-500 hover:text-primary transition-colors" href="https://wordpress.org/plugins/native-content-relationships/">WordPress.org</a>
@@ -473,4 +473,8 @@
 </div>
 </footer>
 </div>
+<script>
+    // Set current year dynamically
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
 </body></html>

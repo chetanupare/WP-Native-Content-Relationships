@@ -561,7 +561,11 @@
 </div>
 <span class="text-sm font-semibold text-gray-900 dark:text-white">Native Content Relationships</span>
 </div>
-<p class="text-sm text-gray-500 dark:text-gray-400">© 2023 NCR Plugin. All rights reserved.</p>
+<p class="text-sm text-slate-500">© <span id="current-year"></span> Native Content Relationships. All rights reserved.</p>
 </div>
 </footer>
+<script>
+    // Set current year dynamically
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
 </body></html>

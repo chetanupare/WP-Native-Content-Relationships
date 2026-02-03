@@ -367,8 +367,12 @@
 </svg>
 </a>
 </div>
-<p class="text-xs text-gray-500 mt-4 md:mt-0">© 2023 Native Content Relationships. All rights reserved.</p>
+<p class="text-sm text-slate-500">© <span id="current-year"></span> Native Content Relationships. All rights reserved.</p>
 </div>
 </div>
 </footer>
+<script>
+    // Set current year dynamically
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
 </body></html>
