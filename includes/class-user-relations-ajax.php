@@ -2,17 +2,30 @@
 /**
  * User Relationships AJAX Handlers
  * Handles AJAX requests for user relationship management
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.10
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * User Relationships AJAX Handlers
+ *
+ * Provides AJAX functionality for managing user relationships in the WordPress
+ * admin area, including search, creation, and deletion operations.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.10
+ */
 class NATICORE_User_Relations_Ajax {
 
 	/**
 	 * Instance
+	 * @var NATICORE_User_Relations_Ajax|null
 	 */
 	private static $instance = null;
 
@@ -32,7 +45,7 @@ class NATICORE_User_Relations_Ajax {
 	private function __construct() {
 		// Add user relation
 		add_action( 'wp_ajax_naticore_add_user_relation', array( $this, 'add_user_relation' ) );
-		
+
 		// Remove user relation
 		add_action( 'wp_ajax_naticore_remove_user_relation', array( $this, 'remove_user_relation' ) );
 	}
@@ -48,8 +61,8 @@ class NATICORE_User_Relations_Ajax {
 
 		// Get and validate parameters
 		$from_id = absint( $_POST['from_id'] ?? 0 );
-		$to_id = absint( $_POST['to_id'] ?? 0 );
-		$type = sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) );
+		$to_id   = absint( $_POST['to_id'] ?? 0 );
+		$type    = sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) );
 		$to_type = sanitize_text_field( wp_unslash( $_POST['to_type'] ?? 'post' ) );
 
 		if ( ! $from_id || ! $to_id || ! $type ) {
@@ -62,7 +75,7 @@ class NATICORE_User_Relations_Ajax {
 			if ( ! current_user_can( 'edit_post', $from_id ) ) {
 				wp_send_json_error( 'Insufficient permissions' );
 			}
-		} else {
+		} elseif ( 'user' !== $to_type ) {
 			// User to post relationship
 			if ( ! current_user_can( 'edit_user', $from_id ) ) {
 				wp_send_json_error( 'Insufficient permissions' );
@@ -76,10 +89,12 @@ class NATICORE_User_Relations_Ajax {
 			wp_send_json_error( $result->get_error_message() );
 		}
 
-		wp_send_json_success( array(
-			'relation_id' => $result,
-			'message' => __( 'Relationship added successfully', 'native-content-relationships' ),
-		) );
+		wp_send_json_success(
+			array(
+				'relation_id' => $result,
+				'message'     => __( 'Relationship added successfully', 'native-content-relationships' ),
+			)
+		);
 	}
 
 	/**
@@ -93,8 +108,8 @@ class NATICORE_User_Relations_Ajax {
 
 		// Get and validate parameters
 		$from_id = absint( $_POST['from_id'] ?? 0 );
-		$to_id = absint( $_POST['to_id'] ?? 0 );
-		$type = sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) );
+		$to_id   = absint( $_POST['to_id'] ?? 0 );
+		$type    = sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) );
 		$to_type = sanitize_text_field( wp_unslash( $_POST['to_type'] ?? 'post' ) );
 
 		if ( ! $from_id || ! $to_id || ! $type ) {
@@ -107,7 +122,7 @@ class NATICORE_User_Relations_Ajax {
 			if ( ! current_user_can( 'edit_post', $from_id ) ) {
 				wp_send_json_error( 'Insufficient permissions' );
 			}
-		} else {
+		} elseif ( 'user' !== $to_type ) {
 			// User to post relationship
 			if ( ! current_user_can( 'edit_user', $from_id ) ) {
 				wp_send_json_error( 'Insufficient permissions' );
@@ -121,9 +136,11 @@ class NATICORE_User_Relations_Ajax {
 			wp_send_json_error( $result->get_error_message() );
 		}
 
-		wp_send_json_success( array(
-			'message' => __( 'Relationship removed successfully', 'native-content-relationships' ),
-		) );
+		wp_send_json_success(
+			array(
+				'message' => __( 'Relationship removed successfully', 'native-content-relationships' ),
+			)
+		);
 	}
 }
 
