@@ -9,18 +9,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WPNCR_Capabilities {
-	
+class NATICORE_Capabilities {
+
 	/**
 	 * Instance
 	 */
 	private static $instance = null;
-	
+
 	/**
 	 * Flag to prevent infinite recursion
 	 */
 	private static $mapping_in_progress = false;
-	
+
 	/**
 	 * Get instance
 	 */
@@ -30,14 +30,14 @@ class WPNCR_Capabilities {
 		}
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Constructor
 	 */
 	private function __construct() {
 		add_filter( 'map_meta_cap', array( $this, 'map_meta_caps' ), 10, 4 );
 	}
-	
+
 	/**
 	 * Map meta capabilities
 	 *
@@ -52,17 +52,16 @@ class WPNCR_Capabilities {
 		if ( self::$mapping_in_progress ) {
 			return $caps;
 		}
-		
-		
+
 		// Handle relationship capabilities
-		if ( 'wpncr_create_relation' === $cap ) {
-			
+		if ( 'naticore_create_relation' === $cap ) {
+
 			$from_id = isset( $args[0] ) ? absint( $args[0] ) : 0;
-			$to_id = isset( $args[1] ) ? absint( $args[1] ) : 0;
-			
+			$to_id   = isset( $args[1] ) ? absint( $args[1] ) : 0;
+
 			if ( $from_id && $to_id ) {
 				$from_post = get_post( $from_id );
-				
+
 				if ( $from_post ) {
 					// Map to edit_post capability for the source post
 					// Temporarily remove our filter to prevent infinite recursion
@@ -70,7 +69,7 @@ class WPNCR_Capabilities {
 					$edit_caps = map_meta_cap( 'edit_post', $user_id, $from_id );
 					add_filter( 'map_meta_cap', array( $this, 'map_meta_caps' ), 10, 4 );
 					$caps = $edit_caps;
-					
+
 				} else {
 					$caps[] = 'do_not_allow';
 				}
@@ -78,23 +77,23 @@ class WPNCR_Capabilities {
 				$caps[] = 'do_not_allow';
 			}
 		}
-		
-		if ( 'wpncr_delete_relation' === $cap ) {
-			
+
+		if ( 'naticore_delete_relation' === $cap ) {
+
 			$from_id = isset( $args[0] ) ? absint( $args[0] ) : 0;
-			$to_id = isset( $args[1] ) ? absint( $args[1] ) : 0;
-			
+			$to_id   = isset( $args[1] ) ? absint( $args[1] ) : 0;
+
 			if ( $from_id && $to_id ) {
 				$from_post = get_post( $from_id );
-				
+
 				if ( $from_post ) {
 					// Map to edit_post capability for the source post
 					// Use flag to prevent infinite recursion
 					self::$mapping_in_progress = true;
-					$edit_caps = map_meta_cap( 'edit_post', $user_id, $from_id );
+					$edit_caps                 = map_meta_cap( 'edit_post', $user_id, $from_id );
 					self::$mapping_in_progress = false;
-					$caps = $edit_caps;
-					
+					$caps                      = $edit_caps;
+
 				} else {
 					$caps[] = 'do_not_allow';
 				}
@@ -102,13 +101,12 @@ class WPNCR_Capabilities {
 				$caps[] = 'do_not_allow';
 			}
 		}
-		
-		if ( 'wpncr_manage_relation_types' === $cap ) {
+
+		if ( 'naticore_manage_relation_types' === $cap ) {
 			// Only administrators can manage relation types
 			$caps = array( 'manage_options' );
 		}
-		
-		
+
 		return $caps;
 	}
 }

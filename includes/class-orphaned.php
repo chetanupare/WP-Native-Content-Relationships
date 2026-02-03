@@ -9,13 +9,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WPNCR_Orphaned {
-	
+class NATICORE_Orphaned {
+
 	/**
 	 * Instance
 	 */
 	private static $instance = null;
-	
+
 	/**
 	 * Get instance
 	 */
@@ -25,7 +25,7 @@ class WPNCR_Orphaned {
 		}
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Constructor
 	 */
@@ -34,40 +34,40 @@ class WPNCR_Orphaned {
 		if ( ! is_admin() ) {
 			return;
 		}
-		
+
 		add_action( 'admin_init', array( $this, 'maybe_check_orphaned' ) );
 		add_action( 'admin_notices', array( $this, 'show_orphaned_notice' ) );
 	}
-	
+
 	/**
 	 * Maybe check for orphaned relationships
 	 */
 	public function maybe_check_orphaned() {
 		// Only check once per week
-		$last_check = get_option( 'wpncr_last_orphaned_check', 0 );
+		$last_check      = get_option( 'naticore_last_orphaned_check', 0 );
 		$week_in_seconds = WEEK_IN_SECONDS;
-		
+
 		if ( time() - $last_check < $week_in_seconds ) {
 			return;
 		}
-		
+
 		$count = $this->count_orphaned();
-		
+
 		if ( $count > 0 ) {
-			update_option( 'wpncr_orphaned_count', $count );
+			update_option( 'naticore_orphaned_count', $count );
 		} else {
-			delete_option( 'wpncr_orphaned_count' );
+			delete_option( 'naticore_orphaned_count' );
 		}
-		
-		update_option( 'wpncr_last_orphaned_check', time() );
+
+		update_option( 'naticore_last_orphaned_check', time() );
 	}
-	
+
 	/**
 	 * Count orphaned relationships
 	 */
 	private function count_orphaned() {
 		global $wpdb;
-		
+
 		// Count relationships where from_id or to_id points to non-existent posts
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Orphan check
 		$count = $wpdb->get_var(
@@ -76,27 +76,27 @@ class WPNCR_Orphaned {
 			LEFT JOIN `{$wpdb->posts}` AS to_post ON rel.to_id = to_post.ID 
 			WHERE from_post.ID IS NULL OR to_post.ID IS NULL"
 		);
-		
+
 		return absint( $count );
 	}
-	
+
 	/**
 	 * Show orphaned notice
 	 */
 	public function show_orphaned_notice() {
-		$count = get_option( 'wpncr_orphaned_count', 0 );
-		
+		$count = get_option( 'naticore_orphaned_count', 0 );
+
 		if ( $count === 0 ) {
 			return;
 		}
-		
+
 		// Only show once per session
-		if ( get_transient( 'wpncr_orphaned_notice_shown' ) ) {
+		if ( get_transient( 'naticore_orphaned_notice_shown' ) ) {
 			return;
 		}
-		
-		set_transient( 'wpncr_orphaned_notice_shown', true, HOUR_IN_SECONDS );
-		
+
+		set_transient( 'naticore_orphaned_notice_shown', true, HOUR_IN_SECONDS );
+
 		?>
 		<div class="notice notice-warning is-dismissible">
 			<p>
@@ -114,7 +114,7 @@ class WPNCR_Orphaned {
 					esc_html( $count )
 				);
 				?>
-				<a href="<?php echo esc_url( admin_url( 'tools.php?page=wpncr-overview' ) ); ?>"><?php esc_html_e( 'View all relationships', 'native-content-relationships' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'tools.php?page=naticore-overview' ) ); ?>"><?php esc_html_e( 'View all relationships', 'native-content-relationships' ); ?></a>
 			</p>
 		</div>
 		<?php

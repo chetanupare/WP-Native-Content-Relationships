@@ -1,0 +1,401 @@
+/**
+ * Native Content Relationships Settings
+ * Modern WordPress-compatible styling
+ */
+
+/* Main container */
+.naticore-settings-container {
+	max-width: 900px;
+	margin: 0;
+}
+
+.naticore-tab-content {
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	margin-top: 12px;
+	box-shadow: none;
+}
+
+.naticore-placeholder {
+	text-align: center;
+	padding: 40px 20px;
+	color: #50575e;
+}
+
+.naticore-placeholder h3 {
+	margin: 0 0 10px 0;
+	font-size: 1.2em;
+	color: #1d2327;
+}
+
+.naticore-placeholder p {
+	margin: 0;
+	font-size: 14px;
+}
+
+/* Tabs */
+.wrap .nav-tab-wrapper {
+	margin-bottom: 12px;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.wrap .nav-tab {
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-bottom: none;
+	margin-right: 4px;
+	padding: 8px 16px 10px;
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.wrap .nav-tab:hover {
+	background-color: #fff;
+	border-color: #c3c4c7;
+	color: #2c2e2d;
+}
+
+.wrap .nav-tab.nav-tab-active {
+	background: #fff;
+	border-bottom: 1px solid #fff;
+	color: #2c2e2d;
+	font-weight: 600;
+}
+
+/* Cards */
+.naticore-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 12px;
+	margin: 0;
+	box-shadow: none;
+}
+
+.naticore-card h3 {
+	margin: 0 0 8px 0;
+	font-size: 1.1em;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.naticore-card p {
+	margin: 6px 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: #50575e;
+}
+
+.naticore-card p.description {
+	margin-top: 8px;
+	font-style: normal;
+	color: #646970;
+}
+
+/* Wide tables (Relationship Types tab) */
+.naticore-widefat-wrap {
+	overflow-x: auto;
+	max-width: 100%;
+	margin-top: 8px;
+}
+
+.naticore-widefat-wrap table.widefat {
+	min-width: 700px;
+}
+
+.naticore-widefat-wrap table.widefat th,
+.naticore-widefat-wrap table.widefat td {
+	vertical-align: top;
+	white-space: nowrap;
+}
+
+.naticore-widefat-wrap table.widefat td:last-child,
+.naticore-widefat-wrap table.widefat th:last-child {
+	white-space: normal;
+}
+
+.naticore-widefat-wrap code {
+	white-space: nowrap;
+}
+
+/* Checkbox Grid */
+.naticore-checkbox-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(140px, 1fr));
+	gap: 6px 12px;
+	margin: 8px 0 0;
+}
+
+.naticore-checkbox-item {
+	display: flex;
+	align-items: center;
+	padding: 6px 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	background: #fff;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.naticore-checkbox-item:hover,
+.naticore-checkbox-item.hover {
+	background: #e7f3ff;
+	border-color: #0073aa;
+	transform: none;
+	box-shadow: none;
+}
+
+.naticore-checkbox-item input[type="checkbox"] {
+	margin-right: 8px;
+}
+
+.naticore-checkbox-label {
+	font-size: 13px;
+	font-weight: 500;
+}
+
+/* Radio Cards */
+.naticore-radio-cards {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(220px, 1fr));
+	gap: 10px;
+	margin: 8px 0 0;
+}
+
+.naticore-radio-card {
+	border: 2px solid #c3c4c7;
+	border-radius: 6px;
+	padding: 10px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	background: #fff;
+	position: relative;
+}
+
+.naticore-radio-card:hover {
+	border-color: #0073aa;
+	background: #f0f6fc;
+	transform: none;
+	box-shadow: none;
+}
+
+.naticore-radio-card.selected {
+	border-color: #0073aa;
+	background: #e7f3ff;
+	box-shadow: none;
+}
+
+.naticore-radio-card input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+}
+
+.naticore-radio-card-content h4 {
+	margin: 0 0 8px 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.naticore-radio-card-content p {
+	margin: 0;
+	font-size: 12px;
+	color: #50575e;
+}
+
+/* Radio Buttons */
+.naticore-radio-buttons label {
+	display: block;
+	margin: 10px 0;
+	font-size: 13px;
+}
+
+.naticore-radio-buttons input[type="radio"] {
+	margin-right: 8px;
+}
+
+/* Field styling */
+.naticore-field-suffix {
+	margin-left: 8px;
+	font-size: 12px;
+	color: #646970;
+}
+
+/* Environment Badge */
+.naticore-env-badge {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 20px;
+	padding: 8px 12px;
+	background: #f9f9f9;
+	border-radius: 4px;
+	border: 1px solid #ddd;
+}
+
+.naticore-env-label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #50575e;
+}
+
+.naticore-env-status {
+	padding: 2px 8px;
+	border-radius: 12px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.naticore-env-status.production {
+	background: #00a32a;
+	color: white;
+}
+
+.naticore-env-status.staging {
+	background: #dba617;
+	color: #1d2327;
+}
+
+.naticore-env-status.development,
+.naticore-env-status.local {
+	background: #d63638;
+	color: white;
+}
+
+/* Toggle Switches */
+.naticore-toggles {
+	margin: 15px 0;
+}
+
+.naticore-toggle {
+	display: flex;
+	align-items: center;
+	margin: 15px 0;
+	padding: 10px;
+	border-radius: 4px;
+	transition: background-color 0.2s ease;
+}
+
+.naticore-toggle:hover,
+.naticore-toggle.hover {
+	background: #f9f9f9;
+}
+
+.naticore-toggle input[type="checkbox"] {
+	display: none;
+}
+
+.naticore-toggle-slider {
+	position: relative;
+	width: 44px;
+	height: 24px;
+	background: #c3c4c7;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	margin-right: 12px;
+}
+
+.naticore-toggle-slider:before {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 20px;
+	height: 20px;
+	background: white;
+	border-radius: 50%;
+	transition: transform 0.2s ease;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.naticore-toggle input[type="checkbox"]:checked + .naticore-toggle-slider {
+	background: #0073aa;
+}
+
+.naticore-toggle input[type="checkbox"]:checked + .naticore-toggle-slider:before {
+	transform: translateX(20px);
+}
+
+.naticore-toggle-label {
+	font-size: 13px;
+	font-weight: 500;
+	color: #1d2327;
+}
+
+/* Notice */
+.naticore-notice {
+	background: #f0f6fc;
+	border: 1px solid #c3c4c7;
+	border-left: 4px solid #0073aa;
+	padding: 12px;
+	margin-top: 20px;
+	border-radius: 0 4px 4px 0;
+}
+
+.naticore-notice p {
+	margin: 0;
+	font-size: 12px;
+	color: #50575e;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+	.naticore-checkbox-grid {
+		grid-template-columns: repeat(2, minmax(140px, 1fr));
+	}
+	
+	.naticore-radio-cards {
+		grid-template-columns: 1fr;
+	}
+	
+	.wrap .nav-tab {
+		padding: 6px 12px 8px;
+		font-size: 13px;
+	}
+}
+
+/* WordPress admin integration */
+.wrap .submit {
+	margin-top: 20px;
+}
+
+.wrap form {
+	background: transparent;
+	border: none;
+	padding: 0;
+}
+
+/* Hide default section titles */
+.wrap h2 {
+	display: none;
+}
+
+/* Keep WordPress Settings API table visible */
+.wrap .form-table {
+	display: table;
+}
+
+.wrap .form-table th {
+	width: 220px;
+	padding: 12px 10px 12px 0;
+}
+
+.wrap .form-table td {
+	padding: 12px 10px;
+}
+
+/* Hide empty row headers generated by Settings API (we render our own headings inside fields) */
+.wrap .form-table th[scope="row"]:empty {
+	display: none;
+	padding: 0;
+	width: 0;
+}
+
+/* Reduce left spacing for rows where <th> is empty */
+.wrap .form-table th[scope="row"]:empty + td {
+	padding-left: 0;
+}

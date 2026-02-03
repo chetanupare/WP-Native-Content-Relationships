@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Settings Page
- * Minimal & Purposeful
+ * Modern Tabbed Interface
  */
 
 // Exit if accessed directly
@@ -9,18 +9,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WPNCR_Settings {
-	
+class NATICORE_Settings {
+
 	/**
 	 * Instance
 	 */
 	private static $instance = null;
-	
+
 	/**
 	 * Option name
 	 */
-	private $option_name = 'wpncr_settings';
-	
+	private $option_name = 'naticore_settings';
+
+	/**
+	 * Current tab
+	 */
+	private $current_tab = 'general';
+
 	/**
 	 * Get instance
 	 */
@@ -30,7 +35,9 @@ class WPNCR_Settings {
 		}
 		return self::$instance;
 	}
-	
+
+
+
 	/**
 	 * Constructor
 	 */
@@ -39,12 +46,62 @@ class WPNCR_Settings {
 		if ( ! is_admin() ) {
 			return;
 		}
-		
+
 		add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
-		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_filter( 'plugin_action_links_' . WPNCR_PLUGIN_BASENAME, array( $this, 'add_settings_link' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ), 20 );
+		add_filter( 'plugin_action_links_' . NATICORE_PLUGIN_BASENAME, array( $this, 'add_settings_link' ) );
+
+		// Handle tab navigation
+		add_action( 'admin_init', array( $this, 'handle_tab_action' ), 5 );
+
+		// Enqueue admin styles
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
 	}
-	
+
+	/**
+	 * Handle tab navigation
+	 */
+	public function handle_tab_action() {
+		if ( isset( $_GET['tab'] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'naticore_tab_nonce' ) && in_array( sanitize_key( $_GET['tab'] ), array_keys( $this->get_tabs() ), true ) ) {
+			$this->current_tab = sanitize_key( $_GET['tab'] );
+		}
+	}
+
+	private function get_page_slug() {
+		switch ( $this->current_tab ) {
+			case 'relationship_types':
+				return 'naticore-settings-relationship-types';
+			case 'woocommerce':
+				return 'naticore-settings-woocommerce';
+			case 'privacy':
+				return 'naticore-settings-privacy';
+			case 'developer':
+				return 'naticore-settings-developer';
+			case 'general':
+			default:
+				return 'naticore-settings';
+		}
+	}
+
+	/**
+	 * Get available tabs
+	 */
+	private function get_tabs() {
+		$tabs = array(
+			'general'            => __( 'General', 'native-content-relationships' ),
+			'relationship_types' => __( 'Relationship Types', 'native-content-relationships' ),
+			'woocommerce'        => __( 'WooCommerce', 'native-content-relationships' ),
+			'privacy'            => __( 'Privacy', 'native-content-relationships' ),
+		);
+
+		// Developer tab only in debug mode
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$tabs['developer'] = __( 'Developer', 'native-content-relationships' );
+		}
+
+		return $tabs;
+	}
+
 	/**
 	 * Add settings page
 	 */
@@ -53,215 +110,423 @@ class WPNCR_Settings {
 			__( 'Content Relationships', 'native-content-relationships' ),
 			__( 'Content Relationships', 'native-content-relationships' ),
 			'manage_options',
-			'wpncr-settings',
+			'naticore-settings',
 			array( $this, 'render_settings_page' )
 		);
 	}
-	
+
 	/**
 	 * Add settings link to plugin actions
 	 */
 	public function add_settings_link( $links ) {
-		$settings_link = '<a href="' . admin_url( 'options-general.php?page=wpncr-settings' ) . '">' . __( 'Settings', 'native-content-relationships' ) . '</a>';
+		$settings_link = '<a href="' . admin_url( 'options-general.php?page=naticore-settings' ) . '">' . __( 'Settings', 'native-content-relationships' ) . '</a>';
 		array_unshift( $links, $settings_link );
 		return $links;
 	}
-	
+
+	/**
+	 * Enqueue admin styles and scripts
+	 */
+	public function enqueue_admin_styles( $hook ) {
+		if ( 'settings_page_naticore-settings' !== $hook ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'naticore-settings',
+			plugins_url( '../assets/settings.css', __FILE__ ),
+			array(),
+			NATICORE_VERSION
+		);
+
+		wp_enqueue_script(
+			'naticore-settings',
+			plugins_url( '../assets/settings.js', __FILE__ ),
+			array( 'jquery' ),
+			NATICORE_VERSION,
+			true
+		);
+	}
+
 	/**
 	 * Register settings
 	 */
 	public function register_settings() {
-		register_setting( 'wpncr_settings', $this->option_name, array( $this, 'sanitize_settings' ) );
-		
+		register_setting( 'naticore_settings', $this->option_name, array( $this, 'sanitize_settings' ) );
+
 		// Allow other components to add settings sections
-		do_action( 'wpncr_register_settings' );
-		
-		// General Settings Section
+		do_action( 'naticore_register_settings' );
+
+		// Register sections based on current tab
+		switch ( $this->current_tab ) {
+			case 'general':
+				$this->register_general_settings();
+				break;
+			case 'relationship_types':
+				$this->register_relationship_types_settings();
+				break;
+			case 'woocommerce':
+				$this->register_woocommerce_settings();
+				break;
+			case 'privacy':
+				$this->register_privacy_settings();
+				break;
+			case 'developer':
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					$this->register_developer_settings();
+				}
+				break;
+		}
+	}
+
+	/**
+	 * Register General tab settings
+	 */
+	private function register_general_settings() {
+		$page = $this->get_page_slug();
+		// Content Types Section
 		add_settings_section(
-			'wpncr_general',
-			__( 'General Settings', 'native-content-relationships' ),
-			array( $this, 'render_general_section' ),
-			'wpncr-settings'
+			'naticore_content_types',
+			'', // No title, will be rendered manually
+			'__return_false',
+			$page
 		);
-		
+
 		add_settings_field(
 			'enabled_post_types',
-			__( 'Enable Relationships For', 'native-content-relationships' ),
+			'', // No title, will be rendered manually
 			array( $this, 'render_enabled_post_types' ),
-			'wpncr-settings',
-			'wpncr_general'
+			$page,
+			'naticore_content_types'
 		);
-		
+
+		// Relationship Behavior Section
+		add_settings_section(
+			'naticore_behavior',
+			'', // No title, will be rendered manually
+			'__return_false',
+			$page
+		);
+
 		add_settings_field(
 			'default_direction',
-			__( 'Default Relationship Behavior', 'native-content-relationships' ),
+			'', // No title, will be rendered manually
 			array( $this, 'render_default_direction' ),
-			'wpncr-settings',
-			'wpncr_general'
+			$page,
+			'naticore_behavior'
 		);
-		
+
+		// Cleanup Section
+		add_settings_section(
+			'naticore_cleanup',
+			'', // No title, will be rendered manually
+			'__return_false',
+			$page
+		);
+
 		add_settings_field(
 			'cleanup_on_delete',
-			__( 'Cleanup on Delete', 'native-content-relationships' ),
+			'', // No title, will be rendered manually
 			array( $this, 'render_cleanup_on_delete' ),
-			'wpncr-settings',
-			'wpncr_general'
+			$page,
+			'naticore_cleanup'
 		);
-		
+
+		// Limits & Automation Section
+		add_settings_section(
+			'naticore_limits',
+			'', // No title, will be rendered manually
+			'__return_false',
+			$page
+		);
+
 		add_settings_field(
 			'max_relationships',
-			__( 'Relationship Limit', 'native-content-relationships' ),
+			'', // No title, will be rendered manually
 			array( $this, 'render_max_relationships' ),
-			'wpncr-settings',
-			'wpncr_general'
+			$page,
+			'naticore_limits'
 		);
-		
+
 		add_settings_field(
 			'auto_relation_enabled',
-			__( 'Automatic Relations', 'native-content-relationships' ),
+			'', // No title, will be rendered manually
 			array( $this, 'render_auto_relation' ),
-			'wpncr-settings',
-			'wpncr_general'
+			$page,
+			'naticore_limits'
 		);
-		
-		// Permissions & Safety Section
+
+		// Permissions Section
 		add_settings_section(
-			'wpncr_permissions',
-			__( 'Permissions & Safety', 'native-content-relationships' ),
-			array( $this, 'render_permissions_section' ),
-			'wpncr-settings'
+			'naticore_permissions',
+			'', // No title, will be rendered manually
+			'__return_false',
+			$page
 		);
-		
+
 		add_settings_field(
 			'prevent_circular',
-			__( 'Loop & Conflict Prevention', 'native-content-relationships' ),
+			'', // No title, will be rendered manually
 			array( $this, 'render_prevent_circular' ),
-			'wpncr-settings',
-			'wpncr_permissions'
+			$page,
+			'naticore_permissions'
 		);
-		
-		// Developer Settings (only if WP_DEBUG)
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			add_settings_section(
-				'wpncr_developer',
-				__( 'Developer Settings', 'native-content-relationships' ),
-				array( $this, 'render_developer_section' ),
-				'wpncr-settings'
-			);
-			
-			add_settings_field(
-				'debug_logging',
-				__( 'Debug Logging', 'native-content-relationships' ),
-				array( $this, 'render_debug_logging' ),
-				'wpncr-settings',
-				'wpncr_developer'
-			);
-			
-			add_settings_field(
-				'query_debug',
-				__( 'Query Debug Mode', 'native-content-relationships' ),
-				array( $this, 'render_query_debug' ),
-				'wpncr-settings',
-				'wpncr_developer'
-			);
-			
-			add_settings_field(
-				'enable_rest_api',
-				__( 'REST API', 'native-content-relationships' ),
-				array( $this, 'render_enable_rest_api' ),
-				'wpncr-settings',
-				'wpncr_developer'
-			);
-		}
 	}
-	
+
 	/**
-	 * Sanitize settings
+	 * Register Developer tab settings
 	 */
-	public function sanitize_settings( $input ) {
-		$sanitized = array();
-		
-		// Enabled post types
-		if ( isset( $input['enabled_post_types'] ) && is_array( $input['enabled_post_types'] ) ) {
-			$sanitized['enabled_post_types'] = array_map( 'sanitize_text_field', $input['enabled_post_types'] );
-		} else {
-			$sanitized['enabled_post_types'] = array();
-		}
-		
-		// Default direction
-		$sanitized['default_direction'] = isset( $input['default_direction'] ) && $input['default_direction'] === 'bidirectional' ? 'bidirectional' : 'unidirectional';
-		
-		// Cleanup on delete
-		$sanitized['cleanup_on_delete'] = isset( $input['cleanup_on_delete'] ) && $input['cleanup_on_delete'] === 'keep' ? 'keep' : 'remove';
-		
-		// Max relationships
-		$sanitized['max_relationships'] = isset( $input['max_relationships'] ) ? absint( $input['max_relationships'] ) : 0;
-		
-		// Prevent circular
-		$sanitized['prevent_circular'] = isset( $input['prevent_circular'] ) ? 1 : 0;
-		
-		// WooCommerce settings
-		if ( isset( $input['wc_enabled_objects'] ) && is_array( $input['wc_enabled_objects'] ) ) {
-			$sanitized['wc_enabled_objects'] = array_map( 'sanitize_text_field', $input['wc_enabled_objects'] );
-		} else {
-			$sanitized['wc_enabled_objects'] = array( 'product' ); // Default
-		}
-		
-		$sanitized['wc_sync_upsells'] = isset( $input['wc_sync_upsells'] ) ? 1 : 0;
-		
-		// ACF settings
-		$sanitized['acf_sync_mode'] = isset( $input['acf_sync_mode'] ) && in_array( $input['acf_sync_mode'], array( 'off', 'read_only' ), true ) ? $input['acf_sync_mode'] : 'off';
-		
-		// Multilingual settings
-		$sanitized['multilingual_mirror'] = isset( $input['multilingual_mirror'] ) ? 1 : 0;
-		
-		// Auto-relation settings
-		$sanitized['auto_relation_enabled'] = isset( $input['auto_relation_enabled'] ) ? 1 : 0;
-		if ( isset( $input['auto_relation_post_types'] ) && is_array( $input['auto_relation_post_types'] ) ) {
-			$sanitized['auto_relation_post_types'] = array_map( 'sanitize_text_field', $input['auto_relation_post_types'] );
-		} else {
-			$sanitized['auto_relation_post_types'] = array( 'post' );
-		}
-		
-		// Immutable mode
-		$sanitized['immutable_mode'] = isset( $input['immutable_mode'] ) ? 1 : 0;
-		
-		// Developer settings
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$sanitized['debug_logging'] = isset( $input['debug_logging'] ) ? 1 : 0;
-			$sanitized['query_debug'] = isset( $input['query_debug'] ) ? 1 : 0;
-			$sanitized['enable_rest_api'] = isset( $input['enable_rest_api'] ) ? 1 : 1; // Default enabled
-		}
-		
-		return $sanitized;
+	private function register_developer_settings() {
+		$page = $this->get_page_slug();
+		add_settings_section(
+			'naticore_developer',
+			'', // No title, will be rendered manually
+			'__return_false',
+			$page
+		);
+
+		add_settings_field(
+			'debug_logging',
+			'', // No title, will be rendered manually
+			array( $this, 'render_debug_logging' ),
+			$page,
+			'naticore_developer'
+		);
+
+		add_settings_field(
+			'query_debug',
+			'', // No title, will be rendered manually
+			array( $this, 'render_query_debug' ),
+			$page,
+			'naticore_developer'
+		);
+
+		add_settings_field(
+			'enable_rest_api',
+			'', // No title, will be rendered manually
+			array( $this, 'render_enable_rest_api' ),
+			$page,
+			'naticore_developer'
+		);
 	}
-	
+
+	/**
+	 * Register other tab settings (placeholders)
+	 */
+	private function register_relationship_types_settings() {
+		$page = $this->get_page_slug();
+		add_settings_section( 'naticore_relationship_types', '', '__return_false', $page );
+		add_settings_field( 'relationship_types_manage_ui', '', array( $this, 'render_relationship_types_manage_ui' ), $page, 'naticore_relationship_types' );
+	}
+
+	private function register_woocommerce_settings() {
+		$page = $this->get_page_slug();
+		add_settings_section( 'naticore_woocommerce', '', '__return_false', $page );
+		add_settings_field( 'wc_enabled_objects', '', array( $this, 'render_wc_enabled_objects' ), $page, 'naticore_woocommerce' );
+		add_settings_field( 'wc_sync_upsells', '', array( $this, 'render_wc_sync_upsells' ), $page, 'naticore_woocommerce' );
+		add_settings_field( 'wc_use_case_presets', '', array( $this, 'render_wc_use_case_presets' ), $page, 'naticore_woocommerce' );
+	}
+
+	private function register_privacy_settings() {
+		$page = $this->get_page_slug();
+		add_settings_section( 'naticore_privacy', '', '__return_false', $page );
+		add_settings_field( 'remove_data_on_uninstall', '', array( $this, 'render_remove_data_on_uninstall' ), $page, 'naticore_privacy' );
+	}
+
+	/**
+	 * Render settings page
+	 */
+	public function render_settings_page() {
+		$tabs        = $this->get_tabs();
+		$current_tab = $this->current_tab;
+		?>
+		<div class="wrap naticore-settings-container">
+			<h1><?php esc_html_e( 'Content Relationships Settings', 'native-content-relationships' ); ?></h1>
+			
+			<?php $this->render_tabs(); ?>
+			
+			<div class="naticore-tab-content">
+				<form method="post" action="options.php">
+					<?php
+					settings_fields( 'naticore_settings' );
+					do_settings_sections( $this->get_page_slug() );
+					if ( $current_tab !== 'developer' || ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+						submit_button();
+					}
+					?>
+				</form>
+			</div>
+		</div>
+		<?php
+	}
+
+	public function render_wc_use_case_presets() {
+		$settings    = $this->get_settings();
+		$accessories = isset( $settings['wc_use_case_accessories'] ) ? (int) $settings['wc_use_case_accessories'] : 0;
+		$related     = isset( $settings['wc_use_case_related_products'] ) ? (int) $settings['wc_use_case_related_products'] : 0;
+		$bundles     = isset( $settings['wc_use_case_bundles'] ) ? (int) $settings['wc_use_case_bundles'] : 0;
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Common Use Cases', 'native-content-relationships' ); ?></h3>
+			<label>
+				<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[wc_use_case_accessories]" value="1" <?php checked( $accessories, 1 ); ?>>
+				<?php esc_html_e( 'Accessories (One-way)', 'native-content-relationships' ); ?>
+			</label>
+			<p class="description"><?php esc_html_e( 'Camera → Lens → Tripod', 'native-content-relationships' ); ?></p>
+			<label>
+				<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[wc_use_case_related_products]" value="1" <?php checked( $related, 1 ); ?>>
+				<?php esc_html_e( 'Related Products (Bidirectional)', 'native-content-relationships' ); ?>
+			</label>
+			<p class="description"><?php esc_html_e( 'Similar or alternative items', 'native-content-relationships' ); ?></p>
+			<label>
+				<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[wc_use_case_bundles]" value="1" <?php checked( $bundles, 1 ); ?>>
+				<?php esc_html_e( 'Bundles / Kits', 'native-content-relationships' ); ?>
+			</label>
+			<p class="description"><?php esc_html_e( 'Multiple products grouped together', 'native-content-relationships' ); ?></p>
+		</div>
+		<?php
+	}
+
+	public function render_relationship_types_manage_ui() {
+		$types = array();
+		if ( class_exists( 'NATICORE_Relation_Types' ) ) {
+			$types = NATICORE_Relation_Types::get_types();
+		}
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Relationship Types', 'native-content-relationships' ); ?></h3>
+			<p class="description"><?php esc_html_e( 'These are the registered relationship types available in the editor meta box.', 'native-content-relationships' ); ?></p>
+			<?php if ( empty( $types ) ) : ?>
+				<p class="description"><?php esc_html_e( 'No relationship types are currently registered.', 'native-content-relationships' ); ?></p>
+			<?php else : ?>
+				<div class="naticore-widefat-wrap">
+					<table class="widefat striped">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'Slug', 'native-content-relationships' ); ?></th>
+								<th><?php esc_html_e( 'Label', 'native-content-relationships' ); ?></th>
+								<th><?php esc_html_e( 'Direction', 'native-content-relationships' ); ?></th>
+								<th><?php esc_html_e( 'Allowed Post Types', 'native-content-relationships' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ( $types as $slug => $args ) : ?>
+								<tr>
+									<td><code><?php echo esc_html( $slug ); ?></code></td>
+									<td><?php echo esc_html( isset( $args['label'] ) ? $args['label'] : $slug ); ?></td>
+									<td><?php echo esc_html( ! empty( $args['bidirectional'] ) ? __( 'Bidirectional', 'native-content-relationships' ) : __( 'One-way', 'native-content-relationships' ) ); ?></td>
+									<td>
+										<?php
+										$allowed = isset( $args['allowed_post_types'] ) && is_array( $args['allowed_post_types'] ) ? $args['allowed_post_types'] : array();
+										echo esc_html( empty( $allowed ) ? __( 'All public types', 'native-content-relationships' ) : implode( ', ', $allowed ) );
+										?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	public function render_wc_enabled_objects() {
+		$settings     = $this->get_settings();
+		$is_wc_active = class_exists( 'WooCommerce' );
+		$enabled      = isset( $settings['wc_enabled_objects'] ) && is_array( $settings['wc_enabled_objects'] ) ? $settings['wc_enabled_objects'] : array( 'product' );
+
+		$objects = array(
+			'product'           => __( 'Products', 'native-content-relationships' ),
+			'product_variation' => __( 'Variations', 'native-content-relationships' ),
+			'shop_order'        => __( 'Orders', 'native-content-relationships' ),
+		);
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Product Relationships', 'native-content-relationships' ); ?></h3>
+			<p class="description">
+				<?php
+				if ( $is_wc_active ) {
+					esc_html_e( 'Unlock accessories, bundles, and related product logic.', 'native-content-relationships' );
+				} else {
+					esc_html_e( 'WooCommerce is not active. These settings will take effect once WooCommerce is enabled.', 'native-content-relationships' );
+				}
+				?>
+			</p>
+			<p class="description"><?php esc_html_e( 'Enable for WooCommerce Products', 'native-content-relationships' ); ?></p>
+			<div class="naticore-checkbox-grid">
+				<?php foreach ( $objects as $key => $label ) : ?>
+					<label class="naticore-checkbox-item">
+						<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[wc_enabled_objects][]" value="<?php echo esc_attr( $key ); ?>" <?php checked( in_array( $key, $enabled, true ) ); ?>>
+						<span class="naticore-checkbox-label"><?php echo esc_html( $label ); ?></span>
+					</label>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	public function render_wc_sync_upsells() {
+		$settings = $this->get_settings();
+		$enabled  = isset( $settings['wc_sync_upsells'] ) ? (int) $settings['wc_sync_upsells'] : 0;
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Sync Linked Products', 'native-content-relationships' ); ?></h3>
+			<label>
+				<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[wc_sync_upsells]" value="1" <?php checked( $enabled, 1 ); ?>>
+				<?php esc_html_e( 'Sync to WooCommerce upsells and cross-sells', 'native-content-relationships' ); ?>
+			</label>
+			<p class="description"><?php esc_html_e( 'When enabled, relationship updates can be mirrored into WooCommerce linked products for compatibility.', 'native-content-relationships' ); ?></p>
+		</div>
+		<?php
+	}
+
+	public function render_remove_data_on_uninstall() {
+		$current = (bool) get_option( 'naticore_remove_data_on_uninstall', false );
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Privacy & Data', 'native-content-relationships' ); ?></h3>
+			<label>
+				<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[remove_data_on_uninstall]" value="1" <?php checked( $current, true ); ?>>
+				<?php esc_html_e( 'Remove all plugin data on uninstall', 'native-content-relationships' ); ?>
+			</label>
+			<p class="description"><?php esc_html_e( 'If enabled, uninstalling the plugin will delete the relationships table and plugin options. If disabled, only options are removed.', 'native-content-relationships' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render tabs
+	 */
+	private function render_tabs() {
+		$tabs        = $this->get_tabs();
+		$current_tab = $this->current_tab;
+
+		echo '<nav class="nav-tab-wrapper" role="tablist">';
+
+		foreach ( $tabs as $tab_id => $tab_label ) {
+			$url    = add_query_arg( 'tab', $tab_id, admin_url( 'options-general.php?page=naticore-settings' ) );
+			$active = $tab_id === $current_tab ? 'nav-tab-active' : '';
+
+			printf(
+				'<a href="%s" class="nav-tab %s" role="tab" aria-selected="%s">%s</a>',
+				esc_url( $url ),
+				esc_attr( $active ),
+				$tab_id === $current_tab ? 'true' : 'false',
+				esc_html( $tab_label )
+			);
+		}
+
+		echo '</nav>';
+	}
+
 	/**
 	 * Get settings
 	 */
-	public function get_settings() {
-		$defaults = array(
-			'enabled_post_types' => array( 'post', 'page' ),
-			'default_direction' => 'unidirectional',
-			'cleanup_on_delete' => 'remove',
-			'max_relationships' => 0,
-			'prevent_circular' => 1,
-			'debug_logging' => 0,
-			'query_debug' => 0,
-			'enable_rest_api' => 1,
-			'wc_enabled_objects' => array( 'product' ),
-			'wc_sync_upsells' => 0,
-			'acf_sync_mode' => 'off',
-			'multilingual_mirror' => 0,
-			'auto_relation_enabled' => 0,
-			'auto_relation_post_types' => array( 'post' ),
-			'immutable_mode' => 0,
-		);
-		
-		$settings = get_option( $this->option_name, array() );
-		return wp_parse_args( $settings, $defaults );
+	private function get_settings() {
+		return get_option( $this->option_name, array() );
 	}
-	
+
 	/**
 	 * Get a specific setting
 	 */
@@ -269,489 +534,286 @@ class WPNCR_Settings {
 		$settings = $this->get_settings();
 		return isset( $settings[ $key ] ) ? $settings[ $key ] : $default;
 	}
-	
+
 	/**
-	 * Render settings page
+	 * Sanitize settings
 	 */
-	public function render_settings_page() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
+	public function sanitize_settings( $input ) {
+		$sanitized = array();
+
+		// Enabled post types
+		if ( isset( $input['enabled_post_types'] ) && is_array( $input['enabled_post_types'] ) ) {
+			$sanitized['enabled_post_types'] = array_map( 'sanitize_text_field', $input['enabled_post_types'] );
+		} else {
+			$sanitized['enabled_post_types'] = array();
 		}
-		
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only tab parameter
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
-		?>
-		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			
-			<nav class="nav-tab-wrapper">
-				<a href="?page=wpncr-settings&tab=general" class="nav-tab <?php echo esc_attr( $active_tab === 'general' ? 'nav-tab-active' : '' ); ?>">
-					<?php esc_html_e( 'General', 'native-content-relationships' ); ?>
-				</a>
-				<a href="?page=wpncr-settings&tab=types" class="nav-tab <?php echo esc_attr( $active_tab === 'types' ? 'nav-tab-active' : '' ); ?>">
-					<?php esc_html_e( 'Relationship Types', 'native-content-relationships' ); ?>
-				</a>
-				<?php do_action( 'wpncr_settings_tabs' ); ?>
-				<a href="?page=wpncr-settings&tab=privacy" class="nav-tab <?php echo esc_attr( $active_tab === 'privacy' ? 'nav-tab-active' : '' ); ?>">
-					<?php esc_html_e( 'Privacy', 'native-content-relationships' ); ?>
-				</a>
-				<?php if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
-					<a href="?page=wpncr-settings&tab=developer" class="nav-tab <?php echo esc_attr( $active_tab === 'developer' ? 'nav-tab-active' : '' ); ?>">
-						<?php esc_html_e( 'Developer', 'native-content-relationships' ); ?>
-					</a>
-				<?php endif; ?>
-			</nav>
-			
-			<?php if ( $active_tab === 'general' ) : ?>
-				<form action="options.php" method="post">
-					<?php
-					settings_fields( 'wpncr_settings' );
-					do_settings_sections( 'wpncr-settings' );
-					submit_button();
-					?>
-				</form>
-			<?php elseif ( $active_tab === 'types' ) : ?>
-				<?php $this->render_types_tab(); ?>
-			<?php elseif ( $active_tab === 'woocommerce' ) : ?>
-				<form action="options.php" method="post">
-					<?php
-					settings_fields( 'wpncr_settings' );
-					if ( class_exists( 'WPNCR_WooCommerce' ) ) {
-						$wc = WPNCR_WooCommerce::get_instance();
-						if ( $wc->is_active() ) {
-							$wc->render_wc_settings();
-						} else {
-							echo '<div class="notice notice-info"><p>' . esc_html__( 'WooCommerce is not active. Install and activate WooCommerce to use these features.', 'native-content-relationships' ) . '</p></div>';
-						}
-					} else {
-						echo '<div class="notice notice-info"><p>' . esc_html__( 'WooCommerce is not active. Install and activate WooCommerce to use these features.', 'native-content-relationships' ) . '</p></div>';
-					}
-					submit_button();
-					?>
-				</form>
-			<?php elseif ( $active_tab === 'acf' ) : ?>
-				<form action="options.php" method="post">
-					<?php
-					settings_fields( 'wpncr_settings' );
-					if ( class_exists( 'WPNCR_ACF' ) ) {
-						$acf = WPNCR_ACF::get_instance();
-						if ( $acf->is_active() ) {
-							$acf->render_acf_settings();
-						} else {
-							echo '<div class="notice notice-info"><p>' . esc_html__( 'Advanced Custom Fields is not active.', 'native-content-relationships' ) . '</p></div>';
-						}
-					} else {
-						echo '<div class="notice notice-info"><p>' . esc_html__( 'Advanced Custom Fields is not active.', 'native-content-relationships' ) . '</p></div>';
-					}
-					submit_button();
-					?>
-				</form>
-			<?php elseif ( $active_tab === 'multilingual' ) : ?>
-				<form action="options.php" method="post">
-					<?php
-					settings_fields( 'wpncr_settings' );
-					if ( class_exists( 'WPNCR_WPML' ) ) {
-						$wpml = WPNCR_WPML::get_instance();
-						if ( $wpml->is_active() ) {
-							$wpml->render_multilingual_settings();
-						} else {
-							echo '<div class="notice notice-info"><p>' . esc_html__( 'WPML or Polylang is not active.', 'native-content-relationships' ) . '</p></div>';
-						}
-					} else {
-						echo '<div class="notice notice-info"><p>' . esc_html__( 'WPML or Polylang is not active.', 'native-content-relationships' ) . '</p></div>';
-					}
-					submit_button();
-					?>
-				</form>
-			<?php elseif ( $active_tab === 'privacy' ) : ?>
-				<?php $this->render_privacy_tab(); ?>
-			<?php elseif ( $active_tab === 'developer' && defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
-				<form action="options.php" method="post">
-					<?php
-					settings_fields( 'wpncr_settings' );
-					// Only show developer section
-					global $wp_settings_sections, $wp_settings_fields;
-					if ( isset( $wp_settings_sections['wpncr-settings']['wpncr_developer'] ) ) {
-						$section = $wp_settings_sections['wpncr-settings']['wpncr_developer'];
-						echo '<h2>' . esc_html( $section['title'] ) . '</h2>';
-						if ( $section['callback'] ) {
-							call_user_func( $section['callback'], $section );
-						}
-						if ( isset( $wp_settings_fields['wpncr-settings'][ $section['id'] ] ) ) {
-							echo '<table class="form-table" role="presentation">';
-							do_settings_fields( 'wpncr-settings', $section['id'] );
-							echo '</table>';
-						}
-					}
-					submit_button();
-					?>
-				</form>
-			<?php endif; ?>
-		</div>
-		<?php
+
+		// Default direction
+		$sanitized['default_direction'] = isset( $input['default_direction'] ) && $input['default_direction'] === 'bidirectional' ? 'bidirectional' : 'unidirectional';
+
+		// Cleanup on delete
+		$sanitized['cleanup_on_delete'] = isset( $input['cleanup_on_delete'] ) && $input['cleanup_on_delete'] === 'keep' ? 'keep' : 'remove';
+
+		// Max relationships
+		$sanitized['max_relationships'] = isset( $input['max_relationships'] ) ? absint( $input['max_relationships'] ) : 0;
+
+		// Auto relation
+		$sanitized['auto_relation_enabled'] = isset( $input['auto_relation_enabled'] ) ? 1 : 0;
+
+		// Prevent circular
+		$sanitized['prevent_circular'] = isset( $input['prevent_circular'] ) ? 1 : 0;
+
+		// Developer settings
+		$sanitized['debug_logging']   = isset( $input['debug_logging'] ) ? 1 : 0;
+		$sanitized['query_debug']     = isset( $input['query_debug'] ) ? 1 : 0;
+		$sanitized['enable_rest_api'] = isset( $input['enable_rest_api'] ) ? 1 : 0;
+
+		// WooCommerce settings
+		if ( isset( $input['wc_enabled_objects'] ) && is_array( $input['wc_enabled_objects'] ) ) {
+			$sanitized['wc_enabled_objects'] = array_map( 'sanitize_text_field', $input['wc_enabled_objects'] );
+		} else {
+			$sanitized['wc_enabled_objects'] = array( 'product' );
+		}
+		$sanitized['wc_sync_upsells']              = isset( $input['wc_sync_upsells'] ) ? 1 : 0;
+		$sanitized['wc_use_case_accessories']      = isset( $input['wc_use_case_accessories'] ) ? 1 : 0;
+		$sanitized['wc_use_case_related_products'] = isset( $input['wc_use_case_related_products'] ) ? 1 : 0;
+		$sanitized['wc_use_case_bundles']          = isset( $input['wc_use_case_bundles'] ) ? 1 : 0;
+
+		// Privacy
+		$remove_data_on_uninstall              = isset( $input['remove_data_on_uninstall'] ) ? 1 : 0;
+		$sanitized['remove_data_on_uninstall'] = $remove_data_on_uninstall;
+		update_option( 'naticore_remove_data_on_uninstall', (bool) $remove_data_on_uninstall );
+
+		return $sanitized;
 	}
-	
-	/**
-	 * Render privacy tab
-	 */
-	private function render_privacy_tab() {
-		?>
-		<div class="wpncr-privacy-section">
-			<h2><?php esc_html_e( 'Privacy Policy', 'native-content-relationships' ); ?></h2>
-			
-			<div class="card" style="max-width: 800px;">
-				<h3><?php esc_html_e( 'Data Storage', 'native-content-relationships' ); ?></h3>
-				<p>
-					<?php esc_html_e( 'This plugin stores content relationship metadata in your WordPress database. All relationship data is stored locally in the custom table:', 'native-content-relationships' ); ?>
-					<code><?php global $wpdb; echo esc_html( $wpdb->prefix . 'content_relations' ); ?></code>
-				</p>
-				
-				<h3><?php esc_html_e( 'External Data Transmission', 'native-content-relationships' ); ?></h3>
-				<p>
-					<strong><?php esc_html_e( 'This plugin does not send any data to external servers.', 'native-content-relationships' ); ?></strong>
-					<?php esc_html_e( 'All relationship data remains on your server and is never transmitted externally.', 'native-content-relationships' ); ?>
-				</p>
-				
-				<h3><?php esc_html_e( 'Data Export & Deletion', 'native-content-relationships' ); ?></h3>
-				<p>
-					<?php esc_html_e( 'You can export all relationship data at any time using the Import/Export tool (Tools → Import/Export Relationships).', 'native-content-relationships' ); ?>
-				</p>
-				<p>
-					<?php esc_html_e( 'When uninstalling the plugin, you can choose to keep or remove all relationship data. This setting can be configured before uninstallation.', 'native-content-relationships' ); ?>
-				</p>
-				
-				<h3><?php esc_html_e( 'What Data is Stored', 'native-content-relationships' ); ?></h3>
-				<ul>
-					<li><?php esc_html_e( 'Post IDs that are related to each other', 'native-content-relationships' ); ?></li>
-					<li><?php esc_html_e( 'Relationship type (e.g., "references", "depends_on")', 'native-content-relationships' ); ?></li>
-					<li><?php esc_html_e( 'Relationship direction (one-way or bidirectional)', 'native-content-relationships' ); ?></li>
-					<li><?php esc_html_e( 'Creation timestamp', 'native-content-relationships' ); ?></li>
-				</ul>
-				
-				<p>
-					<strong><?php esc_html_e( 'Note:', 'native-content-relationships' ); ?></strong>
-					<?php esc_html_e( 'This plugin does not store any personal information, user data, or content from your posts. It only stores the relationships between content items.', 'native-content-relationships' ); ?>
-				</p>
-			</div>
-		</div>
-		<?php
-	}
-	
-	/**
-	 * Render types tab
-	 */
-	private function render_types_tab() {
-		$types = WPNCR_Relation_Types::get_types();
-		?>
-		<div class="wpncr-types-manager">
-			<p><?php esc_html_e( 'Manage relationship types. These are controlled vocabulary — not free text.', 'native-content-relationships' ); ?></p>
-			
-			<table class="wp-list-table widefat fixed striped">
-				<thead>
-					<tr>
-						<th><?php esc_html_e( 'Slug', 'native-content-relationships' ); ?></th>
-						<th><?php esc_html_e( 'Label', 'native-content-relationships' ); ?></th>
-						<th><?php esc_html_e( 'Direction', 'native-content-relationships' ); ?></th>
-						<th><?php esc_html_e( 'Allowed Post Types', 'native-content-relationships' ); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php if ( empty( $types ) ) : ?>
-						<tr>
-							<td colspan="4"><?php esc_html_e( 'No relationship types registered.', 'native-content-relationships' ); ?></td>
-						</tr>
-					<?php else : ?>
-						<?php foreach ( $types as $slug => $type_info ) : ?>
-							<tr>
-								<td><code><?php echo esc_html( $slug ); ?></code></td>
-								<td><strong><?php echo esc_html( $type_info['label'] ); ?></strong></td>
-								<td>
-									<?php if ( $type_info['bidirectional'] ) : ?>
-										<span class="dashicons dashicons-arrow-left-alt" title="<?php esc_attr_e( 'Bidirectional', 'native-content-relationships' ); ?>"></span> ↔
-									<?php else : ?>
-										<span class="dashicons dashicons-arrow-right-alt" title="<?php esc_attr_e( 'One-way', 'native-content-relationships' ); ?>"></span> →
-									<?php endif; ?>
-								</td>
-								<td>
-									<?php if ( empty( $type_info['allowed_post_types'] ) ) : ?>
-										<em><?php esc_html_e( 'All post types', 'native-content-relationships' ); ?></em>
-									<?php else : ?>
-										<?php echo esc_html( implode( ', ', $type_info['allowed_post_types'] ) ); ?>
-									<?php endif; ?>
-								</td>
-							</tr>
-						<?php endforeach; ?>
-					<?php endif; ?>
-				</tbody>
-			</table>
-			
-			<div class="wpncr-types-info" style="margin-top: 20px; padding: 10px; background: #f6f7f7; border-left: 4px solid #2271b1;">
-				<p><strong><?php esc_html_e( 'Registering Custom Types', 'native-content-relationships' ); ?></strong></p>
-				<p><?php esc_html_e( 'Use the <code>register_content_relation_type()</code> function in your theme or plugin:', 'native-content-relationships' ); ?></p>
-				<pre style="background: #fff; padding: 10px; border: 1px solid #dcdcde; border-radius: 2px;"><code>register_content_relation_type( 'custom_type', array(
-    'label'            => 'Custom Type',
-    'bidirectional'    => false,
-    'allowed_post_types' => array( 'post', 'page' )
-) );</code></pre>
-			</div>
-		</div>
-		<?php
-	}
-	
-	/**
-	 * Render general section
-	 */
-	public function render_general_section() {
-		echo '<p>' . esc_html__( 'Configure general behavior for content relationships.', 'native-content-relationships' ) . '</p>';
-	}
-	
+
 	/**
 	 * Render enabled post types field
 	 */
 	public function render_enabled_post_types() {
 		$settings = $this->get_settings();
-		$enabled = isset( $settings['enabled_post_types'] ) ? $settings['enabled_post_types'] : array( 'post', 'page' );
-		
+		$enabled  = isset( $settings['enabled_post_types'] ) ? $settings['enabled_post_types'] : array( 'post', 'page' );
+
 		$post_types = get_post_types( array( 'public' => true ), 'objects' );
 		?>
-		<fieldset>
-			<legend class="screen-reader-text"><?php esc_html_e( 'Enable Relationships For', 'native-content-relationships' ); ?></legend>
-			<?php foreach ( $post_types as $post_type ) : ?>
-				<label>
-					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[enabled_post_types][]" value="<?php echo esc_attr( $post_type->name ); ?>" <?php checked( in_array( $post_type->name, $enabled, true ) ); ?>>
-					<?php echo esc_html( $post_type->label ); ?>
-				</label><br>
-			<?php endforeach; ?>
-		</fieldset>
-		<p class="description"><?php esc_html_e( 'Prevents unnecessary meta boxes on unused content types.', 'native-content-relationships' ); ?></p>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Enable Relationships For', 'native-content-relationships' ); ?></h3>
+			<p class="description"><?php esc_html_e( 'Enable relationships only where they are needed to keep the editor clean and fast.', 'native-content-relationships' ); ?></p>
+			
+			<div class="naticore-checkbox-grid">
+				<?php foreach ( $post_types as $post_type ) : ?>
+					<label class="naticore-checkbox-item">
+						<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[enabled_post_types][]" value="<?php echo esc_attr( $post_type->name ); ?>" <?php checked( in_array( $post_type->name, $enabled, true ) ); ?>>
+						<span class="naticore-checkbox-label"><?php echo esc_html( $post_type->label ); ?></span>
+					</label>
+				<?php endforeach; ?>
+			</div>
+			
+		</div>
 		<?php
 	}
-	
+
 	/**
 	 * Render default direction field
 	 */
 	public function render_default_direction() {
 		$settings = $this->get_settings();
-		$default = isset( $settings['default_direction'] ) ? $settings['default_direction'] : 'unidirectional';
+		$default  = isset( $settings['default_direction'] ) ? $settings['default_direction'] : 'unidirectional';
 		?>
-		<fieldset>
-			<legend class="screen-reader-text"><?php esc_html_e( 'Default Relationship Behavior', 'native-content-relationships' ); ?></legend>
-			<label>
-				<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[default_direction]" value="unidirectional" <?php checked( $default, 'unidirectional' ); ?>>
-				<?php esc_html_e( 'One-way (default)', 'native-content-relationships' ); ?>
-			</label><br>
-			<label>
-				<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[default_direction]" value="bidirectional" <?php checked( $default, 'bidirectional' ); ?>>
-				<?php esc_html_e( 'Bidirectional', 'native-content-relationships' ); ?>
-			</label>
-		</fieldset>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Default Relationship Direction', 'native-content-relationships' ); ?></h3>
+			
+			<div class="naticore-radio-cards">
+				<label class="naticore-radio-card <?php echo $default === 'unidirectional' ? 'selected' : ''; ?>">
+					<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[default_direction]" value="unidirectional" <?php checked( $default, 'unidirectional' ); ?>>
+					<div class="naticore-radio-card-content">
+						<h4><?php esc_html_e( 'One-way (Recommended)', 'native-content-relationships' ); ?></h4>
+						<p><?php esc_html_e( 'Best for parent → child or product → accessory relationships.', 'native-content-relationships' ); ?></p>
+					</div>
+				</label>
+				
+				<label class="naticore-radio-card <?php echo $default === 'bidirectional' ? 'selected' : ''; ?>">
+					<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[default_direction]" value="bidirectional" <?php checked( $default, 'bidirectional' ); ?>>
+					<div class="naticore-radio-card-content">
+						<h4><?php esc_html_e( 'Bidirectional', 'native-content-relationships' ); ?></h4>
+						<p><?php esc_html_e( 'Ideal for related products, alternatives, or mutual links.', 'native-content-relationships' ); ?></p>
+					</div>
+				</label>
+			</div>
+			<p class="description"><?php esc_html_e( 'Most stores use one-way for accessories and bidirectional for related products.', 'native-content-relationships' ); ?></p>
+		</div>
 		<?php
 	}
-	
+
 	/**
 	 * Render cleanup on delete field
 	 */
 	public function render_cleanup_on_delete() {
 		$settings = $this->get_settings();
-		$cleanup = isset( $settings['cleanup_on_delete'] ) ? $settings['cleanup_on_delete'] : 'remove';
+		$cleanup  = isset( $settings['cleanup_on_delete'] ) ? $settings['cleanup_on_delete'] : 'remove';
 		?>
-		<fieldset>
-			<legend class="screen-reader-text"><?php esc_html_e( 'Cleanup on Delete', 'native-content-relationships' ); ?></legend>
-			<label>
-				<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[cleanup_on_delete]" value="remove" <?php checked( $cleanup, 'remove' ); ?>>
-				<?php esc_html_e( 'Remove relations automatically', 'native-content-relationships' ); ?>
-			</label><br>
-			<label>
-				<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[cleanup_on_delete]" value="keep" <?php checked( $cleanup, 'keep' ); ?>>
-				<?php esc_html_e( 'Keep but mark as orphaned', 'native-content-relationships' ); ?>
-			</label>
-		</fieldset>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'When Content Is Deleted', 'native-content-relationships' ); ?></h3>
+			
+			<div class="naticore-radio-buttons">
+				<label>
+					<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[cleanup_on_delete]" value="remove" <?php checked( $cleanup, 'remove' ); ?>>
+					<?php esc_html_e( 'Remove relationships automatically', 'native-content-relationships' ); ?>
+				</label><br>
+				<label>
+					<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[cleanup_on_delete]" value="keep" <?php checked( $cleanup, 'keep' ); ?>>
+					<?php esc_html_e( 'Keep but mark as orphaned', 'native-content-relationships' ); ?>
+				</label>
+			</div>
+			
+			<p class="description"><?php esc_html_e( 'Orphaned relationships are ignored but kept for audits and historical data.', 'native-content-relationships' ); ?></p>
+		</div>
 		<?php
 	}
-	
+
 	/**
 	 * Render max relationships field
 	 */
 	public function render_max_relationships() {
 		$settings = $this->get_settings();
-		$max = isset( $settings['max_relationships'] ) ? $settings['max_relationships'] : 0;
+		$max      = isset( $settings['max_relationships'] ) ? $settings['max_relationships'] : 0;
 		?>
-		<label for="wpncr-max-relationships">
-			<input 
-				type="number" 
-				id="wpncr-max-relationships"
-				name="<?php echo esc_attr( $this->option_name ); ?>[max_relationships]" 
-				value="<?php echo esc_attr( $max ); ?>" 
-				min="0" 
-				step="1" 
-				class="small-text"
-				aria-describedby="wpncr-max-relationships-desc"
-			>
-		</label>
-		<p id="wpncr-max-relationships-desc" class="description"><?php esc_html_e( 'Maximum relationships per post. Set to 0 for unlimited. Prevents misuse.', 'native-content-relationships' ); ?></p>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Maximum Relationships per Item', 'native-content-relationships' ); ?></h3>
+			
+			<label for="naticore-max-relationships">
+				<input 
+					type="number" 
+					id="naticore-max-relationships"
+					name="<?php echo esc_attr( $this->option_name ); ?>[max_relationships]" 
+					value="<?php echo esc_attr( $max ); ?>" 
+					min="0" 
+					step="1" 
+					class="small-text"
+				>
+				<span class="naticore-field-suffix">(0 = <?php esc_html_e( 'Unlimited', 'native-content-relationships' ); ?>)</span>
+			</label>
+			
+			<p class="description"><?php esc_html_e( 'Set a limit to prevent excessive cross-links. Use 0 for unlimited (recommended for WooCommerce).', 'native-content-relationships' ); ?></p>
+		</div>
 		<?php
 	}
-	
+
 	/**
 	 * Render auto-relation field
 	 */
 	public function render_auto_relation() {
 		$settings = $this->get_settings();
-		$enabled = isset( $settings['auto_relation_enabled'] ) ? $settings['auto_relation_enabled'] : 0;
-		$post_types = isset( $settings['auto_relation_post_types'] ) ? $settings['auto_relation_post_types'] : array( 'post' );
-		
+		$enabled  = isset( $settings['auto_relation_enabled'] ) ? $settings['auto_relation_enabled'] : 0;
 		?>
-		<label for="wpncr-auto-relation-enabled">
-			<input 
-				type="checkbox" 
-				id="wpncr-auto-relation-enabled"
-				name="<?php echo esc_attr( $this->option_name ); ?>[auto_relation_enabled]" 
-				value="1" 
-				<?php checked( $enabled, 1 ); ?>
-				aria-describedby="wpncr-auto-relation-desc"
-			>
-			<?php esc_html_e( 'Auto-create relationship when post is published', 'native-content-relationships' ); ?>
-		</label>
-		<p id="wpncr-auto-relation-desc" class="description">
-			<?php esc_html_e( 'When enabled, posts will automatically link to their parent page with "part_of" relationship type.', 'native-content-relationships' ); ?>
-		</p>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Smart Auto-Linking', 'native-content-relationships' ); ?></h3>
+			
+			<label>
+				<input 
+					type="checkbox" 
+					name="<?php echo esc_attr( $this->option_name ); ?>[auto_relation_enabled]" 
+					value="1" 
+					<?php checked( $enabled, 1 ); ?>
+				>
+				<?php esc_html_e( 'Auto-create relationship on publish', 'native-content-relationships' ); ?>
+			</label>
+			
+			<p class="description"><?php esc_html_e( 'Automatically links a post or product to its parent page using a part_of relationship.', 'native-content-relationships' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Helpful for category landing pages and grouped products.', 'native-content-relationships' ); ?></p>
+		</div>
 		<?php
 	}
-	
-	/**
-	 * Render immutable mode field
-	 */
-	public function render_immutable_mode() {
-		$settings = $this->get_settings();
-		$enabled = isset( $settings['immutable_mode'] ) ? $settings['immutable_mode'] : 0;
-		
-		?>
-		<label for="wpncr-immutable-mode">
-			<input 
-				type="checkbox" 
-				id="wpncr-immutable-mode"
-				name="<?php echo esc_attr( $this->option_name ); ?>[immutable_mode]" 
-				value="1" 
-				<?php checked( $enabled, 1 ); ?>
-				aria-describedby="wpncr-immutable-mode-desc"
-			>
-			<?php esc_html_e( 'Lock relationships after publish', 'native-content-relationships' ); ?>
-		</label>
-		<p id="wpncr-immutable-mode-desc" class="description">
-			<?php esc_html_e( 'When enabled, relationships for published posts become read-only. They can only be changed via the admin interface or WP-CLI. Great for documentation and courses where structure shouldn\'t change.', 'native-content-relationships' ); ?>
-		</p>
-		<?php
-	}
-	
-	/**
-	 * Render permissions section
-	 */
-	public function render_permissions_section() {
-		echo '<p>' . esc_html__( 'Configure safety and permission settings.', 'native-content-relationships' ) . '</p>';
-	}
-	
+
 	/**
 	 * Render prevent circular field
 	 */
 	public function render_prevent_circular() {
 		$settings = $this->get_settings();
-		$prevent = isset( $settings['prevent_circular'] ) ? $settings['prevent_circular'] : 1;
+		$enabled  = isset( $settings['prevent_circular'] ) ? $settings['prevent_circular'] : 1;
 		?>
-		<fieldset>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Circular Relationship Protection', 'native-content-relationships' ); ?></h3>
+			
 			<label>
-				<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[prevent_circular]" value="1" <?php checked( $prevent, 1 ); ?>>
+				<input 
+					type="checkbox" 
+					name="<?php echo esc_attr( $this->option_name ); ?>[prevent_circular]" 
+					value="1" 
+					<?php checked( $enabled, 1 ); ?>
+				>
 				<?php esc_html_e( 'Prevent circular relationships', 'native-content-relationships' ); ?>
 			</label>
-			<p class="description"><?php esc_html_e( 'Prevents infinite loops (A → B → A). Self-linking is always prevented.', 'native-content-relationships' ); ?></p>
-		</fieldset>
+			
+			<p class="description"><?php esc_html_e( 'Stops infinite loops (Product A → B → A). Self-links are always blocked.', 'native-content-relationships' ); ?></p>
+		</div>
 		<?php
 	}
-	
-	/**
-	 * Render developer section
-	 */
-	public function render_developer_section() {
-		$env_type = function_exists( 'wp_get_environment_type' ) ? wp_get_environment_type() : 'production';
-		?>
-		<p>
-			<?php esc_html_e( 'Advanced settings for developers. Only visible when WP_DEBUG is enabled.', 'native-content-relationships' ); ?>
-		</p>
-		<?php if ( function_exists( 'wp_get_environment_type' ) ) : ?>
-			<p>
-				<strong><?php esc_html_e( 'Detected Environment:', 'native-content-relationships' ); ?></strong>
-				<?php echo esc_html( ucfirst( $env_type ) ); ?>
-			</p>
-		<?php endif; ?>
-		<?php
-	}
-	
+
 	/**
 	 * Render debug logging field
 	 */
 	public function render_debug_logging() {
 		$settings = $this->get_settings();
-		$debug = isset( $settings['debug_logging'] ) ? $settings['debug_logging'] : 0;
+		$enabled  = isset( $settings['debug_logging'] ) ? $settings['debug_logging'] : 0;
+
+		// Environment detection
+		$environment = 'Production';
+		$env_class   = 'production';
+		if ( defined( 'WP_ENVIRONMENT_TYPE' ) ) {
+			$environment = WP_ENVIRONMENT_TYPE;
+			$env_class   = $environment;
+		}
 		?>
-		<label>
-			<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[debug_logging]" value="1" <?php checked( $debug, 1 ); ?>>
-			<?php esc_html_e( 'Enable debug logging', 'native-content-relationships' ); ?>
-		</label>
-		<p class="description"><?php esc_html_e( 'Log relationship operations to WordPress debug log.', 'native-content-relationships' ); ?></p>
+		<div class="naticore-card">
+			<div class="naticore-env-badge">
+				<span class="naticore-env-label"><?php esc_html_e( 'Environment:', 'native-content-relationships' ); ?></span>
+				<span class="naticore-env-status <?php echo esc_attr( $env_class ); ?>"><?php echo esc_html( ucfirst( $environment ) ); ?></span>
+			</div>
+			
+			<h3><?php esc_html_e( 'Developer Options', 'native-content-relationships' ); ?></h3>
+			
+			<div class="naticore-toggles">
+				<label class="naticore-toggle">
+					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[debug_logging]" value="1" <?php checked( $enabled, 1 ); ?>>
+					<span class="naticore-toggle-slider"></span>
+					<span class="naticore-toggle-label"><?php esc_html_e( 'Debug Logging', 'native-content-relationships' ); ?></span>
+				</label>
+				<p class="description"><?php esc_html_e( 'Log relationship operations to debug.log', 'native-content-relationships' ); ?></p>
+				
+				<?php
+				$query_debug = isset( $settings['query_debug'] ) ? $settings['query_debug'] : 0;
+				?>
+				<label class="naticore-toggle">
+					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[query_debug]" value="1" <?php checked( $query_debug, 1 ); ?>>
+					<span class="naticore-toggle-slider"></span>
+					<span class="naticore-toggle-label"><?php esc_html_e( 'Query Debug Mode', 'native-content-relationships' ); ?></span>
+				</label>
+				<p class="description"><?php esc_html_e( 'Log SQL, index usage, and execution time (Console + debug.log)', 'native-content-relationships' ); ?></p>
+				
+				<?php
+				$rest_api = isset( $settings['enable_rest_api'] ) ? $settings['enable_rest_api'] : 0;
+				?>
+				<label class="naticore-toggle">
+					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[enable_rest_api]" value="1" <?php checked( $rest_api, 1 ); ?>>
+					<span class="naticore-toggle-slider"></span>
+					<span class="naticore-toggle-label"><?php esc_html_e( 'REST API', 'native-content-relationships' ); ?></span>
+				</label>
+				<p class="description"><?php esc_html_e( 'Enable REST API endpoints for headless WordPress', 'native-content-relationships' ); ?></p>
+			</div>
+			
+			<div class="naticore-notice">
+				<p><?php esc_html_e( 'Developer options may impact performance. Use with caution.', 'native-content-relationships' ); ?></p>
+			</div>
+		</div>
 		<?php
 	}
-	
+
 	/**
-	 * Render query debug field
+	 * Placeholder render methods
 	 */
 	public function render_query_debug() {
-		$settings = $this->get_settings();
-		$query_debug = isset( $settings['query_debug'] ) ? $settings['query_debug'] : 0;
-		$env_type = function_exists( 'wp_get_environment_type' ) ? wp_get_environment_type() : 'production';
-		
-		// Auto-enable in local environment
-		$auto_enabled = ( $env_type === 'local' && defined( 'WP_DEBUG' ) && WP_DEBUG );
-		
-		?>
-		<label for="wpncr-query-debug">
-			<input 
-				type="checkbox" 
-				id="wpncr-query-debug"
-				name="<?php echo esc_attr( $this->option_name ); ?>[query_debug]" 
-				value="1" 
-				<?php checked( $query_debug, 1 ); ?>
-				<?php disabled( $auto_enabled ); ?>
-				aria-describedby="wpncr-query-debug-desc"
-			>
-			<?php esc_html_e( 'Enable relation query debug', 'native-content-relationships' ); ?>
-		</label>
-		<p id="wpncr-query-debug-desc" class="description">
-			<?php esc_html_e( 'Outputs SQL used, index used, and query time. Logs to browser console and debug.log. Only active when WP_DEBUG is true.', 'native-content-relationships' ); ?>
-			<?php if ( $auto_enabled ) : ?>
-				<br><strong><?php esc_html_e( 'Auto-enabled in local environment.', 'native-content-relationships' ); ?></strong>
-			<?php endif; ?>
-		</p>
-		<?php
-	}
-	
-	/**
-	 * Render enable REST API field
-	 */
+		return $this->render_debug_logging(); }
 	public function render_enable_rest_api() {
-		$settings = $this->get_settings();
-		$enabled = isset( $settings['enable_rest_api'] ) ? $settings['enable_rest_api'] : 1;
-		?>
-		<label for="wpncr-rest-api">
-			<input 
-				type="checkbox" 
-				id="wpncr-rest-api"
-				name="<?php echo esc_attr( $this->option_name ); ?>[enable_rest_api]" 
-				value="1" 
-				<?php checked( $enabled, 1 ); ?>
-				aria-describedby="wpncr-rest-api-desc"
-			>
-			<?php esc_html_e( 'Enable REST API', 'native-content-relationships' ); ?>
-		</label>
-		<p id="wpncr-rest-api-desc" class="description"><?php esc_html_e( 'Enable REST API endpoints for headless WordPress.', 'native-content-relationships' ); ?></p>
-		<?php
-	}
+		return $this->render_debug_logging(); }
 }

@@ -1,20 +1,20 @@
 (function($) {
 	'use strict';
 	
-	var WPNCR = {
+	var NCR = {
 		init: function() {
 			this.bindEvents();
 		},
 		
 		bindEvents: function() {
 			// Search input
-			$(document).on('input', '.wpncr-search-input', this.handleSearch);
-			$(document).on('input', '.wpncr-product-search', this.handleProductSearch);
-			$(document).on('click', '.wpncr-remove-relation', this.handleRemove);
-			$(document).on('click', '.wpncr-search-result', this.handleAddRelation);
+			$(document).on('input', '.naticore-search-input', this.handleSearch);
+			$(document).on('input', '.naticore-product-search', this.handleProductSearch);
+			$(document).on('click', '.naticore-remove-relation', this.handleRemove);
+			$(document).on('click', '.naticore-search-result', this.handleAddRelation);
 			$(document).on('click', function(e) {
-				if (!$(e.target).closest('.wpncr-add-relation').length) {
-					$('.wpncr-search-results').hide();
+				if (!$(e.target).closest('.naticore-add-relation').length) {
+					$('.naticore-search-results').hide();
 				}
 			});
 		},
@@ -26,14 +26,14 @@
 			var currentPostId = $('#post_ID').val() || 0;
 			
 			if (search.length < 2) {
-				$input.siblings('.wpncr-search-results').hide().empty();
+				$input.siblings('.naticore-search-results').hide().empty();
 				return;
 			}
 			
 			// Debounce
 			clearTimeout($input.data('timeout'));
 			var timeout = setTimeout(function() {
-				WPNCR.performSearch($input, search, relationType, currentPostId);
+				NCR.performSearch($input, search, relationType, currentPostId);
 			}, 300);
 			$input.data('timeout', timeout);
 		},
@@ -45,28 +45,28 @@
 			var currentPostId = $('#post_ID').val() || 0;
 			
 			if (search.length < 2) {
-				$input.siblings('.wpncr-search-results').hide().empty();
+				$input.siblings('.naticore-search-results').hide().empty();
 				return;
 			}
 			
 			// Debounce
 			clearTimeout($input.data('timeout'));
 			var timeout = setTimeout(function() {
-				WPNCR.performProductSearch($input, search, relationType, currentPostId);
+				NCR.performProductSearch($input, search, relationType, currentPostId);
 			}, 300);
 			$input.data('timeout', timeout);
 		},
 		
 		performSearch: function($input, search, relationType, currentPostId) {
-			var $results = $input.siblings('.wpncr-search-results');
-			$results.html('<div class="wpncr-loading">' + wpncrData.strings.searching + '</div>').show();
+			var $results = $input.siblings('.naticore-search-results');
+			$results.html('<div class="naticore-loading">' + naticoreData.strings.searching + '</div>').show();
 			
 			$.ajax({
-				url: wpncrData.ajaxUrl,
+				url: naticoreData.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'wpncr_search_content',
-					nonce: wpncrData.nonce,
+					action: 'naticore_search_content',
+					nonce: naticoreData.nonce,
 					search: search,
 					current_post_id: currentPostId
 				},
@@ -74,31 +74,31 @@
 					if (response.success && response.data.length > 0) {
 						var html = '';
 						$.each(response.data, function(i, item) {
-							html += '<div class="wpncr-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
+							html += '<div class="naticore-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
 							html += '<strong>' + item.title + '</strong> <small>(' + item.type + ')</small>';
 							html += '</div>';
 						});
 						$results.html(html);
 					} else {
-						$results.html('<div class="wpncr-no-results">' + wpncrData.strings.noResults + '</div>');
+						$results.html('<div class="naticore-no-results">' + naticoreData.strings.noResults + '</div>');
 					}
 				},
 				error: function() {
-					$results.html('<div class="wpncr-error">Error searching content.</div>');
+					$results.html('<div class="naticore-error">Error searching content.</div>');
 				}
 			});
 		},
 		
 		performProductSearch: function($input, search, relationType, currentPostId) {
-			var $results = $input.siblings('.wpncr-search-results');
-			$results.html('<div class="wpncr-loading">' + wpncrData.strings.searching + '</div>').show();
+			var $results = $input.siblings('.naticore-search-results');
+			$results.html('<div class="naticore-loading">' + naticoreData.strings.searching + '</div>').show();
 			
 			$.ajax({
-				url: wpncrData.ajaxUrl,
+				url: naticoreData.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'wpncr_search_products',
-					nonce: wpncrData.nonce,
+					action: 'naticore_search_products',
+					nonce: naticoreData.nonce,
 					search: search,
 					current_post_id: currentPostId
 				},
@@ -106,7 +106,7 @@
 					if (response.success && response.data.length > 0) {
 						var html = '';
 						$.each(response.data, function(i, item) {
-							html += '<div class="wpncr-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
+							html += '<div class="naticore-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
 							html += '<strong>' + item.title + '</strong>';
 							if (item.sku) {
 								html += ' <small>(SKU: ' + item.sku + ')</small>';
@@ -115,11 +115,11 @@
 						});
 						$results.html(html);
 					} else {
-						$results.html('<div class="wpncr-no-results">' + wpncrData.strings.noResults + '</div>');
+						$results.html('<div class="naticore-no-results">' + naticoreData.strings.noResults + '</div>');
 					}
 				},
 				error: function() {
-					$results.html('<div class="wpncr-error">Error searching products.</div>');
+					$results.html('<div class="naticore-error">Error searching products.</div>');
 				}
 			});
 		},
@@ -127,7 +127,7 @@
 		handleAddRelation: function(e) {
 			var $result = $(this);
 			var toId = $result.data('id');
-			var $input = $result.closest('.wpncr-add-relation').find('.wpncr-search-input');
+			var $input = $result.closest('.naticore-add-relation').find('.naticore-search-input');
 			var relationType = $input.data('relation-type');
 			var fromId = $('#post_ID').val() || 0;
 			
@@ -138,11 +138,11 @@
 			
 			// Add relation via AJAX
 			$.ajax({
-				url: wpncrData.ajaxUrl,
+				url: naticoreData.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'wpncr_add_relation',
-					nonce: wpncrData.nonce,
+					action: 'naticore_add_relation',
+					nonce: naticoreData.nonce,
 					from_id: fromId,
 					to_id: toId,
 					relation_type: relationType
@@ -174,18 +174,18 @@
 			var relationType = $button.data('relation-type');
 			
 			$.ajax({
-				url: wpncrData.ajaxUrl,
+				url: naticoreData.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'wpncr_remove_relation',
-					nonce: wpncrData.nonce,
+					action: 'naticore_remove_relation',
+					nonce: naticoreData.nonce,
 					from_id: fromId,
 					to_id: toId,
 					relation_type: relationType
 				},
 				success: function(response) {
 					if (response.success) {
-						$button.closest('.wpncr-relation-item').fadeOut(function() {
+						$button.closest('.naticore-relation-item').fadeOut(function() {
 							$(this).remove();
 						});
 					} else {
@@ -200,15 +200,15 @@
 	};
 	
 	$(document).ready(function() {
-		WPNCR.init();
+		NCR.init();
 	});
 	
 	// Add AJAX handlers
-	$(document).on('wp_ajax_wpncr_add_relation', function() {
+	$(document).on('wp_ajax_naticore_add_relation', function() {
 		// Handled in handleAddRelation
 	});
 	
-	$(document).on('wp_ajax_wpncr_remove_relation', function() {
+	$(document).on('wp_ajax_naticore_remove_relation', function() {
 		// Handled in handleRemove
 	});
 	

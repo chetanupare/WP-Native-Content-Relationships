@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ruleset name="Native Content Relationships">
+	<description>PHPCS ruleset for the Native Content Relationships plugin.</description>
+
+	<rule ref="WordPress">
+		<!-- Practical exclusions (documentation + filename conventions) -->
+		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag" />
+		<exclude name="Squiz.Commenting.ClassComment.Missing" />
+		<exclude name="Squiz.Commenting.VariableComment.MissingVar" />
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag" />
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar" />
+		<exclude name="Squiz.Commenting.FunctionComment.Missing" />
+		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop" />
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.Found" />
+		<exclude name="WordPress.PHP.YodaConditions.NotYoda" />
+		<exclude name="WordPress.Security.NonceVerification.Recommended" />
+		<exclude name="WordPress.PHP.StrictInArray.MissingTrueStrict" />
+		<exclude name="Universal.Files.SeparateFunctionsFromOO.Mixed" />
+		<exclude name="WordPress.WP.Capabilities.Unknown" />
+		<exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames.defaultFound" />
+		<exclude name="WordPress.DB.PreparedSQL.InterpolatedNotPrepared" />
+		<exclude name="WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare" />
+		<exclude name="WordPress.WP.AlternativeFunctions.json_encode_json_encode" />
+		<exclude name="WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents" />
+		<exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound" />
+		<exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace" />
+		<exclude name="Universal.Operators.DisallowShortTernary.Found" />
+		<exclude name="Squiz.PHP.CommentedOutCode.Found" />
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed" />
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedElse" />
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment" />
+	</rule>
+
+	<exclude-pattern>vendor/*</exclude-pattern>
+	<exclude-pattern>includes/class-settings-old.php</exclude-pattern>
+	<exclude-pattern>includes/class-acf.php</exclude-pattern>
+	<exclude-pattern>includes/class-editors.php</exclude-pattern>
+	<exclude-pattern>includes/class-wpml.php</exclude-pattern>
+	<exclude-pattern>developer-guide.php</exclude-pattern>
+	<exclude-pattern>phpstan-stubs.php</exclude-pattern>
+</ruleset>

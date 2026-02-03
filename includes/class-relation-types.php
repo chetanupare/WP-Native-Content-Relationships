@@ -9,39 +9,103 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WPNCR_Relation_Types {
-	
+class NATICORE_Relation_Types {
+
 	/**
 	 * Registered relation types
 	 */
 	private static $types = array();
-	
+
 	/**
 	 * Default relation types
 	 */
 	private static $default_types = array(
 		'related_to' => array(
-			'label'            => 'Related To',
-			'bidirectional'    => true,
+			'label'              => 'Related To',
+			'bidirectional'      => true,
 			'allowed_post_types' => array(), // Empty = all
+			'supports_users'     => false,
+			'supports_terms'     => false,
 		),
-		'parent_of' => array(
-			'label'            => 'Parent Of',
-			'bidirectional'    => false,
+		'parent_of'  => array(
+			'label'              => 'Parent Of',
+			'bidirectional'      => false,
 			'allowed_post_types' => array(),
+			'supports_users'     => false,
+			'supports_terms'     => false,
 		),
 		'depends_on' => array(
-			'label'            => 'Depends On',
-			'bidirectional'    => false,
+			'label'              => 'Depends On',
+			'bidirectional'      => false,
 			'allowed_post_types' => array(),
+			'supports_users'     => false,
+			'supports_terms'     => false,
 		),
 		'references' => array(
-			'label'            => 'References',
-			'bidirectional'    => false,
+			'label'              => 'References',
+			'bidirectional'      => false,
 			'allowed_post_types' => array(),
+			'supports_users'     => false,
+			'supports_terms'     => false,
+		),
+		// User relationship types
+		'favorite_posts' => array(
+			'label'              => 'Favorite Posts',
+			'bidirectional'      => false,
+			'allowed_post_types' => array( 'post', 'page' ),
+			'supports_users'     => true,
+			'supports_terms'     => false,
+			'from_type'          => 'user',
+			'to_type'            => 'post',
+		),
+		'bookmarked_by' => array(
+			'label'              => 'Bookmarked By',
+			'bidirectional'      => false,
+			'allowed_post_types' => array( 'post', 'page' ),
+			'supports_users'     => true,
+			'supports_terms'     => false,
+			'from_type'          => 'user',
+			'to_type'            => 'post',
+		),
+		'authored_by' => array(
+			'label'              => 'Authored By',
+			'bidirectional'      => false,
+			'allowed_post_types' => array( 'post', 'page' ),
+			'supports_users'     => true,
+			'supports_terms'     => false,
+			'from_type'          => 'user',
+			'to_type'            => 'post',
+		),
+		// Term relationship types
+		'categorized_as' => array(
+			'label'              => 'Categorized As',
+			'bidirectional'      => false,
+			'allowed_post_types' => array( 'post', 'page' ),
+			'supports_users'     => false,
+			'supports_terms'     => true,
+			'from_type'          => 'post',
+			'to_type'            => 'term',
+		),
+		'tagged_with' => array(
+			'label'              => 'Tagged With',
+			'bidirectional'      => false,
+			'allowed_post_types' => array( 'post' ),
+			'supports_users'     => false,
+			'supports_terms'     => true,
+			'from_type'          => 'post',
+			'to_type'            => 'term',
+		),
+		'featured_in' => array(
+			'label'              => 'Featured In',
+			'bidirectional'      => false,
+			'allowed_post_types' => array( 'post', 'page' ),
+			'supports_users'     => false,
+			'supports_terms'     => true,
+			'from_type'          => 'post',
+			'to_type'            => 'term',
 		),
 	);
-	
+
 	/**
 	 * Initialize
 	 */
@@ -50,18 +114,18 @@ class WPNCR_Relation_Types {
 		foreach ( self::$default_types as $slug => $args ) {
 			self::register( $slug, $args );
 		}
-		
+
 		// Allow filtering
 		add_action( 'init', array( __CLASS__, 'register_defaults' ), 5 );
 	}
-	
+
 	/**
 	 * Register default types (hook)
 	 */
 	public static function register_defaults() {
-		do_action( 'wpncr_register_relation_types' );
+		do_action( 'naticore_register_relation_types' );
 	}
-	
+
 	/**
 	 * Register a relationship type
 	 *
@@ -71,48 +135,52 @@ class WPNCR_Relation_Types {
 	 */
 	public static function register( $slug, $args = array() ) {
 		$slug = sanitize_key( $slug );
-		
+
 		if ( empty( $slug ) ) {
 			return new WP_Error( 'invalid_slug', __( 'Relation type slug cannot be empty.', 'native-content-relationships' ) );
 		}
-		
+
 		$defaults = array(
-			'label'            => ucwords( str_replace( '_', ' ', $slug ) ),
-			'bidirectional'    => true,
+			'label'              => ucwords( str_replace( '_', ' ', $slug ) ),
+			'bidirectional'      => true,
 			'allowed_post_types' => array(), // Empty array = all post types allowed
+			'supports_users'     => false,
+			'supports_terms'     => false,
+			'from_type'          => 'post',
+			'to_type'            => 'post',
 		);
-		
+
 		$args = wp_parse_args( $args, $defaults );
-		
+
 		// Validate
 		if ( ! is_string( $args['label'] ) || empty( $args['label'] ) ) {
 			return new WP_Error( 'invalid_label', __( 'Relation type label must be a non-empty string.', 'native-content-relationships' ) );
 		}
-		
+
 		if ( ! is_bool( $args['bidirectional'] ) ) {
 			$args['bidirectional'] = (bool) $args['bidirectional'];
 		}
-		
+
 		if ( ! is_array( $args['allowed_post_types'] ) ) {
 			$args['allowed_post_types'] = array();
 		}
-		
+
 		self::$types[ $slug ] = $args;
-		
-		do_action( 'wpncr_relation_type_registered', $slug, $args );
-		
+
+		do_action( 'naticore_relation_type_registered', $slug, $args );
+
 		return true;
 	}
-	
+
 	/**
 	 * Get registered relation types
 	 *
 	 * @return array
 	 */
 	public static function get_types() {
-		return apply_filters( 'wpncr_relation_types', self::$types );
+		return apply_filters( 'naticore_relation_types', self::$types );
 	}
-	
+
 	/**
 	 * Get a specific relation type
 	 *
@@ -123,7 +191,7 @@ class WPNCR_Relation_Types {
 		$types = self::get_types();
 		return isset( $types[ $slug ] ) ? $types[ $slug ] : false;
 	}
-	
+
 	/**
 	 * Check if a relation type exists
 	 *
@@ -133,7 +201,7 @@ class WPNCR_Relation_Types {
 	public static function exists( $slug ) {
 		return isset( self::$types[ $slug ] );
 	}
-	
+
 	/**
 	 * Check if post types are allowed for a relation type
 	 *
@@ -144,22 +212,22 @@ class WPNCR_Relation_Types {
 	 */
 	public static function are_post_types_allowed( $type_slug, $from_post_type, $to_post_type ) {
 		$type = self::get_type( $type_slug );
-		
+
 		if ( ! $type ) {
 			return false;
 		}
-		
+
 		$allowed = $type['allowed_post_types'];
-		
+
 		// Empty array means all post types allowed
 		if ( empty( $allowed ) ) {
 			return true;
 		}
-		
+
 		// Check if both post types are in allowed list
 		return in_array( $from_post_type, $allowed, true ) && in_array( $to_post_type, $allowed, true );
 	}
-	
+
 	/**
 	 * Check if relation type is bidirectional
 	 *
@@ -170,15 +238,119 @@ class WPNCR_Relation_Types {
 		$type = self::get_type( $slug );
 		return $type ? $type['bidirectional'] : false;
 	}
+
+	/**
+	 * Check if relation type supports users
+	 *
+	 * @param string $slug Type slug
+	 * @return bool
+	 */
+	public static function supports_users( $slug ) {
+		$type = self::get_type( $slug );
+		return $type ? $type['supports_users'] : false;
+	}
+
+	/**
+	 * Check if relation type supports terms
+	 *
+	 * @param string $slug Type slug
+	 * @return bool
+	 */
+	public static function supports_terms( $slug ) {
+		$type = self::get_type( $slug );
+		return $type ? $type['supports_terms'] : false;
+	}
+
+	/**
+	 * Get user-to-post relationship types
+	 *
+	 * @return array
+	 */
+	public static function get_user_to_post_types() {
+		$types = self::get_types();
+		$user_types = array();
+
+		foreach ( $types as $slug => $config ) {
+			if ( $config['supports_users'] && 
+				 $config['from_type'] === 'user' && 
+				 $config['to_type'] === 'post' ) {
+				$user_types[ $slug ] = $config['label'];
+			}
+		}
+
+		return $user_types;
+	}
+
+	/**
+	 * Get post-to-user relationship types
+	 *
+	 * @return array
+	 */
+	public static function get_post_to_user_types() {
+		$types = self::get_types();
+		$post_types = array();
+
+		foreach ( $types as $slug => $config ) {
+			if ( $config['supports_users'] && 
+				 $config['from_type'] === 'user' && 
+				 $config['to_type'] === 'post' ) {
+				// For post-to-user, we use the same types but reverse the direction
+				$post_types[ $slug ] = $config['label'];
+			}
+		}
+
+		return $post_types;
+	}
+
+	/**
+	 * Get post-to-term relationship types
+	 *
+	 * @return array
+	 */
+	public static function get_post_to_term_types() {
+		$types = self::get_types();
+		$term_types = array();
+
+		foreach ( $types as $slug => $config ) {
+			if ( $config['supports_terms'] && 
+				 $config['from_type'] === 'post' && 
+				 $config['to_type'] === 'term' ) {
+				$term_types[ $slug ] = $config['label'];
+			}
+		}
+
+		return $term_types;
+	}
+
+	/**
+	 * Get term-to-post relationship types
+	 *
+	 * @return array
+	 */
+	public static function get_term_to_post_types() {
+		$types = self::get_types();
+		$term_types = array();
+
+		foreach ( $types as $slug => $config ) {
+			if ( $config['supports_terms'] && 
+				 $config['from_type'] === 'post' && 
+				 $config['to_type'] === 'term' ) {
+				// For term-to-post, we use the same types but reverse the direction
+				$term_types[ $slug ] = $config['label'];
+			}
+		}
+
+		return $term_types;
+	}
 }
 
 // Make function available globally
 if ( ! function_exists( 'register_content_relation_type' ) ) {
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
 	function register_content_relation_type( $slug, $args = array() ) {
-		if ( ! class_exists( 'WPNCR_Relation_Types' ) ) {
-			return new WP_Error( 'class_not_loaded', 'WPNCR_Relation_Types class is not loaded yet.' );
+		if ( ! class_exists( 'NATICORE_Relation_Types' ) ) {
+			return new WP_Error( 'class_not_loaded', 'NATICORE_Relation_Types class is not loaded yet.' );
 		}
-		return WPNCR_Relation_Types::register( $slug, $args );
+		return NATICORE_Relation_Types::register( $slug, $args );
 	}
 }

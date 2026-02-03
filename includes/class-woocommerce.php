@@ -9,18 +9,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WPNCR_WooCommerce {
-	
+class NATICORE_WooCommerce {
+
 	/**
 	 * Instance
 	 */
 	private static $instance = null;
-	
+
 	/**
 	 * Is WooCommerce active
 	 */
 	private $is_wc_active = false;
-	
+
+	/**
+	 * Settings option name
+	 */
+	private $option_name = 'naticore_settings';
+
 	/**
 	 * Get instance
 	 */
@@ -30,120 +35,141 @@ class WPNCR_WooCommerce {
 		}
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Constructor
 	 */
 	private function __construct() {
 		// Check if WooCommerce is active
 		$this->is_wc_active = class_exists( 'WooCommerce' );
-		
+
 		if ( ! $this->is_wc_active ) {
 			return; // Exit early if WooCommerce is not active
 		}
-		
+
 		// Initialize WooCommerce features
 		$this->init();
 	}
-	
+
 	/**
 	 * Initialize WooCommerce features
 	 */
 	private function init() {
 		// Register WooCommerce relationship types
 		add_action( 'init', array( $this, 'register_wc_relation_types' ), 20 );
-		
+
 		// Add product meta box
 		add_action( 'add_meta_boxes', array( $this, 'add_product_meta_box' ), 20 );
-		
+
 		// Add WooCommerce settings tab (via action hook)
-		add_action( 'wpncr_settings_tabs', array( $this, 'add_wc_settings_tab' ) );
-		
+		add_action( 'naticore_settings_tabs', array( $this, 'add_wc_settings_tab' ) );
+
 		// Sync with WooCommerce upsells/cross-sells (optional)
-		$settings = WPNCR_Settings::get_instance();
+		$settings = NATICORE_Settings::get_instance();
 		if ( $settings->get_setting( 'wc_sync_upsells', 0 ) ) {
 			add_action( 'woocommerce_update_product', array( $this, 'sync_upsells' ), 10, 1 );
 			add_action( 'woocommerce_update_product', array( $this, 'sync_cross_sells' ), 10, 1 );
 		}
-		
+
 		// Order relationships
 		add_action( 'woocommerce_new_order', array( $this, 'create_order_relationships' ), 10, 1 );
-		
+
 		// Query helpers
-		add_filter( 'wpncr_query_helpers', array( $this, 'add_query_helpers' ) );
+		add_filter( 'naticore_query_helpers', array( $this, 'add_query_helpers' ) );
 	}
-	
+
 	/**
 	 * Check if WooCommerce is active
 	 */
 	public function is_active() {
 		return $this->is_wc_active;
 	}
-	
+
 	/**
 	 * Register WooCommerce-specific relationship types
 	 */
 	public function register_wc_relation_types() {
 		// Related Product (bidirectional)
-		register_content_relation_type( 'related_product', array(
-			'label'            => __( 'Related Product', 'native-content-relationships' ),
-			'bidirectional'    => true,
-			'allowed_post_types' => array( 'product' ),
-		) );
-		
+		register_content_relation_type(
+			'related_product',
+			array(
+				'label'              => __( 'Related Product', 'native-content-relationships' ),
+				'bidirectional'      => true,
+				'allowed_post_types' => array( 'product' ),
+			)
+		);
+
 		// Upsell Of (one-way)
-		register_content_relation_type( 'upsell_of', array(
-			'label'            => __( 'Upsell Of', 'native-content-relationships' ),
-			'bidirectional'    => false,
-			'allowed_post_types' => array( 'product' ),
-		) );
-		
+		register_content_relation_type(
+			'upsell_of',
+			array(
+				'label'              => __( 'Upsell Of', 'native-content-relationships' ),
+				'bidirectional'      => false,
+				'allowed_post_types' => array( 'product' ),
+			)
+		);
+
 		// Cross Sell Of (one-way)
-		register_content_relation_type( 'cross_sell_of', array(
-			'label'            => __( 'Cross Sell Of', 'native-content-relationships' ),
-			'bidirectional'    => false,
-			'allowed_post_types' => array( 'product' ),
-		) );
-		
+		register_content_relation_type(
+			'cross_sell_of',
+			array(
+				'label'              => __( 'Cross Sell Of', 'native-content-relationships' ),
+				'bidirectional'      => false,
+				'allowed_post_types' => array( 'product' ),
+			)
+		);
+
 		// Bundle Contains (one-way)
-		register_content_relation_type( 'bundle_contains', array(
-			'label'            => __( 'Bundle Contains', 'native-content-relationships' ),
-			'bidirectional'    => false,
-			'allowed_post_types' => array( 'product' ),
-		) );
-		
+		register_content_relation_type(
+			'bundle_contains',
+			array(
+				'label'              => __( 'Bundle Contains', 'native-content-relationships' ),
+				'bidirectional'      => false,
+				'allowed_post_types' => array( 'product' ),
+			)
+		);
+
 		// Accessory Of (one-way)
-		register_content_relation_type( 'accessory_of', array(
-			'label'            => __( 'Accessory Of', 'native-content-relationships' ),
-			'bidirectional'    => false,
-			'allowed_post_types' => array( 'product' ),
-		) );
-		
+		register_content_relation_type(
+			'accessory_of',
+			array(
+				'label'              => __( 'Accessory Of', 'native-content-relationships' ),
+				'bidirectional'      => false,
+				'allowed_post_types' => array( 'product' ),
+			)
+		);
+
 		// Replacement For (one-way)
-		register_content_relation_type( 'replacement_for', array(
-			'label'            => __( 'Replacement For', 'native-content-relationships' ),
-			'bidirectional'    => false,
-			'allowed_post_types' => array( 'product' ),
-		) );
-		
+		register_content_relation_type(
+			'replacement_for',
+			array(
+				'label'              => __( 'Replacement For', 'native-content-relationships' ),
+				'bidirectional'      => false,
+				'allowed_post_types' => array( 'product' ),
+			)
+		);
+
 		// Order Contains Product (one-way)
-		register_content_relation_type( 'order_contains_product', array(
-			'label'            => __( 'Order Contains Product', 'native-content-relationships' ),
-			'bidirectional'    => false,
-			'allowed_post_types' => array( 'shop_order', 'product' ),
-		) );
+		register_content_relation_type(
+			'order_contains_product',
+			array(
+				'label'              => __( 'Order Contains Product', 'native-content-relationships' ),
+				'bidirectional'      => false,
+				'allowed_post_types' => array( 'shop_order', 'product' ),
+			)
+		);
 	}
-	
+
 	/**
 	 * Add product meta box
 	 */
 	public function add_product_meta_box() {
-		$settings = WPNCR_Settings::get_instance();
-		$enabled = $settings->get_setting( 'wc_enabled_objects', array( 'product' ) );
-		
+		$settings = NATICORE_Settings::get_instance();
+		$enabled  = $settings->get_setting( 'wc_enabled_objects', array( 'product' ) );
+
 		if ( in_array( 'product', $enabled, true ) ) {
 			add_meta_box(
-				'wpncr_product_relationships',
+				'naticore_product_relationships',
 				__( 'Product Relationships', 'native-content-relationships' ),
 				array( $this, 'render_product_meta_box' ),
 				'product',
@@ -151,11 +177,11 @@ class WPNCR_WooCommerce {
 				'default'
 			);
 		}
-		
+
 		// Variations (optional)
 		if ( in_array( 'product_variation', $enabled, true ) ) {
 			add_meta_box(
-				'wpncr_product_relationships',
+				'naticore_product_relationships',
 				__( 'Product Relationships', 'native-content-relationships' ),
 				array( $this, 'render_product_meta_box' ),
 				'product_variation',
@@ -164,7 +190,7 @@ class WPNCR_WooCommerce {
 			);
 		}
 	}
-	
+
 	/**
 	 * Render product meta box
 	 */
@@ -178,12 +204,33 @@ class WPNCR_WooCommerce {
 			'accessory_of',
 			'replacement_for',
 		);
-		
-		wp_nonce_field( 'wpncr_save_relationships', 'wpncr_nonce' );
-		
+
+		// Apply use-case presets (settings UI)
+		$settings        = NATICORE_Settings::get_instance();
+		$use_accessories = (int) $settings->get_setting( 'wc_use_case_accessories', 0 );
+		$use_related     = (int) $settings->get_setting( 'wc_use_case_related_products', 0 );
+		$use_bundles     = (int) $settings->get_setting( 'wc_use_case_bundles', 0 );
+
+		$preset_enabled = ( $use_accessories || $use_related || $use_bundles );
+		if ( $preset_enabled ) {
+			$filtered = array();
+			if ( $use_accessories ) {
+				$filtered[] = 'accessory_of';
+			}
+			if ( $use_related ) {
+				$filtered[] = 'related_product';
+			}
+			if ( $use_bundles ) {
+				$filtered[] = 'bundle_contains';
+			}
+			$wc_types = array_values( array_unique( $filtered ) );
+		}
+
+		wp_nonce_field( 'naticore_save_relationships', 'naticore_nonce' );
+
 		// Get existing relationships
-		$relationships = WPNCR_API::get_all_relations( $post->ID );
-		
+		$relationships = NATICORE_API::get_all_relations( $post->ID );
+
 		// Group by relation type (only WC types)
 		$grouped = array();
 		foreach ( $relationships as $rel ) {
@@ -194,56 +241,64 @@ class WPNCR_WooCommerce {
 				$grouped[ $rel->type ][] = $rel;
 			}
 		}
-		
+
 		// Get registered relation types
-		$relation_types = WPNCR_Relation_Types::get_types();
+		$relation_types    = NATICORE_Relation_Types::get_types();
 		$wc_relation_types = array_intersect_key( $relation_types, array_flip( $wc_types ) );
-		
+
 		?>
-		<div id="wpncr-relationships">
+		<div id="naticore-relationships">
 			<p class="description">
 				<?php esc_html_e( 'Manage product relationships. These extend, not replace, WooCommerce linked products.', 'native-content-relationships' ); ?>
 			</p>
-			<div class="wpncr-relation-types">
-				<?php foreach ( $wc_relation_types as $type => $type_info ) : 
+			<div class="naticore-relation-types">
+				<?php
+				foreach ( $wc_relation_types as $type => $type_info ) :
 					$type_label = isset( $type_info['label'] ) ? $type_info['label'] : ucwords( str_replace( '_', ' ', $type ) );
-				?>
-					<div class="wpncr-relation-type" data-type="<?php echo esc_attr( $type ); ?>">
+					?>
+					<div class="naticore-relation-type" data-type="<?php echo esc_attr( $type ); ?>">
 						<h4><?php echo esc_html( $type_label ); ?></h4>
-						<div class="wpncr-relations-list" data-relation-type="<?php echo esc_attr( $type ); ?>">
+						<div class="naticore-relations-list" data-relation-type="<?php echo esc_attr( $type ); ?>">
 							<?php if ( isset( $grouped[ $type ] ) ) : ?>
-								<?php foreach ( $grouped[ $type ] as $rel ) : 
+								<?php
+								foreach ( $grouped[ $type ] as $rel ) :
 									$related_post = get_post( $rel->to_id );
-									if ( ! $related_post ) continue;
-									
-									$rel_type_info = WPNCR_Relation_Types::get_type( $type );
+									if ( ! $related_post ) {
+										continue;
+									}
+
+									$rel_type_info    = NATICORE_Relation_Types::get_type( $type );
 									$is_bidirectional = $rel_type_info && $rel_type_info['bidirectional'];
-								?>
-									<div class="wpncr-relation-item" data-related-id="<?php echo esc_attr( $rel->to_id ); ?>">
-										<span class="wpncr-relation-title">
-											<span class="wpncr-direction-indicator" title="<?php echo esc_attr( $is_bidirectional ? __( 'Bidirectional', 'native-content-relationships' ) : __( 'One-way', 'native-content-relationships' ) ); ?>">
+									?>
+									<div class="naticore-relation-item" data-related-id="<?php echo esc_attr( $rel->to_id ); ?>">
+										<span class="naticore-relation-title">
+											<span class="naticore-direction-indicator" title="<?php echo esc_attr( $is_bidirectional ? __( 'Bidirectional', 'native-content-relationships' ) : __( 'One-way', 'native-content-relationships' ) ); ?>">
 												<?php echo esc_html( $is_bidirectional ? '↔' : '→' ); ?>
 											</span>
 											<a href="<?php echo esc_url( get_edit_post_link( $rel->to_id ) ); ?>" target="_blank">
 												<?php echo esc_html( get_the_title( $rel->to_id ) ); ?>
 											</a>
-											<?php if ( $related_post->post_type === 'product' ) : 
+											<?php
+											if ( $related_post->post_type === 'product' ) :
 												$product = wc_get_product( $rel->to_id );
 												if ( $product ) :
-											?>
+													?>
 												<small>(<?php echo esc_html( $product->get_sku() ? $product->get_sku() : esc_html__( 'No SKU', 'native-content-relationships' ) ); ?>)</small>
-											<?php endif; endif; ?>
+													<?php
+											endif;
+endif;
+											?>
 										</span>
-										<button type="button" class="button wpncr-remove-relation" data-from-id="<?php echo esc_attr( $post->ID ); ?>" data-to-id="<?php echo esc_attr( $rel->to_id ); ?>" data-relation-type="<?php echo esc_attr( $type ); ?>">
+										<button type="button" class="button naticore-remove-relation" data-from-id="<?php echo esc_attr( $post->ID ); ?>" data-to-id="<?php echo esc_attr( $rel->to_id ); ?>" data-relation-type="<?php echo esc_attr( $type ); ?>">
 											<?php esc_html_e( 'Remove', 'native-content-relationships' ); ?>
 										</button>
 									</div>
 								<?php endforeach; ?>
 							<?php endif; ?>
 						</div>
-						<div class="wpncr-add-relation">
-							<input type="text" class="wpncr-search-input wpncr-product-search" placeholder="<?php esc_attr_e( 'Search products by name or SKU...', 'native-content-relationships' ); ?>" data-relation-type="<?php echo esc_attr( $type ); ?>" />
-							<div class="wpncr-search-results" style="display: none;"></div>
+						<div class="naticore-add-relation">
+							<input type="text" class="naticore-search-input naticore-product-search" placeholder="<?php esc_attr_e( 'Search products by name or SKU...', 'native-content-relationships' ); ?>" data-relation-type="<?php echo esc_attr( $type ); ?>" />
+							<div class="naticore-search-results" style="display: none;"></div>
 						</div>
 					</div>
 				<?php endforeach; ?>
@@ -251,7 +306,7 @@ class WPNCR_WooCommerce {
 		</div>
 		<?php
 	}
-	
+
 	/**
 	 * Add WooCommerce settings tab
 	 */
@@ -260,22 +315,22 @@ class WPNCR_WooCommerce {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only tab parameter
 			$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
 			?>
-			<a href="?page=wpncr-settings&tab=woocommerce" class="nav-tab <?php echo esc_attr( $active_tab === 'woocommerce' ? 'nav-tab-active' : '' ); ?>">
+			<a href="?page=naticore-settings&tab=woocommerce" class="nav-tab <?php echo esc_attr( $active_tab === 'woocommerce' ? 'nav-tab-active' : '' ); ?>">
 				<?php esc_html_e( 'WooCommerce', 'native-content-relationships' ); ?>
 			</a>
 			<?php
 		}
 	}
-	
+
 	/**
 	 * Render WooCommerce settings
 	 */
 	public function render_wc_settings() {
-		$settings = WPNCR_Settings::get_instance();
-		$option_name = $this->option_name;
+		$settings        = NATICORE_Settings::get_instance();
+		$option_name     = $this->option_name;
 		$enabled_objects = $settings->get_setting( 'wc_enabled_objects', array( 'product' ) );
-		$sync_upsells = $settings->get_setting( 'wc_sync_upsells', 0 );
-		
+		$sync_upsells    = $settings->get_setting( 'wc_sync_upsells', 0 );
+
 		?>
 		<h2><?php esc_html_e( 'WooCommerce Settings', 'native-content-relationships' ); ?></h2>
 		<p><?php esc_html_e( 'Configure WooCommerce-specific relationship features.', 'native-content-relationships' ); ?></p>
@@ -323,7 +378,7 @@ class WPNCR_WooCommerce {
 		</table>
 		<?php
 	}
-	
+
 	/**
 	 * Sync WooCommerce upsells
 	 */
@@ -332,21 +387,21 @@ class WPNCR_WooCommerce {
 		if ( ! $product ) {
 			return;
 		}
-		
+
 		$upsell_ids = $product->get_upsell_ids();
-		
+
 		// Remove existing upsell_of relations
-		$existing = WPNCR_API::get_related( $product_id, 'upsell_of' );
+		$existing = NATICORE_API::get_related( $product_id, 'upsell_of' );
 		foreach ( $existing as $rel ) {
-			WPNCR_API::remove_relation( $product_id, $rel['id'], 'upsell_of' );
+			NATICORE_API::remove_relation( $product_id, $rel['id'], 'upsell_of' );
 		}
-		
+
 		// Add new relations
 		foreach ( $upsell_ids as $upsell_id ) {
-			WPNCR_API::add_relation( $product_id, $upsell_id, 'upsell_of' );
+			NATICORE_API::add_relation( $product_id, $upsell_id, 'upsell_of' );
 		}
 	}
-	
+
 	/**
 	 * Sync WooCommerce cross-sells
 	 */
@@ -355,21 +410,21 @@ class WPNCR_WooCommerce {
 		if ( ! $product ) {
 			return;
 		}
-		
+
 		$cross_sell_ids = $product->get_cross_sell_ids();
-		
+
 		// Remove existing cross_sell_of relations
-		$existing = WPNCR_API::get_related( $product_id, 'cross_sell_of' );
+		$existing = NATICORE_API::get_related( $product_id, 'cross_sell_of' );
 		foreach ( $existing as $rel ) {
-			WPNCR_API::remove_relation( $product_id, $rel['id'], 'cross_sell_of' );
+			NATICORE_API::remove_relation( $product_id, $rel['id'], 'cross_sell_of' );
 		}
-		
+
 		// Add new relations
 		foreach ( $cross_sell_ids as $cross_sell_id ) {
-			WPNCR_API::add_relation( $product_id, $cross_sell_id, 'cross_sell_of' );
+			NATICORE_API::add_relation( $product_id, $cross_sell_id, 'cross_sell_of' );
 		}
 	}
-	
+
 	/**
 	 * Create order relationships
 	 */
@@ -378,33 +433,33 @@ class WPNCR_WooCommerce {
 		if ( ! $order ) {
 			return;
 		}
-		
+
 		$items = $order->get_items();
 		foreach ( $items as $item ) {
 			$product_id = $item->get_product_id();
 			if ( $product_id ) {
-				WPNCR_API::add_relation( $order_id, $product_id, 'order_contains_product' );
+				NATICORE_API::add_relation( $order_id, $product_id, 'order_contains_product' );
 			}
 		}
 	}
-	
+
 	/**
 	 * Add query helpers
 	 */
 	public function add_query_helpers( $helpers ) {
 		$helpers['wp_get_related_products'] = array(
-			'callback' => array( $this, 'get_related_products' ),
+			'callback'    => array( $this, 'get_related_products' ),
 			'description' => __( 'Get related products for a product ID', 'native-content-relationships' ),
 		);
 		return $helpers;
 	}
-	
+
 	/**
 	 * Get related products helper
 	 */
 	public function get_related_products( $product_id, $type = 'related_product', $args = array() ) {
 		$related = wp_get_related( $product_id, $type, $args );
-		
+
 		$products = array();
 		foreach ( $related as $rel ) {
 			$product = wc_get_product( $rel['id'] );
@@ -412,7 +467,7 @@ class WPNCR_WooCommerce {
 				$products[] = $product;
 			}
 		}
-		
+
 		return $products;
 	}
 }
@@ -421,10 +476,10 @@ class WPNCR_WooCommerce {
 if ( ! function_exists( 'wp_get_related_products' ) ) {
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
 	function wp_get_related_products( $product_id, $type = 'related_product', $args = array() ) {
-		if ( ! class_exists( 'WPNCR_WooCommerce' ) ) {
-			return new WP_Error( 'class_not_loaded', 'WPNCR_WooCommerce class is not loaded yet.' );
+		if ( ! class_exists( 'NATICORE_WooCommerce' ) ) {
+			return new WP_Error( 'class_not_loaded', 'NATICORE_WooCommerce class is not loaded yet.' );
 		}
-		$wc = WPNCR_WooCommerce::get_instance();
+		$wc = NATICORE_WooCommerce::get_instance();
 		if ( ! $wc->is_active() ) {
 			return array();
 		}

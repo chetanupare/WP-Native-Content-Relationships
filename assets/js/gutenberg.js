@@ -6,14 +6,14 @@
 	var SelectControl = components.SelectControl;
 	var RangeControl = components.RangeControl;
 	
-	var relationTypes = (typeof wpncrBlockData !== 'undefined' && wpncrBlockData.relationTypes) ? wpncrBlockData.relationTypes : [
+	var relationTypes = (typeof naticoreBlockData !== 'undefined' && naticoreBlockData.relationTypes) ? naticoreBlockData.relationTypes : [
 		{ label: 'Related To', value: 'related_to' },
 		{ label: 'Parent Of', value: 'parent_of' },
 		{ label: 'Depends On', value: 'depends_on' },
 		{ label: 'References', value: 'references' }
 	];
 	
-	registerBlockType('wpncr/related-posts', {
+	registerBlockType('naticore/related-posts', {
 		title: 'Related Content',
 		icon: 'admin-links',
 		category: 'widgets',
@@ -35,7 +35,7 @@
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
 			
-			return el('div', { className: 'wpncr-related-posts-block-editor' },
+			return el('div', { className: 'naticore-related-posts-block-editor' },
 				el(InspectorControls, {},
 					el(PanelBody, { title: 'Settings' },
 						el(SelectControl, {
@@ -68,7 +68,7 @@
 						})
 					)
 				),
-				el('div', { className: 'wpncr-placeholder', style: { padding: '20px', background: '#f6f7f7', border: '1px solid #dcdcde', borderRadius: '2px' } },
+				el('div', { className: 'naticore-placeholder', style: { padding: '20px', background: '#f6f7f7', border: '1px solid #dcdcde', borderRadius: '2px' } },
 					el('strong', {}, 'Related Content Block'),
 					el('p', {}, attributes.limit + ' posts (Type: ' + attributes.relationType + ', Order: ' + attributes.order + ')')
 				)

@@ -9,23 +9,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WPNCR_WPML {
-	
+class NATICORE_WPML {
+
 	/**
 	 * Instance
 	 */
 	private static $instance = null;
-	
+
 	/**
 	 * Is WPML/Polylang active
 	 */
 	private $is_multilingual_active = false;
-	
+
 	/**
 	 * Plugin type (wpml or polylang)
 	 */
 	private $plugin_type = '';
-	
+
 	/**
 	 * Get instance
 	 */
@@ -35,7 +35,7 @@ class WPNCR_WPML {
 		}
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Constructor
 	 */
@@ -43,52 +43,52 @@ class WPNCR_WPML {
 		// Check if WPML is active
 		if ( defined( 'ICL_SITEPRESS_VERSION' ) || class_exists( 'SitePress' ) ) {
 			$this->is_multilingual_active = true;
-			$this->plugin_type = 'wpml';
+			$this->plugin_type            = 'wpml';
 		}
 		// Check if Polylang is active
 		elseif ( function_exists( 'pll_current_language' ) ) {
 			$this->is_multilingual_active = true;
-			$this->plugin_type = 'polylang';
+			$this->plugin_type            = 'polylang';
 		}
-		
+
 		if ( ! $this->is_multilingual_active ) {
 			return; // Exit early if no multilingual plugin is active
 		}
-		
+
 		// Initialize multilingual features
 		$this->init();
 	}
-	
+
 	/**
 	 * Initialize multilingual features
 	 */
 	private function init() {
 		// Add settings
-		$settings = WPNCR_Settings::get_instance();
+		$settings = NATICORE_Settings::get_instance();
 		if ( $settings->get_setting( 'multilingual_mirror', 0 ) ) {
 			// Mirror relationships across translations
-			add_action( 'wpncr_relation_added', array( $this, 'mirror_relationship' ), 10, 4 );
-			add_action( 'wpncr_relation_removed', array( $this, 'unmirror_relationship' ), 10, 3 );
+			add_action( 'naticore_relation_added', array( $this, 'mirror_relationship' ), 10, 4 );
+			add_action( 'naticore_relation_removed', array( $this, 'unmirror_relationship' ), 10, 3 );
 		}
-		
+
 		// Add settings tab
-		add_action( 'wpncr_settings_tabs', array( $this, 'add_multilingual_settings_tab' ) );
+		add_action( 'naticore_settings_tabs', array( $this, 'add_multilingual_settings_tab' ) );
 	}
-	
+
 	/**
 	 * Check if multilingual is active
 	 */
 	public function is_active() {
 		return $this->is_multilingual_active;
 	}
-	
+
 	/**
 	 * Get plugin type
 	 */
 	public function get_plugin_type() {
 		return $this->plugin_type;
 	}
-	
+
 	/**
 	 * Get translation ID (WPML)
 	 */
@@ -99,7 +99,7 @@ class WPNCR_WPML {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Get translation ID (Polylang)
 	 */
@@ -109,13 +109,13 @@ class WPNCR_WPML {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Get all translations of a post
 	 */
 	private function get_all_translations( $post_id ) {
 		$translations = array( $post_id );
-		
+
 		if ( $this->plugin_type === 'wpml' ) {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook
 			$trid = apply_filters( 'wpml_element_trid', null, $post_id );
@@ -137,51 +137,51 @@ class WPNCR_WPML {
 				}
 			}
 		}
-		
+
 		return $translations;
 	}
-	
+
 	/**
 	 * Mirror relationship across translations
 	 */
 	public function mirror_relationship( $relation_id, $from_id, $to_id, $type ) {
 		$from_translations = $this->get_all_translations( $from_id );
-		$to_translations = $this->get_all_translations( $to_id );
-		
+		$to_translations   = $this->get_all_translations( $to_id );
+
 		// Create relationships between all translation pairs
 		foreach ( $from_translations as $from_trans_id ) {
 			foreach ( $to_translations as $to_trans_id ) {
 				if ( $from_trans_id == $from_id && $to_trans_id == $to_id ) {
 					continue; // Skip original
 				}
-				
+
 				// Check if relation already exists
-				if ( ! WPNCR_API::is_related( $from_trans_id, $to_trans_id, $type ) ) {
-					WPNCR_API::add_relation( $from_trans_id, $to_trans_id, $type );
+				if ( ! NATICORE_API::is_related( $from_trans_id, $to_trans_id, $type ) ) {
+					NATICORE_API::add_relation( $from_trans_id, $to_trans_id, $type );
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Unmirror relationship across translations
 	 */
 	public function unmirror_relationship( $from_id, $to_id, $type ) {
 		$from_translations = $this->get_all_translations( $from_id );
-		$to_translations = $this->get_all_translations( $to_id );
-		
+		$to_translations   = $this->get_all_translations( $to_id );
+
 		// Remove relationships between all translation pairs
 		foreach ( $from_translations as $from_trans_id ) {
 			foreach ( $to_translations as $to_trans_id ) {
 				if ( $from_trans_id == $from_id && $to_trans_id == $to_id ) {
 					continue; // Skip original (already removed)
 				}
-				
-				WPNCR_API::remove_relation( $from_trans_id, $to_trans_id, $type );
+
+				NATICORE_API::remove_relation( $from_trans_id, $to_trans_id, $type );
 			}
 		}
 	}
-	
+
 	/**
 	 * Add multilingual settings tab
 	 */
@@ -190,22 +190,22 @@ class WPNCR_WPML {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only tab parameter
 			$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
 			?>
-			<a href="?page=wpncr-settings&tab=multilingual" class="nav-tab <?php echo esc_attr( $active_tab === 'multilingual' ? 'nav-tab-active' : '' ); ?>">
+			<a href="?page=naticore-settings&tab=multilingual" class="nav-tab <?php echo esc_attr( $active_tab === 'multilingual' ? 'nav-tab-active' : '' ); ?>">
 				<?php esc_html_e( 'Multilingual', 'native-content-relationships' ); ?>
 			</a>
 			<?php
 		}
 	}
-	
+
 	/**
 	 * Render multilingual settings
 	 */
 	public function render_multilingual_settings() {
-		$settings = WPNCR_Settings::get_instance();
-		$option_name = 'wpncr_settings';
-		$mirror = $settings->get_setting( 'multilingual_mirror', 0 );
+		$settings    = NATICORE_Settings::get_instance();
+		$option_name = 'naticore_settings';
+		$mirror      = $settings->get_setting( 'multilingual_mirror', 0 );
 		$plugin_name = $this->plugin_type === 'wpml' ? 'WPML' : 'Polylang';
-		
+
 		?>
 		<h2><?php esc_html_e( 'Multilingual Settings', 'native-content-relationships' ); ?></h2>
 		<?php

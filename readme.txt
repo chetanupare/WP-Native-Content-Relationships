@@ -1,36 +1,37 @@
 === Native Content Relationships ===
 Contributors: chetanupare
-Tags: relationships, content, posts, pages, custom-post-types
+Tags: relationships, content, posts, pages, custom-post-types, users, terms, many-to-many
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
 
-Adds native content relationships to WordPress without abusing post meta or taxonomies.
+Add first-class content relationships to WordPress using a dedicated, indexed database table. Supports posts-to-posts, posts-to-users, posts-to-terms, and their reverse relationships.
 
 == Description ==
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/chetanupare)
+WordPress does not provide a first-class way to relate content items (posts, pages, custom post types, media, users, terms). Many implementations rely on post meta or taxonomies, which can be limiting for querying, directionality, and long-term maintainability.
 
-WordPress has no first-class way to relate content. Existing solutions use post meta (slow, not queryable), taxonomies (misused, no direction), or builder-specific storage (fragile, not reusable).
+Native Content Relationships provides a structured relationship layer with semantic relationship types, so relationships are:
 
-This plugin provides a proper relational database layer with semantic relationship types, making content relationships:
-
-* Queryable (native WP_Query support)
+* Queryable (WP_Query integration)
 * Scalable (indexed database table)
-* Semantic (relationship types with meaning)
+* Semantic (typed relationships)
 * Direction-aware (one-way or bidirectional)
-* Validated (prevents loops, invalid data)
-* Future-proof (works with any theme/builder)
+* Validated (helps prevent invalid data)
+* Theme and editor agnostic
+* **User-aware** (posts-to-users and users-to-posts)
+* **Term-aware** (posts-to-terms and terms-to-posts)
 
 = Key Features =
 
 * **Relationship API**: Clean PHP functions (`wp_add_relation()`, `wp_get_related()`, `wp_is_related()`)
+* **Complete Relationship Support**: Posts, users, and terms with full bidirectional support
 * **Database Layer**: Custom indexed table for fast queries
-* **Admin UI**: Minimal meta box for managing relationships
+* **Admin UI**: Modern interface for managing post, user, and term relationships
 * **Query Integration**: Extend WP_Query with relationship support
 * **REST API**: Full REST endpoints for headless WordPress
 * **WooCommerce**: Optional integration with product relationships
@@ -40,11 +41,31 @@ This plugin provides a proper relational database layer with semantic relationsh
 
 = Use Cases =
 
+**Post-to-Post Relationships:**
 * Products → Accessories
 * Courses → Lessons
 * Documentation → Related articles
 * Articles → Sources
 * Media → Usage tracking
+
+**Post-to-User Relationships:**
+* Posts → Favorite posts (users favorite content)
+* Posts → Bookmarked content
+* Posts → Multiple authors/contributors
+* Posts → Assigned team members
+
+**Post-to-Term Relationships:**
+* Posts → Categorized in specific categories
+* Posts → Tagged with specific tags
+* Posts → Featured in special collections
+* Posts → Grouped by custom taxonomies
+
+**User-to-Post & Term-to-Post Relationships:**
+* Users → Authored posts
+* Users → Bookmarked posts
+* Users → Favorite content
+* Terms → Related posts (reverse queries)
+* Categories → Featured posts
 
 = Architecture =
 
@@ -54,6 +75,9 @@ This plugin uses a proper relational database table instead of post meta, provid
 * Bidirectional queries (forward and reverse)
 * Scalable to millions of relationships
 * Database-native logic
+* **User relationship support** with optimized indexes
+* **Term relationship support** with optimized indexes
+* **Multi-type relationships** in a single, unified system
 
 == Compatibility ==
 
@@ -101,6 +125,45 @@ This plugin integrates seamlessly with popular WordPress plugins and themes. All
 * **Auto-detected:** Yes
 * **Tested up to:** Rank Math 1.0.200
 
+= User Relationships =
+
+This plugin now supports full user-to-post and post-to-user relationships, providing functionality similar to Posts 2 Posts but with a modern architecture.
+
+**Built-in User Relationship Types:**
+* **Favorite Posts**: Users can mark posts as favorites
+* **Bookmarked By**: Users can bookmark content for later
+* **Authored By**: Multiple authors/contributors per post
+
+**User Interface:**
+* **User Profile**: Manage related posts from user profile screen
+* **Post Editor**: Manage related users from post edit screen
+* **AJAX Search**: Real-time search for users and posts
+* **Modern UI**: Clean, responsive interface matching WordPress admin style
+
+**API Examples:**
+```php
+// Add a user's favorite post
+wp_add_relation( $user_id, $post_id, 'favorite_posts', null, 'post' );
+
+// Get a user's favorite posts
+$posts = wp_get_related_users( $user_id, 'favorite_posts' );
+
+// Get users who favorited a post
+$users = wp_get_related( $post_id, 'favorite_posts', array(), 'user' );
+
+// Add a post-to-term relationship
+wp_add_relation( $post_id, $term_id, 'categorized_as', null, 'term' );
+
+// Get a post's related terms
+$terms = wp_get_related_terms( $post_id, 'categorized_as' );
+
+// Get a term's related posts
+$posts = wp_get_term_related_posts( $term_id, 'categorized_as' );
+
+// Get all related items (posts, users, terms)
+$all = wp_get_related( $post_id, null, array(), 'all' );
+```
+
 = Page Builder Integration =
 
 **Elementor:**
@@ -134,7 +197,7 @@ No theme modifications required. The plugin uses WordPress core APIs and follows
 
 == Installation ==
 
-1. Upload the plugin files to `/wp-content/plugins/wp-native-content-relationships/`
+1. Upload the plugin files to `/wp-content/plugins/native-content-relationships/`
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. The database table will be created automatically
 4. Go to Settings → Content Relationships to configure
@@ -161,16 +224,74 @@ Yes. The plugin automatically detects WPML or Polylang and can mirror relationsh
 
 Yes. Use `wp_get_related()` or extend WP_Query with the `content_relation` parameter.
 
+= Does this support user relationships? =
+
+Yes! The plugin supports full posts-to-users and users-to-posts relationships with a modern admin interface, similar to Posts 2 Posts but with better performance and UX.
+
+= Does this support term relationships? =
+
+Yes! The plugin supports full posts-to-terms and terms-to-posts relationships, allowing you to create semantic connections beyond WordPress's native taxonomy system. This includes categories, tags, and custom taxonomies.
+
+= How is this different from Posts 2 Posts? =
+
+Native Content Relationships provides:
+* Modern architecture with semantic relationship types
+* Better performance (indexed database table)
+* User relationships support
+* Term relationships support
+* Modern admin interface with AJAX
+* REST API endpoints
+* WooCommerce integration
+* Better validation and integrity checks
+* Active development and maintenance
+
+= How is this different from MB Relationships? =
+
+Native Content Relationships provides:
+* Posts-to-Terms support (MB Relationships doesn't support this)
+* User relationships support (MB Relationships doesn't support this)
+* Semantic relationship types vs generic connections
+* Better performance and validation
+* Modern admin interface
+* Active development and maintenance
+
 = Does this send data externally? =
 
 No. This plugin stores all relationship data locally in your WordPress database and does not send any data externally.
 
 == Screenshots ==
 
-1. This is General Settings corresponds to screenshot-1.png.
-2. This is Relations Explaination, corresponding to screenshot-2.png.
+1. Settings screen with tabbed interface.
+2. Relationship overview screen.
+3. User profile with related posts management.
+4. Post editor with user relationships management.
+5. Term editor with related posts management.
 
 == Changelog ==
+
+= 1.0.11 =
+* **NEW**: Full posts-to-terms and terms-to-posts relationships support
+* **NEW**: Term editor metabox for managing related posts
+* **NEW**: Built-in term relationship types (categorized_as, tagged_with, featured_in)
+* **NEW**: Term relationship API functions (wp_get_related_terms, wp_get_term_related_posts)
+* **NEW**: AJAX-powered search for terms in addition to users and posts
+* **NEW**: Unified relationship system supporting posts, users, and terms
+* **IMPROVED**: Database schema with optimized indexes for all relationship types
+* **IMPROVED**: Updated readme with comprehensive term relationship documentation
+
+= 1.0.10 =
+* **NEW**: Full posts-to-users and users-to-posts relationships support
+* **NEW**: User profile metabox for managing related posts
+* **NEW**: Post editor metabox for managing related users
+* **NEW**: Built-in user relationship types (favorite_posts, bookmarked_by, authored_by)
+* **NEW**: AJAX-powered search for users and posts
+* **NEW**: Modern admin interface matching WordPress style
+* **NEW**: User relationship API functions (wp_get_related_users, wp_get_user_related_posts)
+* **IMPROVED**: Database schema with optimized indexes for user relationships
+* **IMPROVED**: Updated readme with comprehensive user relationship documentation
+
+= 1.0.6 =
+* Maintenance release.
 
 = 1.0.0 =
 * Initial release
@@ -188,6 +309,9 @@ No. This plugin stores all relationship data locally in your WordPress database 
 * Import/export functionality
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+Maintenance release.
 
 = 1.0.0 =
 Initial release. No upgrade needed.
@@ -216,161 +340,143 @@ This plugin provides a comprehensive API for developers to work with content rel
 * Returns: Boolean
 
 **Remove a relationship:**
-`wp_remove_relation( $from_id, $to_id, $type )`
-* Parameters: Source post ID, target post ID, relationship type
-* Returns: Boolean or WP_Error
+    wp_remove_relation( $from_id, $to_id, $type )
+    * Parameters: Source post ID, target post ID, relationship type
+    * Returns: Boolean or WP_Error
 
 == Fluent API ==
 
 For a more chainable, IDE-friendly API:
 
-```php
-// Create a relationship
-wpncr()
-    ->from( 123 )
-    ->to( 456 )
-    ->type( 'references' )
-    ->create();
+    // Create a relationship
+    naticore()
+        ->from( 123 )
+        ->to( 456 )
+        ->type( 'references' )
+        ->create();
 
-// Get related posts
-$related = wpncr()
-    ->from( 123 )
-    ->type( 'references' )
-    ->get( array( 'limit' => 10 ) );
+    // Get related posts
+    $related = naticore()
+        ->from( 123 )
+        ->type( 'references' )
+        ->get( array( 'limit' => 10 ) );
 
-// Check if related
-$is_related = wpncr()
-    ->from( 123 )
-    ->to( 456 )
-    ->type( 'references' )
-    ->exists();
+    // Check if related
+    $is_related = naticore()
+        ->from( 123 )
+        ->to( 456 )
+        ->type( 'references' )
+        ->exists();
 
-// Remove relationship
-wpncr()
-    ->from( 123 )
-    ->to( 456 )
-    ->type( 'references' )
-    ->remove();
-```
+    // Remove relationship
+    naticore()
+        ->from( 123 )
+        ->to( 456 )
+        ->type( 'references' )
+        ->remove();
 
 == Registering Custom Relationship Types ==
 
 Register your own relationship types with:
 
-```php
-register_content_relation_type( 'custom_type', array(
-    'label'            => 'Custom Relationship',
-    'bidirectional'    => false,
-    'allowed_post_types' => array( 'post', 'page' ),
-) );
-```
-
-Hook into `wpncr_register_relation_types` action:
-
-```php
-add_action( 'wpncr_register_relation_types', function() {
-    register_content_relation_type( 'part_of', array(
-        'label'            => 'Part Of',
+    register_content_relation_type( 'custom_type', array(
+        'label'            => 'Custom Relationship',
         'bidirectional'    => false,
         'allowed_post_types' => array( 'post', 'page' ),
     ) );
-} );
-```
+
+Hook into `naticore_register_relation_types` action:
+
+    add_action( 'naticore_register_relation_types', function() {
+        register_content_relation_type( 'part_of', array(
+            'label'            => 'Part Of',
+            'bidirectional'    => false,
+            'allowed_post_types' => array( 'post', 'page' ),
+        ) );
+    } );
 
 == WP_Query Integration ==
 
 Query posts by relationships:
 
-```php
-$query = new WP_Query( array(
-    'post_type' => 'post',
-    'content_relation' => array(
-        'post_id' => 123,
-        'type' => 'references',
-        'direction' => 'outgoing', // or 'incoming' or 'both'
-    ),
-) );
-```
+    $query = new WP_Query( array(
+        'post_type'         => 'post',
+        'content_relation'  => array(
+            'post_id'    => 123,
+            'type'       => 'references',
+            'direction'  => 'outgoing', // or 'incoming' or 'both'
+        ),
+    ) );
 
 Or use the cleaner syntax:
 
-```php
-$query = new WP_Query( array(
-    'post_type' => 'post',
-    'wpcr' => array(
-        'from' => 123,
-        'type' => 'references',
-    ),
-) );
-```
+    $query = new WP_Query( array(
+        'post_type' => 'post',
+        'naticore'  => array(
+            'from' => 123,
+            'type' => 'references',
+        ),
+    ) );
 
 == REST API ==
 
-The plugin exposes REST endpoints at `/wp-json/wpncr/v1/`:
+The plugin exposes REST endpoints at `/wp-json/naticore/v1/`:
 
-* `GET /wp-json/wpncr/v1/relations/{post_id}` - Get all relationships for a post
-* `POST /wp-json/wpncr/v1/relations` - Create a relationship
-* `DELETE /wp-json/wpncr/v1/relations/{relation_id}` - Delete a relationship
+* `GET /wp-json/naticore/v1/relations/{post_id}` - Get all relationships for a post
+* `POST /wp-json/naticore/v1/relations` - Create a relationship
+* `DELETE /wp-json/naticore/v1/relations/{relation_id}` - Delete a relationship
 
 == Hooks and Filters ==
 
 **Actions:**
-* `wpncr_register_relation_types` - Register custom relationship types
-* `wpncr_relation_added` - Fires after a relationship is created
-* `wpncr_relation_removed` - Fires after a relationship is removed
+* `naticore_register_relation_types` - Register custom relationship types
+* `naticore_relation_added` - Fires after a relationship is created
+* `naticore_relation_removed` - Fires after a relationship is removed
 
 **Filters:**
-* `wpncr_relation_is_allowed` - Modify whether a relationship is allowed
-* `wpncr_get_related_args` - Modify arguments for get_related queries
-* `wpncr_relation_types` - Modify registered relationship types
+* `naticore_relation_is_allowed` - Modify whether a relationship is allowed
+* `naticore_get_related_args` - Modify arguments for get_related queries
+* `naticore_relation_types` - Modify registered relationship types
 
 == Examples ==
 
 **Link a product to accessories:**
-```php
-$product_id = 123;
-$accessory_ids = array( 456, 789, 101 );
+    $product_id = 123;
+    $accessory_ids = array( 456, 789, 101 );
 
-foreach ( $accessory_ids as $accessory_id ) {
-    wp_add_relation( $product_id, $accessory_id, 'accessory_of' );
-}
-```
+    foreach ( $accessory_ids as $accessory_id ) {
+        wp_add_relation( $product_id, $accessory_id, 'accessory_of' );
+    }
 
 **Get all related posts:**
-```php
-$related = wp_get_related( get_the_ID(), 'related_to' );
-foreach ( $related as $post ) {
-    echo '<a href="' . get_permalink( $post->ID ) . '">' . $post->post_title . '</a>';
-}
-```
+    $related = wp_get_related( get_the_ID(), 'related_to' );
+    foreach ( $related as $post ) {
+        echo '<a href="' . get_permalink( $post->ID ) . '">' . $post->post_title . '</a>';
+    }
 
 **Query posts that reference the current post:**
-```php
-$query = new WP_Query( array(
-    'content_relation' => array(
-        'post_id' => get_the_ID(),
-        'type' => 'references',
-        'direction' => 'incoming',
-    ),
-) );
-```
+    $query = new WP_Query( array(
+        'content_relation' => array(
+            'post_id'    => get_the_ID(),
+            'type'       => 'references',
+            'direction'  => 'incoming',
+        ),
+    ) );
 
 **Check if two posts are related:**
-```php
-if ( wp_is_related( $post_id_1, $post_id_2, 'related_to' ) ) {
-    echo 'These posts are related!';
-}
-```
+    if ( wp_is_related( $post_id_1, $post_id_2, 'related_to' ) ) {
+        echo 'These posts are related!';
+    }
 
 == WP-CLI Commands ==
 
 Manage relationships via command line:
 
-* `wp content-relations list --post=123` - List relationships for a post
-* `wp content-relations add --from=123 --to=456 --type=references` - Add relationship
-* `wp content-relations remove --from=123 --to=456 --type=references` - Remove relationship
-* `wp content-relations check` - Check database integrity
-* `wp content-relations sync --dry-run` - Sync relationships (dry run)
+* `wp naticore list --post=123` - List relationships for a post
+* `wp naticore add --from=123 --to=456 --type=references` - Add relationship
+* `wp naticore remove --from=123 --to=456 --type=references` - Remove relationship
+* `wp naticore check` - Check database integrity
+* `wp naticore sync --dry-run` - Sync relationships (dry run)
 
 == Database Schema ==
 
@@ -387,15 +493,13 @@ Relationships are stored in `{prefix}_content_relations` table:
 
 All API functions return `WP_Error` objects on failure. Check for errors:
 
-```php
-$result = wp_add_relation( $from_id, $to_id, 'references' );
+    $result = wp_add_relation( $from_id, $to_id, 'references' );
 
-if ( is_wp_error( $result ) ) {
-    echo 'Error: ' . $result->get_error_message();
-} else {
-    echo 'Relationship created with ID: ' . $result;
-}
-```
+    if ( is_wp_error( $result ) ) {
+        echo 'Error: ' . $result->get_error_message();
+    } else {
+        echo 'Relationship created with ID: ' . $result;
+    }
 
 Common error codes:
 * `self_relation` - Cannot relate a post to itself
@@ -407,9 +511,9 @@ Common error codes:
 == Capabilities ==
 
 The plugin uses WordPress capabilities:
-* `wpncr_create_relation` - Create relationships (default: edit_posts)
-* `wpncr_delete_relation` - Delete relationships (default: edit_posts)
-* `wpncr_manage_relation_types` - Manage relationship types (default: manage_options)
+* `naticore_create_relation` - Create relationships (default: edit_posts)
+* `naticore_delete_relation` - Delete relationships (default: edit_posts)
+* `naticore_manage_relation_types` - Manage relationship types (default: manage_options)
 
 == Performance Tips ==
 

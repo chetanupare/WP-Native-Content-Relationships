@@ -11,44 +11,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Fluent API entry point
- * 
- * @return WPNCR_Fluent_API
+ *
+ * @return NATICORE_Fluent_API
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional global API function
-function wpncr() {
-	if ( ! class_exists( 'WPNCR_Fluent_API' ) ) {
-		return new WP_Error( 'class_not_loaded', 'WPNCR_Fluent_API class is not loaded yet.' );
+function naticore() {
+	if ( ! class_exists( 'NATICORE_Fluent_API' ) ) {
+		return NATICORE_Fluent_API::get_instance();
 	}
-	return WPNCR_Fluent_API::get_instance();
+	return NATICORE_Fluent_API::get_instance();
 }
 
-class WPNCR_Fluent_API {
-	
+class NATICORE_Fluent_API {
+
 	/**
 	 * Instance
 	 */
 	private static $instance = null;
-	
+
 	/**
 	 * Current from_id
 	 */
 	private $from_id = null;
-	
+
 	/**
 	 * Current to_id
 	 */
 	private $to_id = null;
-	
+
 	/**
 	 * Current type
 	 */
 	private $type = 'related_to';
-	
+
 	/**
 	 * Current direction
 	 */
 	private $direction = null;
-	
+
 	/**
 	 * Get instance
 	 */
@@ -58,7 +58,7 @@ class WPNCR_Fluent_API {
 		}
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Constructor
 	 */
@@ -66,20 +66,20 @@ class WPNCR_Fluent_API {
 		// Reset state
 		$this->reset();
 	}
-	
+
 	/**
 	 * Reset state
 	 */
 	private function reset() {
-		$this->from_id = null;
-		$this->to_id = null;
-		$this->type = 'related_to';
+		$this->from_id   = null;
+		$this->to_id     = null;
+		$this->type      = 'related_to';
 		$this->direction = null;
 	}
-	
+
 	/**
 	 * Set source post ID
-	 * 
+	 *
 	 * @param int $post_id
 	 * @return $this
 	 */
@@ -87,10 +87,10 @@ class WPNCR_Fluent_API {
 		$this->from_id = absint( $post_id );
 		return $this;
 	}
-	
+
 	/**
 	 * Set target post ID
-	 * 
+	 *
 	 * @param int $post_id
 	 * @return $this
 	 */
@@ -98,10 +98,10 @@ class WPNCR_Fluent_API {
 		$this->to_id = absint( $post_id );
 		return $this;
 	}
-	
+
 	/**
 	 * Set relationship type
-	 * 
+	 *
 	 * @param string $type
 	 * @return $this
 	 */
@@ -109,10 +109,10 @@ class WPNCR_Fluent_API {
 		$this->type = sanitize_text_field( $type );
 		return $this;
 	}
-	
+
 	/**
 	 * Set direction
-	 * 
+	 *
 	 * @param string $direction 'one-way' or 'bidirectional'
 	 * @return $this
 	 */
@@ -120,10 +120,10 @@ class WPNCR_Fluent_API {
 		$this->direction = sanitize_text_field( $direction );
 		return $this;
 	}
-	
+
 	/**
 	 * Create relationship
-	 * 
+	 *
 	 * @return int|WP_Error Relationship ID on success, WP_Error on failure
 	 */
 	public function create() {
@@ -132,38 +132,37 @@ class WPNCR_Fluent_API {
 			$this->reset();
 			return $error;
 		}
-		
-		$result = WPNCR_API::add_relation( $this->from_id, $this->to_id, $this->type, $this->direction );
+
+		$result = NATICORE_API::add_relation( $this->from_id, $this->to_id, $this->type, $this->direction );
 		$this->reset();
 		return $result;
 	}
-	
+
 	/**
 	 * Get related posts
-	 * 
+	 *
 	 * @param array $args Optional arguments (limit, direction, etc.)
 	 * @return array Array of related posts
 	 */
 	public function get( $args = array() ) {
 		if ( ! $this->from_id ) {
-			$error = new WP_Error( 'missing_params', __( 'from() must be called before get().', 'native-content-relationships' ) );
 			$this->reset();
-			return $error;
+			return array();
 		}
-		
+
 		$defaults = array(
 			'limit' => null,
 		);
-		$args = wp_parse_args( $args, $defaults );
-		
-		$result = WPNCR_API::get_related( $this->from_id, $this->type, $args );
+		$args     = wp_parse_args( $args, $defaults );
+
+		$result = NATICORE_API::get_related( $this->from_id, $this->type, $args );
 		$this->reset();
 		return $result;
 	}
-	
+
 	/**
 	 * Check if related
-	 * 
+	 *
 	 * @return bool|WP_Error
 	 */
 	public function exists() {
@@ -172,15 +171,15 @@ class WPNCR_Fluent_API {
 			$this->reset();
 			return $error;
 		}
-		
-		$result = WPNCR_API::is_related( $this->from_id, $this->to_id, $this->type );
+
+		$result = NATICORE_API::is_related( $this->from_id, $this->to_id, $this->type );
 		$this->reset();
 		return $result;
 	}
-	
+
 	/**
 	 * Remove relationship
-	 * 
+	 *
 	 * @return bool|WP_Error
 	 */
 	public function remove() {
@@ -189,8 +188,8 @@ class WPNCR_Fluent_API {
 			$this->reset();
 			return $error;
 		}
-		
-		$result = WPNCR_API::remove_relation( $this->from_id, $this->to_id, $this->type );
+
+		$result = NATICORE_API::remove_relation( $this->from_id, $this->to_id, $this->type );
 		$this->reset();
 		return $result;
 	}

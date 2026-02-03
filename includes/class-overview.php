@@ -10,22 +10,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
-	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-class WPNCR_Overview_Table extends WP_List_Table {
-	
+class NATICORE_Overview_Table extends WP_List_Table {
+
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		parent::__construct( array(
-			'singular' => 'relationship',
-			'plural'   => 'relationships',
-			'ajax'     => false,
-		) );
+		parent::__construct(
+			array(
+				'singular' => 'relationship',
+				'plural'   => 'relationships',
+				'ajax'     => false,
+			)
+		);
 	}
-	
+
 	/**
 	 * Get columns
 	 */
@@ -38,7 +40,7 @@ class WPNCR_Overview_Table extends WP_List_Table {
 			'date'      => __( 'Date', 'native-content-relationships' ),
 		);
 	}
-	
+
 	/**
 	 * Get sortable columns
 	 */
@@ -48,54 +50,58 @@ class WPNCR_Overview_Table extends WP_List_Table {
 			'type' => array( 'type', false ),
 		);
 	}
-	
+
 	/**
 	 * Prepare items
 	 */
 	public function prepare_items() {
 		global $wpdb;
-		
-		$per_page = $this->get_items_per_page( 'relationships_per_page', 20 );
+
+		$per_page     = $this->get_items_per_page( 'relationships_per_page', 20 );
 		$current_page = $this->get_pagenum();
-		$offset = ( $current_page - 1 ) * $per_page;
-		
+		$offset       = ( $current_page - 1 ) * $per_page;
+
 		// Get total count
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
 		$total_items = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations`" );
-		
+
 		// Get items
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only sorting parameters
 		$orderby = isset( $_GET['orderby'] ) ? sanitize_sql_orderby( wp_unslash( $_GET['orderby'] ) ) : 'created_at';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Display-only sorting parameter, sanitized by strtoupper comparison
 		$order = isset( $_GET['order'] ) && strtoupper( wp_unslash( $_GET['order'] ) ) === 'ASC' ? 'ASC' : 'DESC';
-		
+
 		// Sanitize orderby and order for SQL (whitelisting - never prepared)
 		$allowed_orderby = array( 'from_id', 'to_id', 'type', 'direction', 'created_at' );
-		$orderby = in_array( $orderby, $allowed_orderby, true ) ? $orderby : 'created_at';
-		$allowed_order = array( 'ASC', 'DESC' );
-		$order = in_array( strtoupper( $order ), $allowed_order, true ) ? strtoupper( $order ) : 'DESC';
-		
+		$orderby         = in_array( $orderby, $allowed_orderby, true ) ? $orderby : 'created_at';
+		$allowed_order   = array( 'ASC', 'DESC' );
+		$order           = in_array( strtoupper( $order ), $allowed_order, true ) ? strtoupper( $order ) : 'DESC';
+
 		// ORDER BY column and direction are whitelisted, LIMIT/OFFSET use prepare()
-		$orderby_escaped = esc_sql( $orderby );
-		$order_escaped = esc_sql( $order ); // Already whitelisted above, this is extra safety
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table query, orderby/order are whitelisted
+		// Build ORDER BY clause safely using sprintf with strict whitelist
+		$order_clause = 'ORDER BY created_at DESC'; // default
+		if ( in_array( $orderby, $allowed_orderby, true ) && in_array( $order, $allowed_order, true ) ) {
+			$order_clause = sprintf( 'ORDER BY %s %s', $orderby, $order );
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with safe ORDER BY
 		$items = $wpdb->get_results(
 			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $orderby_escaped and $order_escaped are whitelisted and escaped above
-				"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY {$orderby_escaped} {$order_escaped} LIMIT %d OFFSET %d",
+				"SELECT * FROM `{$wpdb->prefix}content_relations` {$order_clause} LIMIT %d OFFSET %d",
 				$per_page,
 				$offset
 			)
 		);
-		
+
 		$this->items = $items;
-		$this->set_pagination_args( array(
-			'total_items' => $total_items,
-			'per_page'    => $per_page,
-			'total_pages' => ceil( $total_items / $per_page ),
-		) );
+		$this->set_pagination_args(
+			array(
+				'total_items' => (int) $total_items,
+				'per_page'    => $per_page,
+				'total_pages' => (int) ceil( $total_items / $per_page ),
+			)
+		);
 	}
-	
+
 	/**
 	 * Column: From
 	 */
@@ -104,7 +110,7 @@ class WPNCR_Overview_Table extends WP_List_Table {
 		if ( ! $post ) {
 			return '<em>' . __( 'Deleted', 'native-content-relationships' ) . '</em>';
 		}
-		
+
 		$edit_link = get_edit_post_link( $item->from_id );
 		return sprintf(
 			'<a href="%s">%s</a> <small>(%s)</small>',
@@ -113,16 +119,16 @@ class WPNCR_Overview_Table extends WP_List_Table {
 			esc_html( get_post_type_object( $post->post_type )->labels->singular_name )
 		);
 	}
-	
+
 	/**
 	 * Column: Type
 	 */
 	protected function column_type( $item ) {
-		$type_info = WPNCR_Relation_Types::get_type( $item->type );
-		$label = $type_info ? $type_info['label'] : $item->type;
+		$type_info = NATICORE_Relation_Types::get_type( $item->type );
+		$label     = $type_info ? $type_info['label'] : $item->type;
 		return '<code>' . esc_html( $item->type ) . '</code><br><small>' . esc_html( $label ) . '</small>';
 	}
-	
+
 	/**
 	 * Column: To
 	 */
@@ -131,7 +137,7 @@ class WPNCR_Overview_Table extends WP_List_Table {
 		if ( ! $post ) {
 			return '<em>' . __( 'Deleted', 'native-content-relationships' ) . '</em>';
 		}
-		
+
 		$edit_link = get_edit_post_link( $item->to_id );
 		return sprintf(
 			'<a href="%s">%s</a> <small>(%s)</small>',
@@ -140,7 +146,7 @@ class WPNCR_Overview_Table extends WP_List_Table {
 			esc_html( get_post_type_object( $post->post_type )->labels->singular_name )
 		);
 	}
-	
+
 	/**
 	 * Column: Direction
 	 */
@@ -150,21 +156,21 @@ class WPNCR_Overview_Table extends WP_List_Table {
 		}
 		return '→ ' . __( 'One-way', 'native-content-relationships' );
 	}
-	
+
 	/**
 	 * Column: Date
 	 */
 	protected function column_date( $item ) {
 		return mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $item->created_at );
 	}
-	
+
 	/**
 	 * Default column
 	 */
 	protected function column_default( $item, $column_name ) {
 		return '';
 	}
-	
+
 	/**
 	 * No items message
 	 */
@@ -173,13 +179,13 @@ class WPNCR_Overview_Table extends WP_List_Table {
 	}
 }
 
-class WPNCR_Overview {
-	
+class NATICORE_Overview {
+
 	/**
 	 * Instance
 	 */
 	private static $instance = null;
-	
+
 	/**
 	 * Get instance
 	 */
@@ -189,7 +195,7 @@ class WPNCR_Overview {
 		}
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Constructor
 	 */
@@ -198,11 +204,11 @@ class WPNCR_Overview {
 		if ( ! is_admin() ) {
 			return;
 		}
-		
+
 		add_action( 'admin_menu', array( $this, 'add_overview_page' ) );
 		add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
 	}
-	
+
 	/**
 	 * Add overview page
 	 */
@@ -211,24 +217,27 @@ class WPNCR_Overview {
 			__( 'Content Relationships', 'native-content-relationships' ),
 			__( 'Content Relationships', 'native-content-relationships' ),
 			'manage_options',
-			'wpncr-overview',
+			'naticore-overview',
 			array( $this, 'render_overview_page' )
 		);
-		
+
 		add_action( "load-$hook", array( $this, 'add_screen_options' ) );
 	}
-	
+
 	/**
 	 * Add screen options
 	 */
 	public function add_screen_options() {
-		add_screen_option( 'per_page', array(
-			'label'   => __( 'Relationships per page', 'native-content-relationships' ),
-			'default' => 20,
-			'option'  => 'relationships_per_page',
-		) );
+		add_screen_option(
+			'per_page',
+			array(
+				'label'   => __( 'Relationships per page', 'native-content-relationships' ),
+				'default' => 20,
+				'option'  => 'relationships_per_page',
+			)
+		);
 	}
-	
+
 	/**
 	 * Set screen option
 	 */
@@ -238,7 +247,7 @@ class WPNCR_Overview {
 		}
 		return $status;
 	}
-	
+
 	/**
 	 * Render overview page
 	 */
@@ -246,19 +255,19 @@ class WPNCR_Overview {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		
-		$table = new WPNCR_Overview_Table();
+
+		$table = new NATICORE_Overview_Table();
 		$table->prepare_items();
-		
+
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<p class="description" id="wpncr-overview-desc">
+			<p class="description" id="naticore-overview-desc">
 				<?php esc_html_e( 'Overview of all content relationships. To edit relationships, use the "Related Content" meta box on individual posts.', 'native-content-relationships' ); ?>
 			</p>
 			
-			<form method="get" aria-labelledby="wpncr-overview-desc">
-				<input type="hidden" name="page" value="wpncr-overview" />
+			<form method="get" aria-labelledby="naticore-overview-desc">
+				<input type="hidden" name="page" value="naticore-overview" />
 				<?php $table->display(); ?>
 			</form>
 		</div>

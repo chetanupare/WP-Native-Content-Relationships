@@ -1,21 +1,21 @@
-#wpncr-relationships {
+#ncore-relationships {
 	margin: 20px 0;
 }
 
-.wpncr-relation-types {
+.ncore-relation-types {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 	gap: 20px;
 }
 
-.wpncr-relation-type {
+.ncore-relation-type {
 	border: 1px solid #dcdcde;
 	border-radius: 2px;
 	padding: 15px;
 	background: #f6f7f7;
 }
 
-.wpncr-relation-type h4 {
+.ncore-relation-type h4 {
 	margin: 0 0 15px 0;
 	padding-bottom: 10px;
 	border-bottom: 1px solid #dcdcde;
@@ -24,12 +24,12 @@
 	font-weight: 600;
 }
 
-.wpncr-relations-list {
+.ncore-relations-list {
 	min-height: 50px;
 	margin-bottom: 15px;
 }
 
-.wpncr-relation-item {
+.ncore-relation-item {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -40,47 +40,47 @@
 	border-radius: 2px;
 }
 
-.wpncr-relation-item:hover {
+.ncore-relation-item:hover {
 	background: #f6f7f7;
 }
 
-.wpncr-relation-title {
+.ncore-relation-title {
 	flex: 1;
 	display: flex;
 	align-items: center;
 	gap: 8px;
 }
 
-.wpncr-direction-indicator {
+.ncore-direction-indicator {
 	color: #646970;
 	font-size: 16px;
 	font-weight: normal;
 }
 
-.wpncr-relation-title a {
+.ncore-relation-title a {
 	text-decoration: none;
 	color: #2271b1;
 	font-weight: 500;
 }
 
-.wpncr-relation-title a:hover {
+.ncore-relation-title a:hover {
 	color: #135e96;
 }
 
-.wpncr-relation-title small {
+.ncore-relation-title small {
 	color: #646970;
 	margin-left: 5px;
 }
 
-.wpncr-remove-relation {
+.ncore-remove-relation {
 	margin-left: 10px;
 }
 
-.wpncr-add-relation {
+.ncore-add-relation {
 	position: relative;
 }
 
-.wpncr-search-input {
+.ncore-search-input {
 	width: 100%;
 	padding: 8px;
 	border: 1px solid #dcdcde;
@@ -89,7 +89,7 @@
 	background: #fff;
 }
 
-.wpncr-search-results {
+.ncore-search-results {
 	position: absolute;
 	top: 100%;
 	left: 0;
@@ -104,37 +104,37 @@
 	box-shadow: none;
 }
 
-.wpncr-search-result {
+.ncore-search-result {
 	padding: 10px;
 	cursor: pointer;
 	border-bottom: 1px solid #eee;
 }
 
-.wpncr-search-result:hover {
+.ncore-search-result:hover {
 	background: #f0f0f0;
 }
 
-.wpncr-search-result:last-child {
+.ncore-search-result:last-child {
 	border-bottom: none;
 }
 
-.wpncr-search-result strong {
+.ncore-search-result strong {
 	display: block;
 	color: #2271b1;
 }
 
-.wpncr-search-result small {
+.ncore-search-result small {
 	color: #646970;
 }
 
-.wpncr-loading,
-.wpncr-no-results,
-.wpncr-error {
+.ncore-loading,
+.ncore-no-results,
+.ncore-error {
 	padding: 10px;
 	text-align: center;
 	color: #646970;
 }
 
-.wpncr-error {
+.ncore-error {
 	color: #d63638;
 }
