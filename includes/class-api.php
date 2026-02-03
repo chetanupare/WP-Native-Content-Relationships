@@ -702,40 +702,52 @@ class NATICORE_API {
 
 		if ( $has_type && $has_limit ) {
 			if ( $has_to_type_filter ) {
-				$sql    = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s AND type = %s ORDER BY created_at DESC LIMIT %d";
-				$values = array( $post_id, $to_type, $type, $limit );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s AND type = %s ORDER BY created_at DESC LIMIT %d",
+					$post_id, $to_type, $type, $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			} else {
-				$sql    = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s ORDER BY created_at DESC LIMIT %d";
-				$values = array( $post_id, $type, $limit );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s ORDER BY created_at DESC LIMIT %d",
+					$post_id, $type, $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			}
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 		} elseif ( $has_type ) {
 			if ( $has_to_type_filter ) {
-				$sql    = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s AND type = %s ORDER BY created_at DESC";
-				$values = array( $post_id, $to_type, $type );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s AND type = %s ORDER BY created_at DESC",
+					$post_id, $to_type, $type
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			} else {
-				$sql    = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s ORDER BY created_at DESC";
-				$values = array( $post_id, $type );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s ORDER BY created_at DESC",
+					$post_id, $type
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			}
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 		} elseif ( $has_limit ) {
 			if ( $has_to_type_filter ) {
-				$sql    = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC LIMIT %d";
-				$values = array( $post_id, $to_type, $limit );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC LIMIT %d",
+					$post_id, $to_type, $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			} else {
-				$sql    = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY created_at DESC LIMIT %d";
-				$values = array( $post_id, $limit );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY created_at DESC LIMIT %d",
+					$post_id, $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			}
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 		} else {
 			if ( $has_to_type_filter ) {
-				$sql    = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC";
-				$values = array( $post_id, $to_type );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC",
+					$post_id, $to_type
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			} else {
-				$sql    = "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY created_at DESC";
-				$values = array( $post_id );
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY created_at DESC",
+					$post_id
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			}
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 		}
 
 		if ( ! $results ) {
@@ -870,13 +882,16 @@ class NATICORE_API {
 		}
 
 		if ( $type ) {
-			$sql    = "SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s AND type = %s";
-			$values = array( $from_id, $to_id, $to_type, $type );
+			$result = $wpdb->get_var( $wpdb->prepare(
+				"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s AND type = %s",
+				$from_id, $to_id, $to_type, $type
+			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 		} else {
-			$sql    = "SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s";
-			$values = array( $from_id, $to_id, $to_type );
+			$result = $wpdb->get_var( $wpdb->prepare(
+				"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s",
+				$from_id, $to_id, $to_type
+			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 		}
-		$result = $wpdb->get_var( $wpdb->prepare( $sql, $values ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 
 		$exists = (int) $result > 0;
 
