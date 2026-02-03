@@ -73,113 +73,133 @@ class NATICORE_Overview_Table extends WP_List_Table {
 		$current_page = $this->get_pagenum();
 		$offset       = ( $current_page - 1 ) * $per_page;
 
-		// Get total count
+		// Get total count.
 		$total_cache_key = 'naticore_admin_total_count';
-		$total_items = wp_cache_get( $total_cache_key, 'naticore_relationships' );
+		$total_items     = wp_cache_get( $total_cache_key, 'naticore_relationships' );
 		if ( false === $total_items ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 			$total_items = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations`" );
 			wp_cache_set( $total_cache_key, $total_items, 'naticore_relationships', 5 * MINUTE_IN_SECONDS );
 		}
 
-		// Get items
+		// Get items.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only sorting parameters
 		$orderby = isset( $_GET['orderby'] ) ? sanitize_sql_orderby( wp_unslash( $_GET['orderby'] ) ) : 'created_at';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Display-only sorting parameter, sanitized by strtoupper comparison
 		$order = isset( $_GET['order'] ) && strtoupper( wp_unslash( $_GET['order'] ) ) === 'ASC' ? 'ASC' : 'DESC';
 
-		// Sanitize orderby and order for SQL (whitelisting - never prepared)
+		// Sanitize orderby and order for SQL (whitelisting - never prepared).
 		$allowed_orderby = array( 'from_id', 'to_id', 'type', 'direction', 'created_at' );
 		$orderby         = in_array( $orderby, $allowed_orderby, true ) ? $orderby : 'created_at';
 		$allowed_order   = array( 'ASC', 'DESC' );
 		$order           = in_array( strtoupper( $order ), $allowed_order, true ) ? strtoupper( $order ) : 'DESC';
 
-		// Create cache key for paginated results
+		// Create cache key for paginated results.
 		$items_cache_key = sprintf( 'naticore_admin_items_%d_%d_%s_%s', $per_page, $offset, $orderby, $order );
-		$items = wp_cache_get( $items_cache_key, 'naticore_relationships' );
-		
+		$items           = wp_cache_get( $items_cache_key, 'naticore_relationships' );
+
 		if ( false === $items ) {
-			// Build SQL without interpolated ORDER BY fragments (scanner-friendly)
+			// Build SQL without interpolated ORDER BY fragments (scanner-friendly).
 			if ( 'ASC' === $order ) {
 				switch ( $orderby ) {
 					case 'from_id':
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY from_id ASC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY from_id ASC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 					case 'to_id':
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY to_id ASC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY to_id ASC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 					case 'type':
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY type ASC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY type ASC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 					case 'direction':
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY direction ASC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY direction ASC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 					case 'created_at':
 					default:
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY created_at ASC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY created_at ASC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 				}
 			} else {
 				switch ( $orderby ) {
 					case 'from_id':
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY from_id DESC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY from_id DESC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 					case 'to_id':
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY to_id DESC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY to_id DESC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 					case 'type':
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY type DESC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY type DESC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 					case 'direction':
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY direction DESC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY direction DESC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 					case 'created_at':
 					default:
-						$items = $wpdb->get_results( $wpdb->prepare(
-							"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY created_at DESC LIMIT %d OFFSET %d",
-							$per_page,
-							$offset
-						) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
+						$items = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY created_at DESC LIMIT %d OFFSET %d",
+								$per_page,
+								$offset
+							)
+						); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with manual caching
 						break;
 				}
 			}
-			
+
 			// Cache the result for 5 minutes
 			wp_cache_set( $items_cache_key, $items, 'naticore_relationships', 5 * MINUTE_IN_SECONDS );
 		}
