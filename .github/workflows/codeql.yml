@@ -30,12 +30,24 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-        # Exclude vendor directory from analysis
+        # Exclude vendor directory and all its contents from analysis
         exclude: |
-          vendor/
-          node_modules/
+          vendor/**
+          node_modules/**
           *.min.js
           *.min.css
+          .git/**
+          .github/**
+          tests/**
+          tmp/**
+          **/*.test.js
+          **/*UnitTest.js
+          **/*Test.js
+
+    - name: Remove vendor directory before analysis
+      run: |
+        rm -rf vendor/
+        rm -rf node_modules/
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
