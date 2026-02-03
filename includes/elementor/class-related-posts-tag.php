@@ -247,36 +247,25 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 		$order = in_array( $order, $allowed_order, true ) ? $order : 'desc';
 
 		// Build ORDER BY clause safely
+		$order_clause = 'ORDER BY cr.created_at DESC'; // default
 		if ( 'title' === $orderby ) {
 			$order_clause = 'ORDER BY p.post_title ' . strtoupper( $order );
 		} elseif ( 'date' === $orderby ) {
 			$order_clause = 'ORDER BY p.post_date ' . strtoupper( $order );
-		} else {
-			$order_clause = 'ORDER BY cr.created_at ' . strtoupper( $order );
 		}
 
-		// Build query with proper placeholders
-		$where_clauses = array(
-			'cr.to_id = %d',
-			'cr.to_type = %s', 
-			'cr.type = %s',
-			'p.post_status = %s'
-		);
-		$values = array( $post_id, 'post', $type, 'publish' );
-
-		$where_sql = implode( ' AND ', $where_clauses );
-
-		// Query for posts that have relationships to this post
+		// Build complete query with explicit SQL
 		$sql = "SELECT DISTINCT p.ID, p.post_title, p.post_date
 				FROM {$wpdb->prefix}content_relations cr
 				INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
-				WHERE {$where_sql}
+				WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
 				{$order_clause}
 				LIMIT %d";
 
-		$values[] = $limit;
+		$values = array( $post_id, 'post', $type, 'publish', $limit );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- ORDER BY clause is safely constructed with validated values
 		$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 
 		$posts = array();
