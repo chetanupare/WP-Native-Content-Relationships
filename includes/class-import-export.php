@@ -201,7 +201,15 @@ class NATICORE_Import_Export {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Validated by is_uploaded_file()
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- tmp_name is validated by is_uploaded_file() above
 		$tmp_name     = $_FILES['import_file']['tmp_name'];
-		$file_content = file_get_contents( $tmp_name );
+		
+		// Use WP_Filesystem for safe file operations
+		global $wp_filesystem;
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+		
+		$file_content = $wp_filesystem->get_contents( $tmp_name );
 		$data         = json_decode( $file_content, true );
 
 		if ( ! is_array( $data ) ) {

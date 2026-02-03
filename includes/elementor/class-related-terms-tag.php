@@ -33,7 +33,7 @@ class NATICORE_Related_Terms_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 * @return string Tag name
 	 */
 	public function get_name() {
-		return 'ncr-related-terms';
+		return 'naticore-related-terms';
 	}
 
 	/**

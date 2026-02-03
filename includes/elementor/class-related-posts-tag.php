@@ -23,7 +23,7 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 * @return string Tag name
 	 */
 	public function get_name() {
-		return 'ncr-related-posts';
+		return 'naticore-related-posts';
 	}
 
 	/**

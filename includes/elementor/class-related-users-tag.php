@@ -33,7 +33,7 @@ class NATICORE_Related_Users_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 * @return string Tag name
 	 */
 	public function get_name() {
-		return 'ncr-related-users';
+		return 'naticore-related-users';
 	}
 
 	/**

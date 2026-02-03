@@ -42,8 +42,8 @@ class NATICORE_Elementor_Ajax_Handler {
 	 * Constructor
 	 */
 	private function __construct() {
-		add_action( 'wp_ajax_ncr_get_relationship_types', array( $this, 'get_relationship_types' ) );
-		add_action( 'wp_ajax_nopriv_ncr_get_relationship_types', array( $this, 'get_relationship_types' ) );
+		add_action( 'wp_ajax_naticore_get_relationship_types', array( $this, 'get_relationship_types' ) );
+		add_action( 'wp_ajax_nopriv_naticore_get_relationship_types', array( $this, 'get_relationship_types' ) );
 	}
 
 	/**
@@ -52,7 +52,7 @@ class NATICORE_Elementor_Ajax_Handler {
 	public function get_relationship_types() {
 		// Verify nonce
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'ncr_elementor_nonce' ) ) {
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'naticore_elementor_nonce' ) ) {
 			wp_send_json_error( array(
 				'success' => false,
 				'message' => __( 'Security check failed', 'native-content-relationships' )
@@ -62,7 +62,7 @@ class NATICORE_Elementor_Ajax_Handler {
 		$target_type = isset( $_POST['target_type'] ) ? sanitize_text_field( wp_unslash( $_POST['target_type'] ) ) : 'post';
 
 		// Get relationship types
-		$types = NCR_Elementor_Integration::get_relationship_types_for_elementor( $target_type );
+		$types = NATICORE_Elementor_Integration::get_relationship_types_for_elementor( $target_type );
 
 		wp_send_json_success( array(
 			'success' => true,
