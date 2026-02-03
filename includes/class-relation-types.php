@@ -26,37 +26,39 @@ class NATICORE_Relation_Types {
 
 	/**
 	 * Registered relation types
+	 *
 	 * @var array
 	 */
 	private static $types = array();
 
 	/**
 	 * Default relation types
+	 *
 	 * @var array
 	 */
 	private static $default_types = array(
-		'related_to'    => array(
+		'related_to'     => array(
 			'label'              => 'Related To',
 			'bidirectional'      => true,
 			'allowed_post_types' => array(), // Empty = all.
 			'supports_users'     => false,
 			'supports_terms'     => false,
 		),
-		'parent_of'     => array(
+		'parent_of'      => array(
 			'label'              => 'Parent Of',
 			'bidirectional'      => false,
 			'allowed_post_types' => array(),
 			'supports_users'     => false,
 			'supports_terms'     => false,
 		),
-		'depends_on'    => array(
+		'depends_on'     => array(
 			'label'              => 'Depends On',
 			'bidirectional'      => false,
 			'allowed_post_types' => array(),
 			'supports_users'     => false,
 			'supports_terms'     => false,
 		),
-		'references'   => array(
+		'references'     => array(
 			'label'              => 'References',
 			'bidirectional'      => false,
 			'allowed_post_types' => array(),
@@ -101,7 +103,7 @@ class NATICORE_Relation_Types {
 			'from_type'          => 'post',
 			'to_type'            => 'term',
 		),
-		'tagged_with'   => array(
+		'tagged_with'    => array(
 			'label'              => 'Tagged With',
 			'bidirectional'      => false,
 			'allowed_post_types' => array( 'post' ),
@@ -110,7 +112,7 @@ class NATICORE_Relation_Types {
 			'from_type'          => 'post',
 			'to_type'            => 'term',
 		),
-		'featured_in'   => array(
+		'featured_in'    => array(
 			'label'              => 'Featured In',
 			'bidirectional'      => false,
 			'allowed_post_types' => array( 'post', 'page' ),
@@ -125,12 +127,12 @@ class NATICORE_Relation_Types {
 	 * Initialize
 	 */
 	public static function init() {
-		// Register default types
+		// Register default types.
 		foreach ( self::$default_types as $slug => $args ) {
 			self::register( $slug, $args );
 		}
 
-		// Allow filtering
+		// Allow filtering.
 		add_action( 'init', array( __CLASS__, 'register_defaults' ), 5 );
 	}
 
@@ -144,8 +146,8 @@ class NATICORE_Relation_Types {
 	/**
 	 * Register a relationship type
 	 *
-	 * @param string $slug Type slug
-	 * @param array  $args Type arguments
+	 * @param string $slug Type slug.
+	 * @param array  $args Type arguments.
 	 * @return bool|WP_Error
 	 */
 	public static function register( $slug, $args = array() ) {
@@ -282,13 +284,13 @@ class NATICORE_Relation_Types {
 	 * @return array
 	 */
 	public static function get_user_to_post_types() {
-		$types = self::get_types();
+		$types      = self::get_types();
 		$user_types = array();
 
 		foreach ( $types as $slug => $config ) {
-			if ( $config['supports_users'] && 
-				 $config['from_type'] === 'user' && 
-				 $config['to_type'] === 'post' ) {
+			if ( $config['supports_users'] &&
+				$config['from_type'] === 'user' &&
+				$config['to_type'] === 'post' ) {
 				$user_types[ $slug ] = $config['label'];
 			}
 		}
@@ -302,13 +304,13 @@ class NATICORE_Relation_Types {
 	 * @return array
 	 */
 	public static function get_post_to_user_types() {
-		$types = self::get_types();
+		$types      = self::get_types();
 		$post_types = array();
 
 		foreach ( $types as $slug => $config ) {
-			if ( $config['supports_users'] && 
-				 $config['from_type'] === 'user' && 
-				 $config['to_type'] === 'post' ) {
+			if ( $config['supports_users'] &&
+				$config['from_type'] === 'user' &&
+				$config['to_type'] === 'post' ) {
 				// For post-to-user, we use the same types but reverse the direction
 				$post_types[ $slug ] = $config['label'];
 			}
@@ -323,13 +325,13 @@ class NATICORE_Relation_Types {
 	 * @return array
 	 */
 	public static function get_post_to_term_types() {
-		$types = self::get_types();
+		$types      = self::get_types();
 		$term_types = array();
 
 		foreach ( $types as $slug => $config ) {
-			if ( $config['supports_terms'] && 
-				 $config['from_type'] === 'post' && 
-				 $config['to_type'] === 'term' ) {
+			if ( $config['supports_terms'] &&
+				$config['from_type'] === 'post' &&
+				$config['to_type'] === 'term' ) {
 				$term_types[ $slug ] = $config['label'];
 			}
 		}
@@ -343,13 +345,13 @@ class NATICORE_Relation_Types {
 	 * @return array
 	 */
 	public static function get_term_to_post_types() {
-		$types = self::get_types();
+		$types      = self::get_types();
 		$term_types = array();
 
 		foreach ( $types as $slug => $config ) {
-			if ( $config['supports_terms'] && 
-				 $config['from_type'] === 'post' && 
-				 $config['to_type'] === 'term' ) {
+			if ( $config['supports_terms'] &&
+				$config['from_type'] === 'post' &&
+				$config['to_type'] === 'term' ) {
 				// For term-to-post, we use the same types but reverse the direction
 				$term_types[ $slug ] = $config['label'];
 			}
