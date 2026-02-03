@@ -2,27 +2,43 @@
 /**
  * WPML / Polylang Integration
  * Multilingual relationship mirroring
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.10
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * WPML / Polylang Integration
+ *
+ * Provides functionality for managing relationships in multilingual environments,
+ * including automatic mirroring of relationships between different language
+ * versions of content.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.10
+ */
 class NATICORE_WPML {
 
 	/**
 	 * Instance
+	 * @var NATICORE_WPML|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * Is WPML/Polylang active
+	 * @var bool
 	 */
 	private $is_multilingual_active = false;
 
 	/**
 	 * Plugin type (wpml or polylang)
+	 * @var string
 	 */
 	private $plugin_type = '';
 
