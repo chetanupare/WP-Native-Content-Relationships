@@ -2,7 +2,7 @@
 /**
  * Elementor Dynamic Tag: Related Users
  *
- * @package Native Content Relationships
+ * @package NativeContentRelationships
  * @since 1.0.11
  */
 
@@ -15,6 +15,16 @@ if ( ! class_exists( '\Elementor\Core\DynamicTags\Tag' ) ) {
 	return;
 }
 
+/**
+ * Elementor Dynamic Tag: Related Users
+ *
+ * Provides an Elementor dynamic tag to display related users for a given post.
+ * Integrates with the Native Content Relationships plugin to query and
+ * display user relationships in Elementor templates.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.11
+ */
 class NATICORE_Related_Users_Tag extends \Elementor\Core\DynamicTags\Tag {
 
 	/**

@@ -2,6 +2,9 @@
 /**
  * Integrity Checker
  * Silent cleanup of invalid relationships
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.0
  */
 
 // Exit if accessed directly
@@ -9,10 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Integrity Checker
+ *
+ * Provides functionality to check and clean up invalid relationships
+ * that may occur due to deleted content, orphaned relationships, or
+ * data corruption. Runs silently in the background to maintain data integrity.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.0
+ */
 class NATICORE_Integrity {
 
 	/**
 	 * Instance
+	 * @var NATICORE_Integrity|null
 	 */
 	private static $instance = null;
 

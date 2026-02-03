@@ -2,6 +2,9 @@
 /**
  * Relationship Overview Screen
  * Read-only table of all relationships
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.0
  */
 
 // Exit if accessed directly
@@ -13,6 +16,15 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
+/**
+ * Relationship Overview Table
+ *
+ * Displays a read-only table of all relationships in the WordPress admin area.
+ * Extends WP_List_Table to provide standard WordPress admin table functionality.
+ *
+ * @package NativeContentRelationships
+ * @since 1.0.0
+ */
 class NATICORE_Overview_Table extends WP_List_Table {
 
 	/**
