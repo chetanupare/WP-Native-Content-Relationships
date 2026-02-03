@@ -13,18 +13,21 @@ class NATICORE_Settings {
 
 	/**
 	 * Instance
+	 *
 	 * @var NATICORE_Settings|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * Option name
+	 *
 	 * @var string
 	 */
 	private $option_name = 'naticore_settings';
 
 	/**
 	 * Current tab
+	 *
 	 * @var string
 	 */
 	private $current_tab = 'general';
@@ -71,6 +74,11 @@ class NATICORE_Settings {
 		}
 	}
 
+	/**
+	 * Get page slug based on current tab
+	 *
+	 * @return string Page slug
+	 */
 	private function get_page_slug() {
 		switch ( $this->current_tab ) {
 			case 'relationship_types':
@@ -111,16 +119,19 @@ class NATICORE_Settings {
 	 */
 	public function add_settings_page() {
 		add_options_page(
-			__( 'Content Relationships', 'native-content-relationships' ),
-			__( 'Content Relationships', 'native-content-relationships' ),
-			'manage_options',
-			'naticore-settings',
-			array( $this, 'render_settings_page' )
+			__( 'Content Relationships', 'native-content-relationships' ), // Page title.
+			__( 'Content Relationships', 'native-content-relationships' ), // Menu title.
+			'manage_options',                                             // Capability.
+			'naticore-settings',                                          // Menu slug.
+			array( $this, 'render_settings_page' )                      // Callback.
 		);
 	}
 
 	/**
 	 * Add settings link to plugin actions
+	 *
+	 * @param array $links Existing plugin action links
+	 * @return array Modified plugin action links
 	 */
 	public function add_settings_link( $links ) {
 		$settings_link = '<a href="' . admin_url( 'options-general.php?page=naticore-settings' ) . '">' . __( 'Settings', 'native-content-relationships' ) . '</a>';
