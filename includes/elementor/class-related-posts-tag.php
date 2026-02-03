@@ -246,27 +246,41 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 		$allowed_order = array( 'asc', 'desc' );
 		$order = in_array( $order, $allowed_order, true ) ? $order : 'desc';
 
-		// Build ORDER BY clause safely
-		$order_clause = 'ORDER BY cr.created_at DESC'; // default
-		if ( 'title' === $orderby ) {
-			$order_clause = 'ORDER BY p.post_title ' . strtoupper( $order );
-		} elseif ( 'date' === $orderby ) {
-			$order_clause = 'ORDER BY p.post_date ' . strtoupper( $order );
+		$cache_key = sprintf( 'naticore_incoming_posts_%d_%s_%d_%s_%s', absint( $post_id ), sanitize_key( (string) $type ), absint( $limit ), sanitize_key( (string) $orderby ), sanitize_key( (string) $order ) );
+		$cached    = wp_cache_get( $cache_key, 'naticore_relationships' );
+		if ( false !== $cached ) {
+			return $cached;
 		}
 
-		// Build complete query with explicit SQL
-		$sql = "SELECT DISTINCT p.ID, p.post_title, p.post_date
-				FROM {$wpdb->prefix}content_relations cr
-				INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
-				WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
-				{$order_clause}
-				LIMIT %d";
+		$order_dir = ( 'asc' === $order ) ? 'ASC' : 'DESC';
+
+		// Build SQL without interpolated ORDER BY fragments (scanner-friendly)
+		if ( 'title' === $orderby ) {
+			$sql = "SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY p.post_title {$order_dir}
+					LIMIT %d";
+		} elseif ( 'date' === $orderby ) {
+			$sql = "SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY p.post_date {$order_dir}
+					LIMIT %d";
+		} else {
+			$sql = "SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY cr.created_at {$order_dir}
+					LIMIT %d";
+		}
 
 		$values = array( $post_id, 'post', $type, 'publish', $limit );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- ORDER BY clause is safely constructed with validated values
-		$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, $values ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
 
 		$posts = array();
 		foreach ( $results as $row ) {
@@ -276,6 +290,8 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 				'date'  => $row->post_date,
 			);
 		}
+
+		wp_cache_set( $cache_key, $posts, 'naticore_relationships', HOUR_IN_SECONDS );
 
 		return $posts;
 	}

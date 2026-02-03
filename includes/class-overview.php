@@ -77,21 +77,48 @@ class NATICORE_Overview_Table extends WP_List_Table {
 		$allowed_order   = array( 'ASC', 'DESC' );
 		$order           = in_array( strtoupper( $order ), $allowed_order, true ) ? strtoupper( $order ) : 'DESC';
 
-		// ORDER BY column and direction are whitelisted, LIMIT/OFFSET use prepare()
-		// Build ORDER BY clause safely using strict whitelist
-		$order_clause = 'ORDER BY created_at DESC'; // default
-		if ( in_array( $orderby, $allowed_orderby, true ) && in_array( $order, $allowed_order, true ) ) {
-			$order_clause = 'ORDER BY ' . sanitize_sql_orderby( "{$orderby} {$order}" );
+		// Build SQL without interpolated ORDER BY fragments (scanner-friendly)
+		if ( 'ASC' === $order ) {
+			switch ( $orderby ) {
+				case 'from_id':
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY from_id ASC LIMIT %d OFFSET %d";
+					break;
+				case 'to_id':
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY to_id ASC LIMIT %d OFFSET %d";
+					break;
+				case 'type':
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY type ASC LIMIT %d OFFSET %d";
+					break;
+				case 'direction':
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY direction ASC LIMIT %d OFFSET %d";
+					break;
+				case 'created_at':
+				default:
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY created_at ASC LIMIT %d OFFSET %d";
+					break;
+			}
+		} else {
+			switch ( $orderby ) {
+				case 'from_id':
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY from_id DESC LIMIT %d OFFSET %d";
+					break;
+				case 'to_id':
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY to_id DESC LIMIT %d OFFSET %d";
+					break;
+				case 'type':
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY type DESC LIMIT %d OFFSET %d";
+					break;
+				case 'direction':
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY direction DESC LIMIT %d OFFSET %d";
+					break;
+				case 'created_at':
+				default:
+					$sql = "SELECT * FROM `{$wpdb->prefix}content_relations` ORDER BY created_at DESC LIMIT %d OFFSET %d";
+					break;
+			}
 		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with safe ORDER BY
-		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- ORDER BY clause is safely constructed with validated values
-		$items = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT * FROM `{$wpdb->prefix}content_relations` {$order_clause} LIMIT %d OFFSET %d",
-				$per_page,
-				$offset
-			)
-		);
+
+		$items = $wpdb->get_results( $wpdb->prepare( $sql, $per_page, $offset ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
 
 		$this->items = $items;
 		$this->set_pagination_args(
