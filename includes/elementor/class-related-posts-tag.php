@@ -139,20 +139,20 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 		$this->add_control(
 			'order',
 			array(
-				'label'   => __( 'Order', 'native-content-relationships' ),
-				'type'    => \Elementor\Controls_Manager::SELECT,
-				'options' => array(
+				'label'     => __( 'Order', 'native-content-relationships' ),
+				'type'      => \Elementor\Controls_Manager::SELECT,
+				'options'   => array(
 					'desc' => __( 'Descending', 'native-content-relationships' ),
 					'asc'  => __( 'Ascending', 'native-content-relationships' ),
 				),
-				'default' => 'desc',
+				'default'   => 'desc',
 				'condition' => array(
 					'orderby!' => 'random',
 				),
 			)
 		);
 
-		// Separator control
+		// Separator control.
 		$this->add_control(
 			'separator',
 			array(
@@ -160,7 +160,7 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 			)
 		);
 
-		// Fallback text control
+		// Fallback text control.
 		$this->add_control(
 			'fallback',
 			array(
@@ -177,7 +177,7 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 	 * @return array Relationship types options
 	 */
 	private function get_relationship_types() {
-		$types = NATICORE_Relation_Types::get_types();
+		$types   = NATICORE_Relation_Types::get_types();
 		$options = array();
 
 		foreach ( $types as $slug => $type_info ) {
@@ -192,7 +192,7 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 	/**
 	 * Render tag value
 	 *
-	 * @param array $options Tag options
+	 * @param array $options Tag options.
 	 * @return mixed Tag value
 	 */
 	public function render( $options = array() ) {
@@ -217,7 +217,7 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 
 		// Get related posts
 		$related_posts = array();
-		
+
 		if ( 'incoming' === $settings['direction'] ) {
 			// For incoming relationships, we need to query posts that relate to this post
 			$related_posts = $this->get_incoming_related_posts( $post_id, $settings['relationship_type'], $args );
@@ -245,16 +245,16 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 	private function get_incoming_related_posts( $post_id, $type, $args ) {
 		global $wpdb;
 
-		$limit = isset( $args['limit'] ) ? absint( $args['limit'] ) : 10;
+		$limit   = isset( $args['limit'] ) ? absint( $args['limit'] ) : 10;
 		$orderby = isset( $args['orderby'] ) ? sanitize_sql_orderby( $args['orderby'] ) : 'date';
-		$order = isset( $args['order'] ) ? sanitize_key( $args['order'] ) : 'desc';
+		$order   = isset( $args['order'] ) ? sanitize_key( $args['order'] ) : 'desc';
 
 		// Validate order values
 		$allowed_orderby = array( 'date', 'title', 'random' );
-		$orderby = in_array( $orderby, $allowed_orderby, true ) ? $orderby : 'date';
-		
+		$orderby         = in_array( $orderby, $allowed_orderby, true ) ? $orderby : 'date';
+
 		$allowed_order = array( 'asc', 'desc' );
-		$order = in_array( $order, $allowed_order, true ) ? $order : 'desc';
+		$order         = in_array( $order, $allowed_order, true ) ? $order : 'desc';
 
 		$cache_key = sprintf( 'naticore_incoming_posts_%d_%s_%d_%s_%s', absint( $post_id ), sanitize_key( (string) $type ), absint( $limit ), sanitize_key( (string) $orderby ), sanitize_key( (string) $order ) );
 		$cached    = wp_cache_get( $cache_key, 'naticore_relationships' );
@@ -267,70 +267,105 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 		// Build SQL without interpolated ORDER BY fragments (scanner-friendly)
 		if ( 'title' === $orderby ) {
 			if ( 'asc' === $order ) {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+				$results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT DISTINCT p.ID, p.post_title, p.post_date
 					FROM {$wpdb->prefix}content_relations cr
 					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
 					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
 					ORDER BY p.post_title ASC
 					LIMIT %d",
-					$post_id, 'post', $type, 'publish', $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+						$post_id,
+						'post',
+						$type,
+						'publish',
+						$limit
+					)
+				); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
 			} else {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+				$results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT DISTINCT p.ID, p.post_title, p.post_date
 					FROM {$wpdb->prefix}content_relations cr
 					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
 					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
 					ORDER BY p.post_title DESC
 					LIMIT %d",
-					$post_id, 'post', $type, 'publish', $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+						$post_id,
+						'post',
+						$type,
+						'publish',
+						$limit
+					)
+				); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
 			}
 		} elseif ( 'date' === $orderby ) {
 			if ( 'asc' === $order ) {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+				$results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT DISTINCT p.ID, p.post_title, p.post_date
 					FROM {$wpdb->prefix}content_relations cr
 					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
 					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
 					ORDER BY p.post_date ASC
 					LIMIT %d",
-					$post_id, 'post', $type, 'publish', $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+						$post_id,
+						'post',
+						$type,
+						'publish',
+						$limit
+					)
+				); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
 			} else {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+				$results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT DISTINCT p.ID, p.post_title, p.post_date
 					FROM {$wpdb->prefix}content_relations cr
 					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
 					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
 					ORDER BY p.post_date DESC
 					LIMIT %d",
-					$post_id, 'post', $type, 'publish', $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+						$post_id,
+						'post',
+						$type,
+						'publish',
+						$limit
+					)
+				); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
 			}
-		} else {
-			if ( 'asc' === $order ) {
-				$results = $wpdb->get_results( $wpdb->prepare(
-					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+		} elseif ( 'asc' === $order ) {
+				$results = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT DISTINCT p.ID, p.post_title, p.post_date
 					FROM {$wpdb->prefix}content_relations cr
 					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
 					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
 					ORDER BY cr.created_at ASC
 					LIMIT %d",
-					$post_id, 'post', $type, 'publish', $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
-			} else {
-				$results = $wpdb->get_results( $wpdb->prepare(
+						$post_id,
+						'post',
+						$type,
+						'publish',
+						$limit
+					)
+				); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+		} else {
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
 					"SELECT DISTINCT p.ID, p.post_title, p.post_date
 					FROM {$wpdb->prefix}content_relations cr
 					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
 					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
 					ORDER BY cr.created_at DESC
 					LIMIT %d",
-					$post_id, 'post', $type, 'publish', $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
-			}
+					$post_id,
+					'post',
+					$type,
+					'publish',
+					$limit
+				)
+			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+
 		}
 
 		$posts = array();
