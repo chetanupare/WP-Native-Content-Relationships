@@ -26,6 +26,7 @@ class NATICORE_API {
 
 	/**
 	 * Instance
+	 *
 	 * @var NATICORE_API|null
 	 */
 	private static $instance = null;
@@ -185,7 +186,7 @@ class NATICORE_API {
 			return new WP_Error( 'relation_exists', __( 'This relationship already exists.', 'native-content-relationships' ) );
 		}
 
-		// Check for infinite loops (A → B → A) - respect settings
+		// Check for infinite loops (A → B → A) - respect settings.
 		$settings = NATICORE_Settings::get_instance();
 		if ( $settings->get_setting( 'prevent_circular', 1 ) ) {
 			if ( self::would_create_loop( $from_id, $to_id, $type ) ) {
@@ -193,7 +194,7 @@ class NATICORE_API {
 			}
 		}
 
-		// Check max relationships limit
+		// Check max relationships limit.
 		$max_relationships = $settings->get_setting( 'max_relationships', 0 );
 		if ( $max_relationships > 0 ) {
 			$current_count = count( self::get_all_relations( $from_id ) );
@@ -203,12 +204,12 @@ class NATICORE_API {
 			}
 		}
 
-		// Validate relation type exists
+		// Validate relation type exists.
 		if ( ! NATICORE_Relation_Types::exists( $type ) ) {
 			return new WP_Error( 'invalid_relation_type', __( 'Invalid relationship type.', 'native-content-relationships' ) );
 		}
 
-		// Check if post types are allowed for this relation type (skip for user targets)
+		// Check if post types are allowed for this relation type (skip for user targets).
 		if ( 'post' === $to_type ) {
 			if ( ! NATICORE_Relation_Types::are_post_types_allowed( $type, $from_post->post_type, $to_post->post_type ) ) {
 				return new WP_Error( 'post_type_not_allowed', __( 'This relationship type is not allowed between these post types.', 'native-content-relationships' ) );
@@ -217,37 +218,37 @@ class NATICORE_API {
 
 		$type_supports_bidirectional = NATICORE_Relation_Types::is_bidirectional( $type );
 
-		// Determine direction
+		// Determine direction.
 		if ( null === $direction ) {
-			// Default direction is derived from type, but can be overridden by global setting
+			// Default direction is derived from type, but can be overridden by global setting.
 			$settings          = NATICORE_Settings::get_instance();
 			$default_direction = $settings->get_setting( 'default_direction', $type_supports_bidirectional ? 'bidirectional' : 'unidirectional' );
 			$direction         = 'bidirectional' === $default_direction ? 'bidirectional' : 'unidirectional';
 		}
 
-		// Validate direction value
+		// Validate direction value.
 		if ( ! in_array( $direction, array( 'unidirectional', 'bidirectional' ), true ) ) {
 			$direction = 'unidirectional';
 		}
 
-		// Enforce type capability: one-way types must stay one-way
+		// Enforce type capability: one-way types must stay one-way.
 		if ( ! $type_supports_bidirectional ) {
 			$direction = 'unidirectional';
 		}
 
-		// Generate deterministic hash for this relationship
+		// Generate deterministic hash for this relationship.
 		$relation_hash = self::generate_relation_hash( $from_id, $to_id, $type );
 
-		// Insert relationship
+		// Insert relationship.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table insert
 		$result = $wpdb->insert(
 			$wpdb->prefix . 'content_relations',
 			array(
-				'from_id'   => $from_id,
-				'to_id'     => $to_id,
-				'type'      => $type,
-				'direction' => $direction,
-				'to_type'   => $to_type,
+				'from_id'    => $from_id,
+				'to_id'      => $to_id,
+				'type'       => $type,
+				'direction'  => $direction,
+				'to_type'    => $to_type,
 				'to_user_id' => 'user' === $to_type ? $to_id : null,
 				'to_term_id' => 'term' === $to_type ? $to_id : null,
 			),
@@ -260,35 +261,35 @@ class NATICORE_API {
 
 		$relation_id = $wpdb->insert_id;
 
-		// If bidirectional, create reverse relation
+		// If bidirectional, create reverse relation.
 		if ( 'bidirectional' === $direction && 'post' === $to_type ) {
-			// Only create reverse for post-to-post relationships
+			// Only create reverse for post-to-post relationships.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table insert
 			$wpdb->insert(
 				$wpdb->prefix . 'content_relations',
 				array(
-					'from_id'   => $to_id,
-					'to_id'     => $from_id,
-					'type'      => $type,
-					'direction' => $direction,
-					'to_type'   => 'post',
+					'from_id'    => $to_id,
+					'to_id'      => $from_id,
+					'type'       => $type,
+					'direction'  => $direction,
+					'to_type'    => 'post',
 					'to_user_id' => null,
 				),
 				array( '%d', '%d', '%s', '%s', '%s', '%d' )
 			);
 		}
 
-		// Create relation object for hooks
+		// Create relation object for hooks.
 		$relation_object = (object) array(
-			'id'        => $relation_id,
-			'from_id'   => $from_id,
-			'to_id'     => $to_id,
-			'type'      => $type,
-			'direction' => $direction,
-			'to_type'   => $to_type,
+			'id'         => $relation_id,
+			'from_id'    => $from_id,
+			'to_id'      => $to_id,
+			'type'       => $type,
+			'direction'  => $direction,
+			'to_type'    => $to_type,
 			'to_user_id' => 'user' === $to_type ? $to_id : null,
 			'to_term_id' => 'term' === $to_type ? $to_id : null,
-			'hash'      => $relation_hash,
+			'hash'       => $relation_hash,
 		);
 
 		// Fire actions
@@ -552,8 +553,8 @@ class NATICORE_API {
 	 *
 	 * @since 1.0.11
 	 *
-	 * @param int|null $from_id Optional. Source content ID to clear cache for.
-	 * @param int|null $to_id   Optional. Target content ID to clear cache for.
+	 * @param int|null    $from_id Optional. Source content ID to clear cache for.
+	 * @param int|null    $to_id   Optional. Target content ID to clear cache for.
 	 * @param string|null $type Optional. Relationship type to clear cache for.
 	 * @return void
 	 *
@@ -585,7 +586,7 @@ class NATICORE_API {
 
 		// Clear admin cache
 		wp_cache_delete( 'naticore_admin_total_count', 'naticore_relationships' );
-		
+
 		// Clear all admin items cache (pattern-based)
 		wp_cache_delete_group( 'naticore_relationships' );
 	}
@@ -614,10 +615,10 @@ class NATICORE_API {
 	 * @since 1.0.10 Added support for user relationships
 	 * @since 1.0.11 Added support for term relationships and advanced filtering
 	 *
-	 * @param int   $post_id The ID of the source content (post, user, or term)
+	 * @param int    $post_id The ID of the source content (post, user, or term)
 	 * @param string $type    Type of relationship to filter by (optional, null for all types)
-	 * @param array $args    {
-	 *     Optional. Array of query arguments.
+	 * @param array  $args    {
+	 *      Optional. Array of query arguments.
 	 *
 	 *     @type int    $limit    Maximum number of results to return (default: no limit)
 	 *     @type int    $offset   Number of results to skip (for pagination)
@@ -706,14 +707,15 @@ class NATICORE_API {
 		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
 
 		// Create cache key
-		$cache_key = sprintf( 'naticore_get_related_%d_%s_%s_%d_%s', 
-			$post_id, 
-			(string) $type, 
-			$to_type, 
-			$limit, 
+		$cache_key = sprintf(
+			'naticore_get_related_%d_%s_%s_%d_%s',
+			$post_id,
+			(string) $type,
+			$to_type,
+			$limit,
 			isset( $args['orderby'] ) ? sanitize_key( (string) $args['orderby'] ) : 'default'
 		);
-		
+
 		// Check cache first
 		$cached_result = wp_cache_get( $cache_key, 'naticore_relationships' );
 		if ( false !== $cached_result ) {
@@ -768,33 +770,33 @@ class NATICORE_API {
 			$related_items = array();
 			foreach ( $results as $row ) {
 				$item = array(
-					'id'   => absint( $row->to_id ),
-					'type' => $row->type,
+					'id'      => absint( $row->to_id ),
+					'type'    => $row->type,
 					'to_type' => $row->to_type,
 				);
-				
+
 				// Add additional data based on target type
 				if ( 'user' === $row->to_type ) {
 					$user = get_userdata( $row->to_id );
 					if ( $user ) {
 						$item['display_name'] = $user->display_name;
-						$item['user_email'] = $user->user_email;
+						$item['user_email']   = $user->user_email;
 					}
 				} elseif ( 'term' === $row->to_type ) {
 					$term = get_term( $row->to_id );
 					if ( $term && ! is_wp_error( $term ) ) {
-						$item['term_name'] = $term->name;
+						$item['term_name']     = $term->name;
 						$item['term_taxonomy'] = $term->taxonomy;
-						$item['term_slug'] = $term->slug;
+						$item['term_slug']     = $term->slug;
 					}
 				} else {
 					$post = get_post( $row->to_id );
 					if ( $post ) {
 						$item['post_title'] = $post->post_title;
-						$item['post_type'] = $post->post_type;
+						$item['post_type']  = $post->post_type;
 					}
 				}
-				
+
 				$related_items[] = $item;
 			}
 		}
@@ -889,7 +891,7 @@ class NATICORE_API {
 
 		// Create cache key
 		$cache_key = "naticore_exists_{$from_id}_{$to_id}_{$type}_{$to_type}";
-		
+
 		// Check cache first
 		$cached_result = wp_cache_get( $cache_key, 'naticore_relationships' );
 		if ( false !== $cached_result ) {
@@ -897,15 +899,24 @@ class NATICORE_API {
 		}
 
 		if ( $type ) {
-			$result = $wpdb->get_var( $wpdb->prepare(
-				"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s AND type = %s",
-				$from_id, $to_id, $to_type, $type
-			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
+			$result = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s AND type = %s",
+					$from_id,
+					$to_id,
+					$to_type,
+					$type
+				)
+			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 		} else {
-			$result = $wpdb->get_var( $wpdb->prepare(
-				"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s",
-				$from_id, $to_id, $to_type
-			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
+			$result = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s",
+					$from_id,
+					$to_id,
+					$to_type
+				)
+			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 		}
 
 		$exists = (int) $result > 0;
@@ -978,10 +989,10 @@ if ( ! function_exists( 'wp_get_user_related_posts' ) ) {
 		// For user-to-post relationships, we need to query where from_id is the user
 		// This is a simplified version - in a full implementation, you'd add a dedicated method
 		global $wpdb;
-		$user_id = absint( $user_id );
-		$has_type = ! empty( $type );
+		$user_id   = absint( $user_id );
+		$has_type  = ! empty( $type );
 		$has_limit = isset( $args['limit'] );
-		$limit = $has_limit ? absint( $args['limit'] ) : 0;
+		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
 
 		if ( $has_type && $has_limit ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
@@ -1034,10 +1045,10 @@ if ( ! function_exists( 'wp_get_user_related_posts' ) ) {
 			$post = get_post( $row->to_id );
 			if ( $post ) {
 				$related_posts[] = array(
-					'id' => absint( $row->to_id ),
-					'type' => $row->type,
+					'id'         => absint( $row->to_id ),
+					'type'       => $row->type,
 					'post_title' => $post->post_title,
-					'post_type' => $post->post_type,
+					'post_type'  => $post->post_type,
 				);
 			}
 		}
@@ -1065,10 +1076,10 @@ if ( ! function_exists( 'wp_get_term_related_posts' ) ) {
 		}
 		// For term-to-post relationships, we need to query where from_id is the term
 		global $wpdb;
-		$term_id = absint( $term_id );
-		$has_type = ! empty( $type );
+		$term_id   = absint( $term_id );
+		$has_type  = ! empty( $type );
 		$has_limit = isset( $args['limit'] );
-		$limit = $has_limit ? absint( $args['limit'] ) : 0;
+		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
 
 		if ( $has_type && $has_limit ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
@@ -1121,10 +1132,10 @@ if ( ! function_exists( 'wp_get_term_related_posts' ) ) {
 			$post = get_post( $row->to_id );
 			if ( $post ) {
 				$related_posts[] = array(
-					'id' => absint( $row->to_id ),
-					'type' => $row->type,
+					'id'         => absint( $row->to_id ),
+					'type'       => $row->type,
 					'post_title' => $post->post_title,
-					'post_type' => $post->post_type,
+					'post_type'  => $post->post_type,
 				);
 			}
 		}
