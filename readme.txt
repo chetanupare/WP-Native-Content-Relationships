@@ -38,6 +38,7 @@ Native Content Relationships provides a structured relationship layer with seman
 * **ACF Migration**: One-time migration from ACF relationship fields
 * **Multilingual**: WPML/Polylang support with relationship mirroring
 * **Developer Tools**: Fluent API, WP-CLI commands, query debugging
+* **Page Builder Support**: Gutenberg block and Elementor dynamic tags
 
 = Use Cases =
 
@@ -125,6 +126,20 @@ This plugin integrates seamlessly with popular WordPress plugins and themes. All
 * **Auto-detected:** Yes
 * **Tested up to:** Rank Math 1.0.200
 
+= Page Builder Integration =
+
+**Elementor:**
+* **Compatible with:** Elementor 2.0+
+* **Features:** Dynamic content tag for related content
+* **Auto-detected:** Yes
+* **Tested up to:** Elementor 3.20
+
+**Gutenberg:**
+* **Compatible with:** WordPress 5.0+ (Core)
+* **Features:** "Related Content" block with relationship filtering
+* **Always available:** Yes (core WordPress feature)
+* **Tested up to:** WordPress 6.5
+
 = User Relationships =
 
 This plugin now supports full user-to-post and post-to-user relationships, providing functionality similar to Posts 2 Posts but with a modern architecture.
@@ -163,20 +178,6 @@ $posts = wp_get_term_related_posts( $term_id, 'categorized_as' );
 // Get all related items (posts, users, terms)
 $all = wp_get_related( $post_id, null, array(), 'all' );
 ```
-
-= Page Builder Integration =
-
-**Elementor:**
-* **Compatible with:** Elementor 2.0+
-* **Features:** Dynamic content tag for related content
-* **Auto-detected:** Yes
-* **Tested up to:** Elementor 3.20
-
-**Gutenberg:**
-* **Compatible with:** WordPress 5.0+ (Core)
-* **Features:** "Related Content" block with relationship filtering
-* **Always available:** Yes (core WordPress feature)
-* **Tested up to:** WordPress 6.5
 
 = Other Compatible Plugins =
 
@@ -301,6 +302,24 @@ No. This plugin stores all relationship data locally in your WordPress database 
 * REST API endpoints
 * WooCommerce integration
 * ACF migration tool
+
+== Contributing ==
+
+Contributions are welcome! Please feel free to submit a Pull Request on GitHub:
+
+**GitHub Repository:** https://github.com/chetanupare/WP-Native-Content-Relationships
+
+For bug reports and feature requests, please use the GitHub Issues page.
+
+== License ==
+
+This plugin is licensed under the GPLv2 or later.
+
+== Credits ==
+
+* Developed by [Chetan Upare](https://buymeacoffee.com/chetanupare)
+* Built with modern WordPress standards and best practices
+* Compatible with the latest WordPress versions
 * WPML/Polylang support
 * Gutenberg block
 * WP-CLI commands
