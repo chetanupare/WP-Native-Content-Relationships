@@ -256,35 +256,71 @@ class NATICORE_Related_Posts_Tag extends \Elementor\Core\DynamicTags\Tag {
 
 		// Build SQL without interpolated ORDER BY fragments (scanner-friendly)
 		if ( 'title' === $orderby ) {
-			$results = $wpdb->get_results( $wpdb->prepare(
-				"SELECT DISTINCT p.ID, p.post_title, p.post_date
-				FROM {$wpdb->prefix}content_relations cr
-				INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
-				WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
-				ORDER BY p.post_title {$order_dir}
-				LIMIT %d",
-				$post_id, 'post', $type, 'publish', $limit
-			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			if ( 'asc' === $order ) {
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY p.post_title ASC
+					LIMIT %d",
+					$post_id, 'post', $type, 'publish', $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			} else {
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY p.post_title DESC
+					LIMIT %d",
+					$post_id, 'post', $type, 'publish', $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			}
 		} elseif ( 'date' === $orderby ) {
-			$results = $wpdb->get_results( $wpdb->prepare(
-				"SELECT DISTINCT p.ID, p.post_title, p.post_date
-				FROM {$wpdb->prefix}content_relations cr
-				INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
-				WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
-				ORDER BY p.post_date {$order_dir}
-				LIMIT %d",
-				$post_id, 'post', $type, 'publish', $limit
-			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			if ( 'asc' === $order ) {
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY p.post_date ASC
+					LIMIT %d",
+					$post_id, 'post', $type, 'publish', $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			} else {
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY p.post_date DESC
+					LIMIT %d",
+					$post_id, 'post', $type, 'publish', $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			}
 		} else {
-			$results = $wpdb->get_results( $wpdb->prepare(
-				"SELECT DISTINCT p.ID, p.post_title, p.post_date
-				FROM {$wpdb->prefix}content_relations cr
-				INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
-				WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
-				ORDER BY cr.created_at {$order_dir}
-				LIMIT %d",
-				$post_id, 'post', $type, 'publish', $limit
-			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			if ( 'asc' === $order ) {
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY cr.created_at ASC
+					LIMIT %d",
+					$post_id, 'post', $type, 'publish', $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			} else {
+				$results = $wpdb->get_results( $wpdb->prepare(
+					"SELECT DISTINCT p.ID, p.post_title, p.post_date
+					FROM {$wpdb->prefix}content_relations cr
+					INNER JOIN {$wpdb->posts} p ON cr.from_id = p.ID
+					WHERE cr.to_id = %d AND cr.to_type = %s AND cr.type = %s AND p.post_status = %s
+					ORDER BY cr.created_at DESC
+					LIMIT %d",
+					$post_id, 'post', $type, 'publish', $limit
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+			}
 		}
 
 		$posts = array();

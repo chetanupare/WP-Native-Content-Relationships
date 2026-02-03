@@ -531,55 +531,49 @@ class NATICORE_API {
 	}
 
 	/**
-	 * Clear relationship cache for specific items
+	 * Clear relationship cache
 	 *
-	 * Clears cached relationship data to ensure fresh queries after relationship modifications.
-	 * Automatically called by add_relation() and remove_relation() methods.
+	 * Clears cached relationship data for specific items or all relationships.
+	 * Used to maintain cache consistency when relationships are modified.
 	 *
 	 * @since 1.0.11
 	 *
-	 * @param int    $from_id  The ID of the source content
-	 * @param int    $to_id    The ID of the target content (optional)
-	 * @param string $type     Type of relationship (optional)
-	 * @param string $to_type  Target type (optional)
-	 *
+	 * @param int|null $from_id Optional. Source content ID to clear cache for.
+	 * @param int|null $to_id   Optional. Target content ID to clear cache for.
+	 * @param string|null $type Optional. Relationship type to clear cache for.
 	 * @return void
 	 *
-	 * @example Clear cache for specific relationship
-	 * ```php
-	 * NATICORE_API::clear_cache( 123, 456, 'related_to', 'post' );
-	 * ```
-	 *
-	 * @example Clear all cache for a content item
+	 * @example Clear cache for specific post
 	 * ```php
 	 * NATICORE_API::clear_cache( 123 );
 	 * ```
 	 *
-	 * @example Clear cache after bulk operations
+	 * @example Clear cache for all relationships
 	 * ```php
-	 * foreach ( $relationships as $rel ) {
-	 *     NATICORE_API::clear_cache( $rel['from_id'], $rel['to_id'], $rel['type'], $rel['to_type'] );
-	 * }
+	 * NATICORE_API::clear_cache();
 	 * ```
-	 *
-	 * @see NATICORE_API::is_related() Uses caching for performance
-	 * @see wp_cache_delete() WordPress cache function
 	 */
-	public static function clear_cache( $from_id, $to_id = null, $type = null, $to_type = null ) {
-		// Clear specific relationship cache
-		if ( $to_id && $to_type ) {
-			$cache_key = "naticore_exists_{$from_id}_{$to_id}_{$type}_{$to_type}";
-			wp_cache_delete( $cache_key, 'naticore_relationships' );
+	public static function clear_cache( $from_id = null, $to_id = null, $type = null ) {
+		if ( null !== $from_id ) {
+			// Clear specific post cache
+			$from_id = absint( $from_id );
+			wp_cache_delete( "naticore_get_related_{$from_id}_all_all_0_default", 'naticore_relationships' );
+			wp_cache_delete( "naticore_exists_{$from_id}_all_all", 'naticore_relationships' );
 		}
 
-		// Clear all related caches for from_id
-		$group = 'naticore_relationships';
-		wp_cache_delete( "naticore_related_{$from_id}_{$type}_{$to_type}", $group );
-		
-		// Clear reverse cache if bidirectional
-		if ( $to_id ) {
-			wp_cache_delete( "naticore_related_{$to_id}_{$type}_post", $group );
+		if ( null !== $from_id && null !== $to_id && null !== $type ) {
+			// Clear specific relationship cache
+			$from_id = absint( $from_id );
+			$to_id   = absint( $to_id );
+			$type    = sanitize_key( (string) $type );
+			wp_cache_delete( "naticore_exists_{$from_id}_{$to_id}_{$type}_post", 'naticore_relationships' );
 		}
+
+		// Clear admin cache
+		wp_cache_delete( 'naticore_admin_total_count', 'naticore_relationships' );
+		
+		// Clear all admin items cache (pattern-based)
+		wp_cache_delete_group( 'naticore_relationships' );
 	}
 
 	/**
@@ -697,6 +691,21 @@ class NATICORE_API {
 		$has_limit = isset( $args['limit'] );
 		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
 
+		// Create cache key
+		$cache_key = sprintf( 'naticore_get_related_%d_%s_%s_%d_%s', 
+			$post_id, 
+			(string) $type, 
+			$to_type, 
+			$limit, 
+			isset( $args['orderby'] ) ? sanitize_key( (string) $args['orderby'] ) : 'default'
+		);
+		
+		// Check cache first
+		$cached_result = wp_cache_get( $cache_key, 'naticore_relationships' );
+		if ( false !== $cached_result ) {
+			return $cached_result;
+		}
+
 		// Build SQL without interpolated WHERE fragments (scanner-friendly)
 		$has_to_type_filter = in_array( $to_type, array( 'post', 'user', 'term' ), true );
 
@@ -705,87 +714,90 @@ class NATICORE_API {
 				$results = $wpdb->get_results( $wpdb->prepare(
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s AND type = %s ORDER BY created_at DESC LIMIT %d",
 					$post_id, $to_type, $type, $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 			} else {
 				$results = $wpdb->get_results( $wpdb->prepare(
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s ORDER BY created_at DESC LIMIT %d",
 					$post_id, $type, $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 			}
 		} elseif ( $has_type ) {
 			if ( $has_to_type_filter ) {
 				$results = $wpdb->get_results( $wpdb->prepare(
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s AND type = %s ORDER BY created_at DESC",
 					$post_id, $to_type, $type
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 			} else {
 				$results = $wpdb->get_results( $wpdb->prepare(
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s ORDER BY created_at DESC",
 					$post_id, $type
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 			}
 		} elseif ( $has_limit ) {
 			if ( $has_to_type_filter ) {
 				$results = $wpdb->get_results( $wpdb->prepare(
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC LIMIT %d",
 					$post_id, $to_type, $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 			} else {
 				$results = $wpdb->get_results( $wpdb->prepare(
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY created_at DESC LIMIT %d",
 					$post_id, $limit
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 			}
 		} else {
 			if ( $has_to_type_filter ) {
 				$results = $wpdb->get_results( $wpdb->prepare(
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC",
 					$post_id, $to_type
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 			} else {
 				$results = $wpdb->get_results( $wpdb->prepare(
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY created_at DESC",
 					$post_id
-				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+				) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with manual caching
 			}
 		}
 
 		if ( ! $results ) {
-			return array();
+			$related_items = array();
+		} else {
+			$related_items = array();
+			foreach ( $results as $row ) {
+				$item = array(
+					'id'   => absint( $row->to_id ),
+					'type' => $row->type,
+					'to_type' => $row->to_type,
+				);
+				
+				// Add additional data based on target type
+				if ( 'user' === $row->to_type ) {
+					$user = get_userdata( $row->to_id );
+					if ( $user ) {
+						$item['display_name'] = $user->display_name;
+						$item['user_email'] = $user->user_email;
+					}
+				} elseif ( 'term' === $row->to_type ) {
+					$term = get_term( $row->to_id );
+					if ( $term && ! is_wp_error( $term ) ) {
+						$item['term_name'] = $term->name;
+						$item['term_taxonomy'] = $term->taxonomy;
+						$item['term_slug'] = $term->slug;
+					}
+				} else {
+					$post = get_post( $row->to_id );
+					if ( $post ) {
+						$item['post_title'] = $post->post_title;
+						$item['post_type'] = $post->post_type;
+					}
+				}
+				
+				$related_items[] = $item;
+			}
 		}
 
-		$related_items = array();
-		foreach ( $results as $row ) {
-			$item = array(
-				'id'   => absint( $row->to_id ),
-				'type' => $row->type,
-				'to_type' => $row->to_type,
-			);
-			
-			// Add additional data based on target type
-			if ( 'user' === $row->to_type ) {
-				$user = get_userdata( $row->to_id );
-				if ( $user ) {
-					$item['display_name'] = $user->display_name;
-					$item['user_email'] = $user->user_email;
-				}
-			} elseif ( 'term' === $row->to_type ) {
-				$term = get_term( $row->to_id );
-				if ( $term && ! is_wp_error( $term ) ) {
-					$item['term_name'] = $term->name;
-					$item['term_taxonomy'] = $term->taxonomy;
-					$item['term_slug'] = $term->slug;
-				}
-			} else {
-				$post = get_post( $row->to_id );
-				if ( $post ) {
-					$item['post_title'] = $post->post_title;
-					$item['post_type'] = $post->post_type;
-				}
-			}
-			
-			$related_items[] = $item;
-		}
+		// Cache the result for 1 hour
+		wp_cache_set( $cache_key, $related_items, 'naticore_relationships', HOUR_IN_SECONDS );
 
 		return $related_items;
 	}
