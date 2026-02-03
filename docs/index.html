@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Architecture &amp; Performance - Native Content Relationships</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<title>Native Content Relationships - Professional WordPress Plugin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
@@ -16,369 +12,364 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1193d4",
-                        "background-light": "#f6f7f8",
+                        "primary": "#0da6f2",
+                        "background-light": "#f8fafc",
                         "background-dark": "#101c22",
-                        "card-light": "#ffffff",
-                        "card-dark": "#1a2c35",
-                        "border-light": "#e2e8f0",
-                        "border-dark": "#2d3f4a",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"],
-                        "mono": ["JetBrains Mono", "monospace"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
                     },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    borderRadius: {"DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
                 },
             },
         }
     </script>
 <style>
-        /* Custom scrollbar for code blocks */
-        .code-scroll::-webkit-scrollbar {
-            height: 8px;
-            width: 8px;
+        body { font-family: 'Inter', sans-serif; }.reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-        .code-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .code-scroll::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 4px;
-        }
-        .dark .code-scroll::-webkit-scrollbar-thumb {
-            background-color: #475569;
-        }
-        
-        /* Schematic Grid Background */
-        .bg-grid-pattern {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-        }
-        .dark .bg-grid-pattern {
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }.delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
     </style>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-100 transition-colors duration-200">
-<!-- Navigation -->
-<nav class="sticky top-0 z-50 w-full border-b border-border-light dark:border-border-dark bg-card-light/90 dark:bg-card-dark/90 backdrop-blur-sm">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div class="flex justify-between items-center h-16">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-white font-bold text-lg">N</div>
-<span class="font-bold text-lg tracking-tight">Native Content Relationships</span>
+<body class="bg-background-light dark:bg-background-dark text-[#1e293b] dark:text-white antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#101c22]/90 backdrop-blur-md">
+<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-3 group">
+<img alt="Native Content Relationships Logo" class="h-8 w-8 rounded-md animate-float" data-alt="Native Content Relationships plugin logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdZrTkVCuBmkFcB2MT-UQqCT8Doh2dln3mnYH6j8gU2cepiOUC4IQu47wrJidRO9nefWgYQHu5WfnZNArIsRnTBcIjXJSHLT9UggiloRB5AfldMWEfGKaJWEXNI00aQS4qQYjLW8d8yZdFegX_7ZbVfwqYLvMWmxW9t_aAj0xV9B4i9JmOsUeePLrIpNMSHKdgASTlI39GsFxZZsOEAUfY7rLOp-1RcCOswJd-QlAwjIhhzB52sQZBkTKOBxE6Pwk2UyJlAJICF_XO"/>
+<span class="text-lg font-bold tracking-tight text-[#111618] dark:text-white transition-colors group-hover:text-primary">Native Content Relationships</span>
 </div>
-<div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600 dark:text-gray-400">
-<a class="hover:text-primary transition-colors" href="#">Features</a>
-<a class="text-primary" href="#">Architecture</a>
-<a class="hover:text-primary transition-colors" href="#">Documentation</a>
-<a class="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition-colors" href="#">Get Started</a>
-</div>
-</div>
-</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="#features">Features</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="#architecture">Architecture</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="#use-cases">Use Cases</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="#docs">Docs</a>
 </nav>
-<!-- Hero Section -->
-<header class="relative pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
-<div class="absolute inset-0 bg-grid-pattern pointer-events-none z-0"></div>
-<div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-mono font-medium mb-6">
-<span class="w-2 h-2 rounded-full bg-primary"></span>
-                V 2.0 ARCHITECTURE
-            </div>
-<h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-                Built for <span class="text-primary">Performance</span> and Scale
-            </h1>
-<p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
-                Engineered to bypass WordPress metadata bloat. We use custom indexed tables and intelligent caching to deliver relationships at enterprise scale.
-            </p>
-<div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-<a class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded text-white bg-primary hover:bg-primary/90 md:py-3 md:text-lg md:px-8 transition-all" href="#schema">
-                    View Database Schema
-                </a>
-<a class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 dark:border-gray-600 text-base font-medium rounded text-gray-700 dark:text-gray-200 bg-white dark:bg-card-dark hover:bg-gray-50 dark:hover:bg-gray-800 md:py-3 md:text-lg md:px-8 transition-all font-mono" href="#api">
-                    $ composer require ncr
-                </a>
+<div class="flex items-center gap-4">
+<a class="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors" href="#">GitHub</a>
+<button class="flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white transition-all hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                    Download
+                </button>
 </div>
 </div>
 </header>
-<!-- Schema Visualizer Section -->
-<section class="py-16 bg-white dark:bg-card-dark border-y border-border-light dark:border-border-dark relative" id="schema">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div class="mb-12">
-<h2 class="text-2xl font-bold mb-4">The Custom Schema Advantage</h2>
-<p class="text-gray-600 dark:text-gray-400 max-w-2xl">
-                    Unlike standard plugins that bloat <code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-primary font-mono text-sm">wp_postmeta</code>, NCR creates a dedicated, indexed relational table. This ensures O(1) lookup speeds regardless of database size.
-                </p>
-</div>
-<!-- Schematic Diagram Container -->
-<div class="relative w-full overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark p-8 md:p-12 shadow-sm">
-<!-- Lines (CSS Pseudo elements simulated with divs for simplicity) -->
-<div class="hidden lg:block absolute top-1/2 left-[30%] w-[15%] h-[2px] bg-gray-300 dark:bg-gray-600 -translate-y-1/2 z-0"></div>
-<div class="hidden lg:block absolute top-1/2 right-[30%] w-[15%] h-[2px] bg-gray-300 dark:bg-gray-600 -translate-y-1/2 z-0"></div>
-<div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-0">
-<!-- WP_POSTS (Source) -->
-<div class="w-full max-w-xs bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-<div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center gap-2">
-<span class="material-icons text-gray-400 text-sm">table_view</span>
-<span class="font-mono font-bold text-sm">wp_posts</span>
-</div>
-<div class="p-4 space-y-2">
-<div class="flex justify-between items-center text-xs font-mono">
-<span class="text-primary font-bold">ID (PK)</span>
-<span class="text-gray-400">bigint(20)</span>
-</div>
-<div class="flex justify-between items-center text-xs font-mono text-gray-500">
-<span>post_title</span>
-<span class="text-gray-400">text</span>
-</div>
-<div class="flex justify-between items-center text-xs font-mono text-gray-500">
-<span>post_type</span>
-<span class="text-gray-400">varchar(20)</span>
+<main class="flex-grow">
+<section class="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-32 lg:pb-40">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
+<div class="lg:col-span-6 text-center lg:text-left reveal-on-scroll">
+<h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl md:text-6xl mb-6 leading-tight">
+                            First-class content relationships for <span class="text-primary inline-block hover:scale-105 transition-transform duration-300">WordPress</span>
+</h1>
+<p class="mt-4 text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto lg:mx-0">
+                            Create scalable, semantic relationships between posts, users, and terms — without hacks. Move beyond messy post meta and embrace clean architecture.
+                        </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+<button class="inline-flex h-12 items-center justify-center rounded-lg bg-primary px-8 text-base font-bold text-white shadow-sm transition-all hover:bg-sky-600 animate-pulse-slow hover:animate-none hover:scale-105">
+<span class="material-symbols-outlined mr-2 text-[20px]">download</span>
+                                View on WordPress.org
+                            </button>
+<button class="inline-flex h-12 items-center justify-center rounded-lg border border-slate-200 bg-white px-8 text-base font-bold text-slate-900 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700 hover:shadow-md">
+<span class="material-symbols-outlined mr-2 text-[20px]">code</span>
+                                View on GitHub
+                            </button>
 </div>
 </div>
+<div class="relative mt-16 lg:mt-0 lg:col-span-6 reveal-on-scroll delay-200">
+<div class="relative rounded-xl bg-slate-900/5 dark:bg-white/5 p-2 ring-1 ring-inset ring-slate-900/10 dark:ring-white/10 lg:-m-4 lg:rounded-2xl lg:p-4 hover:shadow-2xl transition-shadow duration-500">
+<div class="rounded-lg bg-white dark:bg-slate-800 shadow-xl overflow-hidden ring-1 ring-slate-900/5">
+<div class="bg-center bg-cover h-64 sm:h-80 w-full" data-alt="Abstract visualization of connected data nodes representing database relationships" style="background-image: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); background-size: cover;">
+<div class="flex items-center justify-center h-full">
+<div class="grid grid-cols-3 gap-8 p-8 opacity-90">
+<div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 w-24 h-24 flex flex-col items-center justify-center gap-2 animate-float">
+<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-primary"><span class="material-symbols-outlined text-sm">article</span></div>
+<div class="h-2 w-12 bg-slate-100 rounded"></div>
 </div>
-<!-- WP_NCR_RELATIONSHIPS (Centerpiece) -->
-<div class="w-full max-w-sm bg-white dark:bg-card-dark border-2 border-primary/30 rounded-lg shadow-lg transform scale-105">
-<div class="px-4 py-3 border-b border-primary/20 bg-primary/5 flex items-center justify-between">
-<div class="flex items-center gap-2">
-<span class="material-icons text-primary text-sm">hub</span>
-<span class="font-mono font-bold text-sm text-primary">wp_ncr_relationships</span>
+<div class="flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-4xl animate-spin" style="animation-duration: 4s;">sync_alt</span>
 </div>
-<span class="text-[10px] uppercase font-bold tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">Custom Table</span>
-</div>
-<div class="p-4 space-y-3">
-<div class="flex justify-between items-center text-xs font-mono border-b border-dashed border-gray-200 dark:border-gray-700 pb-2">
-<span class="text-primary font-bold">id (PK)</span>
-<span class="text-gray-400">bigint(20)</span>
-</div>
-<div class="flex justify-between items-center text-xs font-mono group cursor-help">
-<div class="flex items-center gap-1">
-<span class="text-purple-500 font-bold">parent_id (FK)</span>
-<span class="material-icons text-[10px] text-gray-300">key</span>
-</div>
-<span class="text-gray-400">bigint(20)</span>
-</div>
-<div class="flex justify-between items-center text-xs font-mono group cursor-help">
-<div class="flex items-center gap-1">
-<span class="text-purple-500 font-bold">child_id (FK)</span>
-<span class="material-icons text-[10px] text-gray-300">key</span>
-</div>
-<span class="text-gray-400">bigint(20)</span>
-</div>
-<div class="flex justify-between items-center text-xs font-mono pt-1">
-<span class="text-gray-600 dark:text-gray-300">order</span>
-<span class="text-gray-400">int(11)</span>
-</div>
-<div class="flex justify-between items-center text-xs font-mono">
-<span class="text-gray-600 dark:text-gray-300">context</span>
-<span class="text-gray-400">varchar(50)</span>
-</div>
-<div class="mt-2 text-[10px] text-gray-400 font-mono bg-gray-50 dark:bg-gray-800 p-2 rounded">
-                                -- Indexes: (parent_id, context), (child_id)
-                            </div>
+<div class="bg-white p-4 rounded-lg shadow-sm border border-slate-100 w-24 h-24 flex flex-col items-center justify-center gap-2 animate-float" style="animation-delay: 1s;">
+<div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600"><span class="material-symbols-outlined text-sm">person</span></div>
+<div class="h-2 w-12 bg-slate-100 rounded"></div>
 </div>
 </div>
-<!-- WP_POSTS (Target) -->
-<div class="w-full max-w-xs bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm opacity-80">
-<div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center gap-2">
-<span class="material-icons text-gray-400 text-sm">table_view</span>
-<span class="font-mono font-bold text-sm">wp_posts (Related)</span>
 </div>
-<div class="p-4 space-y-2">
-<div class="flex justify-between items-center text-xs font-mono">
-<span class="text-primary font-bold">ID (PK)</span>
-<span class="text-gray-400">bigint(20)</span>
 </div>
-<!-- Blur effect for generic columns -->
-<div class="h-2 bg-gray-100 dark:bg-gray-700 rounded w-2/3"></div>
-<div class="h-2 bg-gray-100 dark:bg-gray-700 rounded w-1/2"></div>
 </div>
 </div>
 </div>
 </div>
 </div>
 </section>
-<!-- Performance Pillars -->
-<section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-<!-- Card 1: No Bloat -->
-<div class="bg-card-light dark:bg-card-dark p-8 rounded-xl border border-border-light dark:border-border-dark hover:border-primary/50 transition-colors group">
-<div class="w-12 h-12 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-<span class="material-icons">storage</span>
+<section class="bg-white dark:bg-[#15232d] py-20 sm:py-24 border-y border-slate-100 dark:border-slate-800">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-16 reveal-on-scroll">
+<h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Why Native Content Relationships?</h2>
+<p class="mt-4 text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Standard meta queries kill performance at scale. It's time to treat relationships as first-class citizens.</p>
 </div>
-<h3 class="text-xl font-bold mb-3">No Post Meta Bloat</h3>
-<p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                    Standard plugins serialize arrays into <code class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">wp_postmeta</code>, making reverse queries impossible at scale. We bypass this entirely.
-                </p>
-<ul class="text-sm space-y-2 text-gray-500 dark:text-gray-400">
-<li class="flex items-center gap-2">
-<span class="material-icons text-green-500 text-sm">check</span>
-<span>Zero serialization overhead</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-icons text-green-500 text-sm">check</span>
-<span>Direct SQL joins supported</span>
-</li>
+<div class="grid md:grid-cols-2 gap-8 lg:gap-12">
+<div class="relative group rounded-2xl bg-slate-50 dark:bg-slate-800/50 p-8 ring-1 ring-slate-900/5 transition-all hover:bg-red-50/50 dark:hover:bg-red-900/10 reveal-on-scroll delay-100">
+<div class="flex items-center gap-4 mb-4">
+<div class="flex h-12 w-12 items-center justify-center rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">The Old Way: Post Meta</h3>
+</div>
+<p class="text-slate-600 dark:text-slate-400 mb-6">Storing relationships in <code class="bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded text-xs text-red-600 dark:text-red-400">wp_postmeta</code> creates a cluttered database. Complex queries require expensive JOINS that slow down your site as content grows.</p>
+<ul class="space-y-3 text-sm text-slate-500 dark:text-slate-400">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-red-500 text-[18px]">close</span> Slow queries at scale</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-red-500 text-[18px]">close</span> No referential integrity</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-red-500 text-[18px]">close</span> Messy serialization</li>
 </ul>
 </div>
-<!-- Card 2: Caching -->
-<div class="bg-card-light dark:bg-card-dark p-8 rounded-xl border border-border-light dark:border-border-dark hover:border-primary/50 transition-colors group">
-<div class="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-<span class="material-icons">bolt</span>
+<div class="relative group rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-lg shadow-slate-200/50 dark:shadow-none ring-1 ring-slate-200 dark:ring-slate-700 transition-all hover:scale-[1.02] hover:shadow-xl reveal-on-scroll delay-200">
+<div class="absolute -top-4 -right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm animate-bounce">RECOMMENDED</div>
+<div class="flex items-center gap-4 mb-4">
+<div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-primary dark:bg-blue-900/30 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">table_view</span>
 </div>
-<h3 class="text-xl font-bold mb-3">Intelligent Caching</h3>
-<p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                    Built-in support for Persistent Object Caching (Redis/Memcached). Relationships are cached aggressively and invalidated intelligently on update.
-                </p>
-<div class="bg-gray-50 dark:bg-gray-800 rounded p-3 text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-700">
-                    GET ncr:rel:post_123:related<br/>
-<span class="text-green-600 dark:text-green-400">HIT (0.002s)</span>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">The New Way: Indexed Tables</h3>
 </div>
+<p class="text-slate-600 dark:text-slate-400 mb-6">Data is stored in dedicated, indexed custom tables. This ensures instant lookups, cleaner data architecture, and zero pollution of your meta tables.</p>
+<ul class="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-green-500 text-[18px]">check_circle</span> O(1) Lookup performance</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-green-500 text-[18px]">check_circle</span> Bidirectional by default</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-green-500 text-[18px]">check_circle</span> Clean database schema</li>
+</ul>
 </div>
-<!-- Card 3: API -->
-<div class="bg-card-light dark:bg-card-dark p-8 rounded-xl border border-border-light dark:border-border-dark hover:border-primary/50 transition-colors group">
-<div class="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-<span class="material-icons">code</span>
-</div>
-<h3 class="text-xl font-bold mb-3">Developer First API</h3>
-<p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                    Strictly typed interfaces and deep integration with standard <code class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">WP_Query</code> arguments.
-                </p>
-<a class="text-primary font-medium text-sm hover:underline flex items-center gap-1" href="#api">
-                    See code examples
-                    <span class="material-icons text-sm">arrow_forward</span>
-</a>
 </div>
 </div>
 </section>
-<!-- Developer API Details -->
-<section class="py-16 bg-background-light dark:bg-background-dark" id="api">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div class="flex flex-col lg:flex-row gap-12 items-start">
-<!-- Explanation -->
-<div class="lg:w-1/3">
-<h2 class="text-3xl font-bold mb-6">Simple yet Powerful API</h2>
-<p class="text-gray-600 dark:text-gray-400 mb-6">
-                        Register relationships in your `functions.php` or plugin file. We handle the admin UI, database schema, and query optimizations automatically.
-                    </p>
+<section class="py-20 sm:py-24" id="features">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="mb-12 reveal-on-scroll">
+<h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Developer-Centric Features</h2>
+<p class="mt-4 text-lg text-slate-600 dark:text-slate-400">Built for scale, designed for developer ergonomics.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="group relative rounded-xl border border-slate-200 bg-white p-6 hover:border-primary/50 transition-all dark:border-slate-700 dark:bg-[#15232d] hover:-translate-y-1 hover:shadow-lg reveal-on-scroll">
+<div class="mb-4 inline-flex rounded-lg bg-sky-50 p-3 text-primary dark:bg-sky-900/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined">link</span>
+</div>
+<h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Post-to-User Linking</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Connect any post type to users effortlessly. Great for directories, team pages, or author assignments.</p>
+</div>
+<div class="group relative rounded-xl border border-slate-200 bg-white p-6 hover:border-primary/50 transition-all dark:border-slate-700 dark:bg-[#15232d] hover:-translate-y-1 hover:shadow-lg reveal-on-scroll delay-100">
+<div class="mb-4 inline-flex rounded-lg bg-sky-50 p-3 text-primary dark:bg-sky-900/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined">sync_alt</span>
+</div>
+<h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Bidirectional Sync</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Relationships sync automatically. Link a Speaker to an Event, and the Event appears on the Speaker's profile.</p>
+</div>
+<div class="group relative rounded-xl border border-slate-200 bg-white p-6 hover:border-primary/50 transition-all dark:border-slate-700 dark:bg-[#15232d] hover:-translate-y-1 hover:shadow-lg reveal-on-scroll delay-200">
+<div class="mb-4 inline-flex rounded-lg bg-sky-50 p-3 text-primary dark:bg-sky-900/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined">query_stats</span>
+</div>
+<h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">WP_Query Integration</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Seamlessly query relationships using standard WordPress methods. No need to learn a new query language.</p>
+</div>
+<div class="group relative rounded-xl border border-slate-200 bg-white p-6 hover:border-primary/50 transition-all dark:border-slate-700 dark:bg-[#15232d] hover:-translate-y-1 hover:shadow-lg reveal-on-scroll">
+<div class="mb-4 inline-flex rounded-lg bg-sky-50 p-3 text-primary dark:bg-sky-900/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined">language</span>
+</div>
+<h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Multilingual Support</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Fully compatible with WPML and Polylang. Relationships persist across translations.</p>
+</div>
+<div class="group relative rounded-xl border border-slate-200 bg-white p-6 hover:border-primary/50 transition-all dark:border-slate-700 dark:bg-[#15232d] hover:-translate-y-1 hover:shadow-lg reveal-on-scroll delay-100">
+<div class="mb-4 inline-flex rounded-lg bg-sky-50 p-3 text-primary dark:bg-sky-900/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined">grid_view</span>
+</div>
+<h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Gutenberg Ready</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Includes native blocks for managing and displaying relationships directly in the editor.</p>
+</div>
+<div class="group relative rounded-xl border border-slate-200 bg-white p-6 hover:border-primary/50 transition-all dark:border-slate-700 dark:bg-[#15232d] hover:-translate-y-1 hover:shadow-lg reveal-on-scroll delay-200">
+<div class="mb-4 inline-flex rounded-lg bg-sky-50 p-3 text-primary dark:bg-sky-900/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined">api</span>
+</div>
+<h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">REST API Compatible</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Exposes relationships via standard API endpoints for headless or decoupled applications.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-slate-50 dark:bg-[#15232d]/50 py-20 border-y border-slate-200 dark:border-slate-800" id="use-cases">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-10 reveal-on-scroll">Common Use Cases</h2>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="rounded-lg bg-white dark:bg-[#101c22] p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 reveal-on-scroll">
+<div class="h-40 w-full bg-slate-100 dark:bg-slate-800 rounded mb-4 overflow-hidden relative group" data-alt="Abstract icon representing events and speakers connecting">
+<div class="absolute inset-0 flex items-center justify-center opacity-20 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-6xl">podium</span>
+</div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Events &amp; Speakers</h3>
+<p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Link `event` post types to `speaker` (user or post). Display "Other events by this speaker" automatically.</p>
+</div>
+<div class="rounded-lg bg-white dark:bg-[#101c22] p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 reveal-on-scroll delay-100">
+<div class="h-40 w-full bg-slate-100 dark:bg-slate-800 rounded mb-4 overflow-hidden relative group" data-alt="Abstract icon representing courses and lessons structure">
+<div class="absolute inset-0 flex items-center justify-center opacity-20 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-6xl">school</span>
+</div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Courses &amp; Lessons</h3>
+<p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Create strict hierarchies. Connect `lessons` to `courses` and `instructors` without the bloat of an LMS plugin.</p>
+</div>
+<div class="rounded-lg bg-white dark:bg-[#101c22] p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 reveal-on-scroll delay-200">
+<div class="h-40 w-full bg-slate-100 dark:bg-slate-800 rounded mb-4 overflow-hidden relative group" data-alt="Abstract icon representing products and accessories">
+<div class="absolute inset-0 flex items-center justify-center opacity-20 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-6xl">inventory_2</span>
+</div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Related Products</h3>
+<p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Manually curate "Frequently Bought Together" lists by linking `product` to `product` bidirectionally.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 sm:py-24 bg-white dark:bg-background-dark" id="architecture">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+<div class="reveal-on-scroll">
+<h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl mb-6">Clean Architecture</h2>
+<p class="text-lg text-slate-600 dark:text-slate-400 mb-8">
+                            Native Content Relationships sits on top of WordPress, creating a separate database layer for connections. This keeps your <code class="text-sm bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-pink-500">wp_postmeta</code> table lean and your queries fast.
+                        </p>
 <div class="space-y-6">
-<div class="flex gap-4">
-<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm shrink-0">1</div>
+<div class="flex gap-4 group cursor-default">
+<div class="flex-none pt-1 transition-transform group-hover:scale-125 duration-300">
+<span class="material-symbols-outlined text-primary">storage</span>
+</div>
 <div>
-<h4 class="font-bold text-gray-800 dark:text-gray-200">Bidirectional</h4>
-<p class="text-sm text-gray-600 dark:text-gray-500">Relationships work both ways automatically. Query related items from either side.</p>
+<h4 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Optimized Tables</h4>
+<p class="text-sm text-slate-600 dark:text-slate-400">Custom tables properly indexed for ID-based lookups.</p>
 </div>
 </div>
-<div class="flex gap-4">
-<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm shrink-0">2</div>
+<div class="flex gap-4 group cursor-default">
+<div class="flex-none pt-1 transition-transform group-hover:scale-125 duration-300">
+<span class="material-symbols-outlined text-primary">code</span>
+</div>
 <div>
-<h4 class="font-bold text-gray-800 dark:text-gray-200">WP_Query Integration</h4>
-<p class="text-sm text-gray-600 dark:text-gray-500">Use standard WordPress query arguments. No learning curve for new SQL syntax.</p>
+<h4 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Standard WP_Query</h4>
+<p class="text-sm text-slate-600 dark:text-slate-400">We hook into `WP_Query` so you can use familiar syntax.</p>
 </div>
 </div>
 </div>
 </div>
-<!-- Code Block -->
-<div class="lg:w-2/3 w-full">
-<div class="bg-[#1e1e1e] rounded-lg shadow-2xl overflow-hidden border border-gray-700">
-<div class="flex items-center px-4 py-2 bg-[#2d2d2d] border-b border-gray-700">
-<div class="flex space-x-2">
-<div class="w-3 h-3 rounded-full bg-red-500"></div>
-<div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-<div class="w-3 h-3 rounded-full bg-green-500"></div>
+<div class="mt-12 lg:mt-0 reveal-on-scroll delay-200">
+<div class="rounded-xl bg-[#0f172a] shadow-2xl ring-1 ring-white/10 overflow-hidden transform hover:scale-[1.01] transition-transform duration-500">
+<div class="flex items-center gap-2 border-b border-white/5 bg-white/5 px-4 py-3">
+<div class="h-3 w-3 rounded-full bg-[#ff5f56]"></div>
+<div class="h-3 w-3 rounded-full bg-[#ffbd2e]"></div>
+<div class="h-3 w-3 rounded-full bg-[#27c93f]"></div>
+<div class="ml-2 text-xs text-slate-400 font-mono">functions.php</div>
 </div>
-<div class="ml-4 text-xs font-mono text-gray-400">functions.php</div>
-</div>
-<div class="p-6 overflow-x-auto code-scroll">
-<pre class="font-mono text-sm leading-relaxed text-gray-300"><span class="text-purple-400">use</span> NCR\Core\Relationship;
-
-<span class="text-gray-500">// 1. Register a relationship between 'Movies' and 'Actors'</span>
-add_action(<span class="text-green-400">'init'</span>, <span class="text-purple-400">function</span>() {
-    Relationship::<span class="text-blue-400">register</span>([
-        <span class="text-green-400">'id'</span>          =&gt; <span class="text-green-400">'movie_actors'</span>,
-        <span class="text-green-400">'from'</span>        =&gt; <span class="text-green-400">'movie'</span>,
-        <span class="text-green-400">'to'</span>          =&gt; <span class="text-green-400">'actor'</span>,
-        <span class="text-green-400">'cardinality'</span> =&gt; <span class="text-green-400">'many-to-many'</span>, <span class="text-gray-500">// Supports 1-to-1, 1-to-many</span>
-        <span class="text-green-400">'meta'</span>        =&gt; <span class="text-blue-400">true</span> <span class="text-gray-500">// Allow metadata on the connection itself</span>
-    ]);
-});
-
-<span class="text-gray-500">// 2. Query Movies featuring a specific Actor</span>
-<span class="text-blue-300">$query</span> = <span class="text-purple-400">new</span> WP_Query([
-    <span class="text-green-400">'post_type'</span> =&gt; <span class="text-green-400">'movie'</span>,
-    <span class="text-green-400">'ncr_relationship'</span> =&gt; [
-        <span class="text-green-400">'id'</span> =&gt; <span class="text-green-400">'movie_actors'</span>,
-        <span class="text-green-400">'related_to'</span> =&gt; <span class="text-orange-400">1054</span> <span class="text-gray-500">// Actor ID</span>
-    ]
-]);
-</pre>
+<div class="p-6 overflow-x-auto">
+<pre class="text-sm font-mono leading-relaxed text-slate-300"><code><span class="text-purple-400">$args</span> = [
+  <span class="text-sky-300">'post_type'</span>      =&gt; <span class="text-green-300">'event'</span>,
+  <span class="text-sky-300">'posts_per_page'</span> =&gt; <span class="text-orange-300">10</span>,
+  <span class="text-slate-500">// Native Content Relationships Query</span>
+  <span class="text-sky-300">'relationship'</span>   =&gt; [
+    <span class="text-sky-300">'id'</span>   =&gt; <span class="text-green-300">'event_to_speakers'</span>,
+    <span class="text-sky-300">'to'</span>   =&gt; <span class="text-purple-400">$speaker_id</span>, 
+  ],
+];
+<span class="text-purple-400">$query</span> = <span class="text-pink-400">new</span> <span class="text-yellow-200">WP_Query</span>( <span class="text-purple-400">$args</span> );
+<span class="text-pink-400">if</span> ( <span class="text-purple-400">$query</span>-&gt;<span class="text-yellow-200">have_posts</span>() ) {
+  <span class="text-pink-400">while</span> ( <span class="text-purple-400">$query</span>-&gt;<span class="text-yellow-200">have_posts</span>() ) {
+    <span class="text-purple-400">$query</span>-&gt;<span class="text-yellow-200">the_post</span>();
+    <span class="text-slate-500">// ... standard loop</span>
+  }
+}</code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 </section>
-<!-- Metrics Comparison -->
-<section class="py-16 bg-white dark:bg-card-dark border-y border-border-light dark:border-border-dark">
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-<h2 class="text-2xl font-bold mb-8">Performance Benchmark</h2>
-<div class="overflow-hidden border border-border-light dark:border-border-dark rounded-lg">
-<table class="min-w-full divide-y divide-border-light dark:divide-border-dark">
-<thead class="bg-background-light dark:bg-background-dark">
-<tr>
-<th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider" scope="col">Query Type</th>
-<th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider" scope="col">Time (10k items)</th>
-<th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider" scope="col">Memory</th>
-</tr>
-</thead>
-<tbody class="bg-white dark:bg-card-dark divide-y divide-border-light dark:divide-border-dark">
-<tr>
-<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                Standard Meta Query
-                            </td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-red-500 font-mono">
-                                0.84s
-                            </td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-red-500 font-mono">
-                                12MB
-                            </td>
-</tr>
-<tr class="bg-primary/5">
-<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">
-                                NCR Relationship Query
-                            </td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 font-bold font-mono">
-                                0.04s
-                            </td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 font-bold font-mono">
-                                2MB
-                            </td>
-</tr>
-</tbody>
-</table>
+<section class="py-12 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#15232d] reveal-on-scroll">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+<p class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-8">Works seamlessly with the tools you love</p>
+<div class="flex flex-wrap justify-center items-center gap-x-12 gap-y-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+<div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-300 hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">public</span> WordPress
+                    </div>
+<div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-300 hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">shopping_cart</span> WooCommerce
+                    </div>
+<div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-300 hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">translate</span> WPML
+                    </div>
+<div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-300 hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">view_quilt</span> Gutenberg
+                    </div>
+<div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-300 hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">dashboard_customize</span> Elementor
+                    </div>
 </div>
-<p class="mt-4 text-xs text-gray-500 italic">* Tested on a standard VPS with 100,000 posts in database.</p>
 </div>
 </section>
-<!-- Footer -->
-<footer class="bg-background-light dark:bg-background-dark pt-12 pb-8 border-t border-border-light dark:border-border-dark">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+</main>
+<footer class="bg-white dark:bg-[#101c22] border-t border-slate-200 dark:border-slate-800">
+<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6">
 <div class="flex items-center gap-2">
-<div class="w-6 h-6 rounded bg-primary flex items-center justify-center text-white font-bold text-xs">N</div>
-<span class="font-bold text-gray-700 dark:text-gray-300">Native Content Relationships</span>
+<img alt="Logo" class="h-6 w-6 rounded opacity-80" data-alt="Small footer logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz_fZdXWtqY4dFCo-TvboeMKWKy0TVE51g4IG_EtX6UBe4R47dU5vLLZ6i8wNF11xQhvlkO4aeKey2JP7f26hLpoUnPzqF8RnUg1BlF43_0AegleUS2pd4fwL6bHMcoBl5faZGnGbbcKP70c-oRGTMj82ipgvT7FyrY1zB1XUJc4e6SSRyfKQcfBdVnLDUa4hKlpuy3k5OfbFBT1FZmdtP99IfuSB7NTWGcioynWQC0mdJkLx8OjD7PJXXmPOObhixNl987Icu-H6p"/>
+<p class="text-sm text-slate-500">© 2024 Native Content Relationships.</p>
 </div>
-<div class="flex space-x-6 text-sm text-gray-500 dark:text-gray-400">
-<a class="hover:text-primary" href="#">Docs</a>
-<a class="hover:text-primary" href="#">GitHub</a>
-<a class="hover:text-primary" href="#">Support</a>
-<a class="hover:text-primary" href="#">License</a>
+<div class="flex gap-6">
+<a class="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors hover:underline" href="#">Documentation</a>
+<a class="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors hover:underline" href="#">Support</a>
+<a class="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors hover:underline" href="#">WordPress.org</a>
+<a class="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors hover:underline" href="#">GitHub</a>
 </div>
-<div class="text-xs text-gray-400">
-                © 2023 NCR Plugin. Open Source.
-            </div>
+</div>
+<div class="mt-8 text-center text-xs text-slate-400">
+                Created by <a class="font-medium hover:text-primary transition-colors" href="#">Chetan Upare</a>
+</div>
 </div>
 </footer>
+</div>
 </body></html>
