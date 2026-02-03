@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Relationship Use Cases - Native Content Relationships</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0da6f2",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101c22",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#182830",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111618] dark:text-white font-display overflow-x-hidden">
+<!-- Top Navbar -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#101c22]/90 backdrop-blur-md">
+<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-3 group">
+<a href="index.html" class="flex items-center gap-3 group">
+<img alt="Native Content Relationships Logo" class="h-8 w-8 rounded-md animate-float" data-alt="Native Content Relationships plugin logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdZrTkVCuBmkFcB2MT-UQqCT8Doh2dln3mnYH6j8gU2cepiOUC4IQu47wrJidRO9nefWgYQHu5WfnZNArIsRnTBcIjXJSHLT9UggiloRB5AfldMWEfGKaJWEXNI00aQS4qQYjLW8d8yZdFegX_7ZbVfwqYLvMWmxW9t_aAj0xV9B4i9JmOsUeePLrIpNMSHKdgASTlI39GsFxZZsOEAUfY7rLOp-1RcCOswJd-QlAwjIhhzB52sQZBkTKOBxE6Pwk2UyJlAJICF_XO"/>
+<span class="text-lg font-bold tracking-tight text-[#111618] dark:text-white transition-colors group-hover:text-primary">Native Content Relationships</span>
+</a>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="features.html">Features</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="architecture.html">Architecture</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="use-cases.html">Use Cases</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="documentation.html">Docs</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors" href="#">GitHub</a>
+<button class="flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white transition-all hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                    Download
+                </button>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="relative bg-surface-light dark:bg-surface-dark pt-16 pb-20 lg:pt-24 lg:pb-28 border-b border-gray-200 dark:border-gray-800">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+<span class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary ring-1 ring-inset ring-primary/20 mb-6">
+                Flexible Data Structures
+            </span>
+<h1 class="text-4xl font-black tracking-tight text-[#111618] dark:text-white sm:text-5xl lg:text-6xl mb-6">
+                Real-world implementations
+            </h1>
+<p class="mx-auto max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400 mb-10">
+                See how Native Content Relationships structures data for complex websites. From e-learning platforms to staff directories, explore the flexibility of native data linking without the headache.
+            </p>
+<div class="mx-auto max-w-lg">
+<label class="relative flex items-center w-full">
+<div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="block w-full rounded-xl border-0 py-4 pl-12 pr-32 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-[#101c22] dark:ring-gray-700 dark:text-white dark:placeholder:text-gray-500" placeholder="Search specific use cases..." type="text"/>
+<div class="absolute inset-y-0 right-2 flex items-center">
+<button class="flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary/90 transition-colors">
+                            Find
+                        </button>
+</div>
+</label>
+</div>
+</div>
+<!-- Background decorative elements -->
+<div class="absolute top-0 left-0 -z-10 h-full w-full overflow-hidden opacity-20 dark:opacity-10 pointer-events-none">
+<div class="absolute left-[10%] top-[20%] h-72 w-72 rounded-full bg-primary blur-[100px]"></div>
+<div class="absolute right-[10%] bottom-[20%] h-72 w-72 rounded-full bg-indigo-500 blur-[100px]"></div>
+</div>
+</section>
+<!-- Use Cases Grid -->
+<section class="py-16 sm:py-24 bg-background-light dark:bg-background-dark">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="mb-12 md:flex md:items-end md:justify-between">
+<div class="max-w-2xl">
+<h2 class="text-3xl font-bold tracking-tight text-[#111618] dark:text-white sm:text-4xl">Common Scenarios</h2>
+<p class="mt-4 text-lg text-gray-600 dark:text-gray-400">Deep dive into how our plugin solves specific architectural challenges across different industries.</p>
+</div>
+<div class="hidden md:flex gap-2">
+<button class="rounded-lg p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white transition-all">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="rounded-lg p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white transition-all">
+<span class="material-symbols-outlined">view_list</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+<!-- Card 1: LMS -->
+<article class="flex flex-col overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 transition-all hover:shadow-md dark:hover:ring-gray-700 group">
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center gap-3 mb-6">
+<div class="flex items-center justify-center size-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h3 class="text-xl font-bold text-[#111618] dark:text-white">LMS Platform</h3>
+</div>
+<!-- Schematic -->
+<div class="mb-6 rounded-lg bg-background-light dark:bg-background-dark border border-gray-100 dark:border-gray-800 p-4">
+<div class="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[20px]">local_library</span>
+<span>Course</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">arrow_forward</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[20px]">folder_open</span>
+<span>Module</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">arrow_forward</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[20px]">menu_book</span>
+<span>Lesson</span>
+</div>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<!-- Challenge -->
+<div class="relative pl-4 border-l-2 border-red-200 dark:border-red-900/50">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 text-[18px]">cancel</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Challenge</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Moving lessons between courses breaks hardcoded links, causing 404s and forcing manual updates.
+                                </p>
+</div>
+<!-- Solution -->
+<div class="relative pl-4 border-l-2 border-primary">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Solution</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Parent-child relationships ensure lessons automatically inherit course context, even if moved.
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-white/5 px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80" href="#">
+                            See Implementation <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Card 2: Event Management -->
+<article class="flex flex-col overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 transition-all hover:shadow-md dark:hover:ring-gray-700 group">
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center gap-3 mb-6">
+<div class="flex items-center justify-center size-10 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined">event</span>
+</div>
+<h3 class="text-xl font-bold text-[#111618] dark:text-white">Event Conference</h3>
+</div>
+<!-- Schematic -->
+<div class="mb-6 rounded-lg bg-background-light dark:bg-background-dark border border-gray-100 dark:border-gray-800 p-4">
+<div class="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-purple-500 text-[20px]">person</span>
+<span>Speaker</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">sync_alt</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-purple-500 text-[20px]">mic_external_on</span>
+<span>Session</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">arrow_forward</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-purple-500 text-[20px]">location_on</span>
+<span>Room</span>
+</div>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<!-- Challenge -->
+<div class="relative pl-4 border-l-2 border-red-200 dark:border-red-900/50">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 text-[18px]">cancel</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Challenge</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Updating a speaker's bio requires editing every single session page they are attached to.
+                                </p>
+</div>
+<!-- Solution -->
+<div class="relative pl-4 border-l-2 border-primary">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Solution</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Many-to-many relationships mean editing the Speaker CPT updates it everywhere instantly.
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-white/5 px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80" href="#">
+                            See Implementation <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Card 3: E-Commerce -->
+<article class="flex flex-col overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 transition-all hover:shadow-md dark:hover:ring-gray-700 group">
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center gap-3 mb-6">
+<div class="flex items-center justify-center size-10 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<h3 class="text-xl font-bold text-[#111618] dark:text-white">Related Products</h3>
+</div>
+<!-- Schematic -->
+<div class="mb-6 rounded-lg bg-background-light dark:bg-background-dark border border-gray-100 dark:border-gray-800 p-4">
+<div class="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-green-500 text-[20px]">apparel</span>
+<span>Product</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">sync_alt</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-green-500 text-[20px]">watch</span>
+<span>Accessory</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">arrow_back</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-green-500 text-[20px]">style</span>
+<span>Lookbook</span>
+</div>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<!-- Challenge -->
+<div class="relative pl-4 border-l-2 border-red-200 dark:border-red-900/50">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 text-[18px]">cancel</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Challenge</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Standard WooCommerce upsells are often one-way or rely on manual tagging that gets messy.
+                                </p>
+</div>
+<!-- Solution -->
+<div class="relative pl-4 border-l-2 border-primary">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Solution</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Create "Complete the Look" sections by connecting products bi-directionally to collections.
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-white/5 px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80" href="#">
+                            See Implementation <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Card 4: Staff Directory -->
+<article class="flex flex-col overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 transition-all hover:shadow-md dark:hover:ring-gray-700 group">
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center gap-3 mb-6">
+<div class="flex items-center justify-center size-10 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined">badge</span>
+</div>
+<h3 class="text-xl font-bold text-[#111618] dark:text-white">Corporate Directory</h3>
+</div>
+<!-- Schematic -->
+<div class="mb-6 rounded-lg bg-background-light dark:bg-background-dark border border-gray-100 dark:border-gray-800 p-4">
+<div class="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-orange-500 text-[20px]">apartment</span>
+<span>Dept</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">arrow_forward</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-orange-500 text-[20px]">groups</span>
+<span>Team</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">sync_alt</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-orange-500 text-[20px]">assignment</span>
+<span>Project</span>
+</div>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<!-- Challenge -->
+<div class="relative pl-4 border-l-2 border-red-200 dark:border-red-900/50">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 text-[18px]">cancel</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Challenge</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Org charts are fluid. Employees change teams and projects daily, making static pages obsolete.
+                                </p>
+</div>
+<!-- Solution -->
+<div class="relative pl-4 border-l-2 border-primary">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Solution</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Assign staff to teams and projects dynamically. The department page auto-populates.
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-white/5 px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80" href="#">
+                            See Implementation <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Card 5: Real Estate -->
+<article class="flex flex-col overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 transition-all hover:shadow-md dark:hover:ring-gray-700 group">
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center gap-3 mb-6">
+<div class="flex items-center justify-center size-10 rounded-lg bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400">
+<span class="material-symbols-outlined">real_estate_agent</span>
+</div>
+<h3 class="text-xl font-bold text-[#111618] dark:text-white">Real Estate</h3>
+</div>
+<!-- Schematic -->
+<div class="mb-6 rounded-lg bg-background-light dark:bg-background-dark border border-gray-100 dark:border-gray-800 p-4">
+<div class="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-teal-500 text-[20px]">domain</span>
+<span>Agency</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">arrow_forward</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-teal-500 text-[20px]">support_agent</span>
+<span>Agent</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">sync_alt</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-teal-500 text-[20px]">home</span>
+<span>Listing</span>
+</div>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<!-- Challenge -->
+<div class="relative pl-4 border-l-2 border-red-200 dark:border-red-900/50">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 text-[18px]">cancel</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Challenge</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    When an agent leaves, reassigning their 50 listings to a new agent is a database nightmare.
+                                </p>
+</div>
+<!-- Solution -->
+<div class="relative pl-4 border-l-2 border-primary">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Solution</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Bulk reassign the 'Agent' relationship on listings without touching the listing content itself.
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-white/5 px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80" href="#">
+                            See Implementation <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Card 6: Documentation -->
+<article class="flex flex-col overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 transition-all hover:shadow-md dark:hover:ring-gray-700 group">
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center gap-3 mb-6">
+<div class="flex items-center justify-center size-10 rounded-lg bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400">
+<span class="material-symbols-outlined">description</span>
+</div>
+<h3 class="text-xl font-bold text-[#111618] dark:text-white">Documentation</h3>
+</div>
+<!-- Schematic -->
+<div class="mb-6 rounded-lg bg-background-light dark:bg-background-dark border border-gray-100 dark:border-gray-800 p-4">
+<div class="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-pink-500 text-[20px]">new_releases</span>
+<span>Version</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">arrow_forward</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-pink-500 text-[20px]">toc</span>
+<span>Section</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">arrow_forward</span>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-pink-500 text-[20px]">article</span>
+<span>Article</span>
+</div>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<!-- Challenge -->
+<div class="relative pl-4 border-l-2 border-red-200 dark:border-red-900/50">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 text-[18px]">cancel</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Challenge</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Duplicating articles across different software versions (v1, v2) creates SEO duplicate content issues.
+                                </p>
+</div>
+<!-- Solution -->
+<div class="relative pl-4 border-l-2 border-primary">
+<div class="mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">The Solution</h4>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Relate a single Article to multiple Version objects. One post to maintain, displayed in multiple context lists.
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-white/5 px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80" href="#">
+                            See Implementation <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- Footer CTA -->
+<section class="relative overflow-hidden bg-primary py-16 sm:py-24">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 32px 32px;"></div>
+<div class="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+<h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Ready to structure your content?</h2>
+<p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-white/90">
+                Stop fighting with basic WordPress categories. Start building powerful, relational data structures today.
+            </p>
+<div class="mt-10 flex items-center justify-center gap-x-6">
+<a class="rounded-lg bg-white px-8 py-3.5 text-sm font-bold text-primary shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" href="#">
+                    Get Started Free
+                </a>
+<a class="text-sm font-semibold leading-6 text-white hover:text-white/80" href="#">
+                    Read Documentation <span aria-hidden="true">→</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Simple Footer -->
+<footer class="bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 py-12">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="flex items-center justify-center size-6 rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[16px]">hub</span>
+</div>
+<span class="text-sm font-semibold text-gray-900 dark:text-white">Native Content Relationships</span>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400">© 2023 NCR Plugin. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

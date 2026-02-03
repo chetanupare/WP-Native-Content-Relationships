@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Features - Native Content Relationships</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0da6f2",
+            "background-light": "#f5f7f8",
+            "background-dark": "#101c22",
+            "surface-light": "#ffffff",
+            "surface-dark": "#18262e",
+            "border-light": "#e5e7eb",
+            "border-dark": "#2d3748",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+            "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111618] dark:text-gray-100 flex flex-col min-h-screen">
+<!-- Header -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#101c22]/90 backdrop-blur-md">
+<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-3 group">
+<a href="index.html" class="flex items-center gap-3 group">
+<img alt="Native Content Relationships Logo" class="h-8 w-8 rounded-md animate-float" data-alt="Native Content Relationships plugin logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdZrTkVCuBmkFcB2MT-UQqCT8Doh2dln3mnYH6j8gU2cepiOUC4IQu47wrJidRO9nefWgYQHu5WfnZNArIsRnTBcIjXJSHLT9UggiloRB5AfldMWEfGKaJWEXNI00aQS4qQYjLW8d8yZdFegX_7ZbVfwqYLvMWmxW9t_aAj0xV9B4i9JmOsUeePLrIpNMSHKdgASTlI39GsFxZZsOEAUfY7rLOp-1RcCOswJd-QlAwjIhhzB52sQZBkTKOBxE6Pwk2UyJlAJICF_XO"/>
+<span class="text-lg font-bold tracking-tight text-[#111618] dark:text-white transition-colors group-hover:text-primary">Native Content Relationships</span>
+</a>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="features.html">Features</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="architecture.html">Architecture</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="use-cases.html">Use Cases</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="documentation.html">Docs</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors" href="#">GitHub</a>
+<button class="flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white transition-all hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                    Download
+                </button>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="py-20 px-4 text-center">
+<div class="max-w-4xl mx-auto space-y-6">
+<h1 class="text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tighter text-[#111618] dark:text-white">
+        Powerful Features for <span class="text-primary">Structured Data</span>
+</h1>
+<p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 font-normal leading-relaxed max-w-2xl mx-auto">
+        Build complex data models in WordPress without the bloat. Discover the architecture behind Native Content Relationships designed for performance and developer sanity.
+      </p>
+</div>
+</section>
+<!-- Main Content Area -->
+<main class="flex-grow">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+<!-- Feature Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+<!-- Card 1: Relationships Engine -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-8 shadow-sm border border-border-light dark:border-border-dark flex flex-col gap-6 hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">hub</span>
+</div>
+<span class="px-3 py-1 text-xs font-semibold bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300">Core</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold mb-3 text-[#111618] dark:text-white">Relationships Engine</h3>
+<p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+              Connect any WordPress object type. Create One-to-One, One-to-Many, or Many-to-Many relationships between Posts, Users, and Terms without cluttering your database with duplicate meta entries.
+            </p>
+</div>
+<div class="mt-auto bg-gray-50 dark:bg-[#101c22] rounded-lg p-4 border border-dashed border-gray-200 dark:border-gray-700">
+<div class="flex items-center justify-center gap-4 text-sm font-mono text-gray-500">
+<span class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">Post (Book)</span>
+<span class="material-symbols-outlined text-primary">sync_alt</span>
+<span class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">User (Author)</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Bidirectional Sync -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-8 shadow-sm border border-border-light dark:border-border-dark flex flex-col gap-6 hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">sync</span>
+</div>
+<span class="px-3 py-1 text-xs font-semibold bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300">Automated</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold mb-3 text-[#111618] dark:text-white">Bidirectional Sync</h3>
+<p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+              Ensure data consistency automatically. When you update a relationship on one side, the plugin instantly synchronizes the connection on the other, maintaining referential integrity at all times.
+            </p>
+</div>
+<!-- Abstract Diagram for Sync -->
+<div class="mt-auto h-24 w-full bg-cover bg-center rounded-lg relative overflow-hidden" data-alt="Abstract blue data flow representation" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA081YTf67A8ITaFA7LqBkf0cf12lKe3tLs_aRaNqCoTEadFsrnOoalUx1NaQhCHOB7PeSMekAEQ8Rx18340j9X6oJC-7yaU9I7VP-0EBlhD_cp-4CZ53MDOZDsGtEosVHQKi4oT_LBx5fCikjBt2VvP4CP18v5C_SpNcc1zAsPAVb5ZoB5t0v-WBnpbHdJsVU0arHq-DAq-B_W_Tc5DvdlYjf2dlIUp6fvoNXN3DJ-_fD-pt01aTTqmZISgrxVXHg9nwpljcTQ409Z');">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent mix-blend-overlay"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="flex gap-2 animate-pulse">
+<div class="h-2 w-2 bg-primary rounded-full"></div>
+<div class="h-2 w-2 bg-primary rounded-full delay-75"></div>
+<div class="h-2 w-2 bg-primary rounded-full delay-150"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Indexed Custom Tables -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-8 shadow-sm border border-border-light dark:border-border-dark flex flex-col gap-6 hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">table_view</span>
+</div>
+<span class="px-3 py-1 text-xs font-semibold bg-green-100 dark:bg-green-900 rounded-full text-green-700 dark:text-green-300">Performance</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold mb-3 text-[#111618] dark:text-white">Indexed Custom Tables</h3>
+<p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+              Skip the slow `wp_postmeta` table. We use custom SQL tables indexed specifically for relationships, enabling you to query millions of connections in milliseconds without caching plugins.
+            </p>
+</div>
+<div class="mt-auto bg-gray-900 rounded-lg p-4 font-mono text-xs text-gray-300 overflow-x-auto">
+<div class="flex flex-col gap-1">
+<span class="text-blue-400">SELECT</span> * <span class="text-blue-400">FROM</span> wp_ncr_relationships
+              <div><span class="text-blue-400">WHERE</span> parent_id = <span class="text-purple-400">1402</span></div>
+<div><span class="text-blue-400">AND</span> child_type = <span class="text-green-400">'product'</span>;</div>
+</div>
+</div>
+</div>
+<!-- Card 4: Admin UI Integration -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-8 shadow-sm border border-border-light dark:border-border-dark flex flex-col gap-6 hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">dashboard</span>
+</div>
+<span class="px-3 py-1 text-xs font-semibold bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300">UX</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold mb-3 text-[#111618] dark:text-white">Native Admin UI</h3>
+<p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+              Manage connections directly within the WordPress dashboard. Our metaboxes blend perfectly with the Gutenberg editor and Classic Editor, feeling like a native part of the CMS.
+            </p>
+</div>
+<div class="mt-auto h-32 w-full bg-cover bg-top rounded-lg border border-border-light dark:border-border-dark" data-alt="Screenshot of a clean dashboard interface" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAHcgDonUHejs75iHhAQz1VjmO0Lz5nY5gVTjw-aopHpo4S5v73cQPqkd9p_mQuudgNbWIZ5Ys9TnE5GE5pED_apoxBTA0Sb5VGoTlZNofnbIQZyTNT-O99mKIMJEtv35UEwNFMTbANGoBK7IA69VaOYWZyjI6hlXy7-LfNmFLQusBZO_pGuL-y_NfyaSU6kf5eFiXlmfcV8A7BHbwR6EGXWOfx36AvDMTMQ2LaYa_hpRRe_tlLy1opILY1K4DbWTS3k7xYinHcO5lY');"></div>
+</div>
+</div>
+<!-- Developer Integration Section -->
+<div class="bg-white dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm border border-border-light dark:border-border-dark">
+<div class="grid lg:grid-cols-2">
+<div class="p-8 lg:p-12 flex flex-col justify-center gap-6">
+<div class="inline-flex items-center gap-2 text-primary font-semibold">
+<span class="material-symbols-outlined">code</span>
+<span>Developer First</span>
+</div>
+<h2 class="text-3xl font-bold text-[#111618] dark:text-white">Seamless WP_Query Integration</h2>
+<p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
+              Stop writing complex raw SQL JOINs. Use our simplified <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-primary">meta_query</code>-like syntax to fetch related content efficiently while maintaining standard WordPress development patterns.
+            </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold py-2.5 px-5 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-sm">menu_book</span>
+                Read Documentation
+              </button>
+<button class="flex items-center gap-2 text-gray-600 dark:text-gray-300 font-medium py-2.5 px-5 hover:text-primary transition-colors">
+                View on GitHub
+                <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Code Block -->
+<div class="bg-[#0f172a] p-8 lg:p-12 overflow-x-auto flex items-center">
+<pre class="font-mono text-sm leading-relaxed text-gray-300 w-full"><span class="text-purple-400">$args</span> = [
+  <span class="text-green-400">'post_type'</span>  =&gt; <span class="text-green-400">'book'</span>,
+  <span class="text-green-400">'connected_to'</span> =&gt; [
+    <span class="text-green-400">'relationship'</span> =&gt; <span class="text-green-400">'author_to_book'</span>,
+    <span class="text-green-400">'from'</span>         =&gt; <span class="text-blue-400">123</span>, <span class="text-gray-500">// Author ID</span>
+  ],
+  <span class="text-green-400">'posts_per_page'</span> =&gt; <span class="text-blue-400">10</span>,
+];
+
+<span class="text-gray-500">// Standard WP_Query</span>
+<span class="text-purple-400">$query</span> = <span class="text-blue-400">new</span> WP_Query( <span class="text-purple-400">$args</span> );
+</pre>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- CTA Section -->
+<section class="bg-surface-light dark:bg-[#132028] py-24 px-4 border-t border-border-light dark:border-border-dark">
+<div class="max-w-4xl mx-auto text-center space-y-8">
+<h2 class="text-3xl md:text-4xl font-bold tracking-tight text-[#111618] dark:text-white">
+        Ready to structure your data?
+      </h2>
+<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        Join thousands of developers building scalable, high-performance WordPress sites with Native Content Relationships.
+      </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<button class="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-bold text-lg py-3 px-8 rounded-lg shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5">
+          Purchase License
+        </button>
+<button class="w-full sm:w-auto bg-white dark:bg-transparent border border-gray-300 dark:border-gray-600 text-[#111618] dark:text-white font-medium text-lg py-3 px-8 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          Contact Sales
+        </button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-white dark:bg-background-dark border-t border-border-light dark:border-border-dark pt-16 pb-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+<div>
+<h4 class="font-bold text-[#111618] dark:text-white mb-4">Product</h4>
+<ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pricing</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Changelog</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Roadmap</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-[#111618] dark:text-white mb-4">Resources</h4>
+<ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Tutorials</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Community</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-[#111618] dark:text-white mb-4">Company</h4>
+<ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">About</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Blog</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-[#111618] dark:text-white mb-4">Legal</h4>
+<ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Cookie Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-border-light dark:border-border-dark">
+<div class="flex items-center gap-2 text-[#111618] dark:text-white mb-4 md:mb-0">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.8261 30.5736C16.7203 29.8826 20.2244 29.4783 24 29.4783C27.7756 29.4783 31.2797 29.8826 34.1739 30.5736C36.9144 31.2278 39.9967 32.7669 41.3563 33.8352L24.8486 7.36089C24.4571 6.73303 23.5429 6.73303 23.1514 7.36089L6.64374 33.8352C8.00331 32.7669 11.0856 31.2278 13.8261 30.5736Z" fill="currentColor"></path>
+<path clip-rule="evenodd" d="M39.998 35.764C39.9944 35.7463 39.9875 35.7155 39.9748 35.6706C39.9436 35.5601 39.8949 35.4259 39.8346 35.2825C39.8168 35.2403 39.7989 35.1993 39.7813 35.1602C38.5103 34.2887 35.9788 33.0607 33.7095 32.5189C30.9875 31.8691 27.6413 31.4783 24 31.4783C20.3587 31.4783 17.0125 31.8691 14.2905 32.5189C12.0012 33.0654 9.44505 34.3104 8.18538 35.1832C8.17384 35.2075 8.16216 35.233 8.15052 35.2592C8.09919 35.3751 8.05721 35.4886 8.02977 35.589C8.00356 35.6848 8.00039 35.7333 8.00004 35.7388C8.00004 35.739 8 35.7393 8.00004 35.7388C8.00004 35.7641 8.0104 36.0767 8.68485 36.6314C9.34546 37.1746 10.4222 37.7531 11.9291 38.2772C14.9242 39.319 19.1919 40 24 40C28.8081 40 33.0758 39.319 36.0709 38.2772C37.5778 37.7531 38.6545 37.1746 39.3151 36.6314C39.9006 36.1499 39.9857 35.8511 39.998 35.764ZM4.95178 32.7688L21.4543 6.30267C22.6288 4.4191 25.3712 4.41909 26.5457 6.30267L43.0534 32.777C43.0709 32.8052 43.0878 32.8338 43.104 32.8629L41.3563 33.8352C43.104 32.8629 43.1038 32.8626 43.104 32.8629L43.1051 32.865L43.1065 32.8675L43.1101 32.8739L43.1199 32.8918C43.1276 32.906 43.1377 32.9246 43.1497 32.9473C43.1738 32.9925 43.2062 33.0545 43.244 33.1299C43.319 33.2792 43.4196 33.489 43.5217 33.7317C43.6901 34.1321 44 34.9311 44 35.7391C44 37.4427 43.003 38.7775 41.8558 39.7209C40.6947 40.6757 39.1354 41.4464 37.385 42.0552C33.8654 43.2794 29.133 44 24 44C18.867 44 14.1346 43.2794 10.615 42.0552C8.86463 41.4464 7.30529 40.6757 6.14419 39.7209C4.99695 38.7775 3.99999 37.4427 3.99999 35.7391C3.99999 34.8725 4.29264 34.0922 4.49321 33.6393C4.60375 33.3898 4.71348 33.1804 4.79687 33.0311C4.83898 32.9556 4.87547 32.8935 4.9035 32.8471C4.91754 32.8238 4.92954 32.8043 4.93916 32.7889L4.94662 32.777L4.95178 32.7688ZM35.9868 29.004L24 9.77997L12.0131 29.004C12.4661 28.8609 12.9179 28.7342 13.3617 28.6282C16.4281 27.8961 20.0901 27.4783 24 27.4783C27.9099 27.4783 31.5719 27.8961 34.6383 28.6282C35.082 28.7342 35.5339 28.8609 35.9868 29.004Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="font-bold text-sm tracking-tight">Native Content Relationships</span>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-gray-400 hover:text-primary transition-colors" href="#"><span class="sr-only">Twitter</span>
+<svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24">
+<path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+</svg>
+</a>
+<a class="text-gray-400 hover:text-primary transition-colors" href="#"><span class="sr-only">GitHub</span>
+<svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+<p class="text-xs text-gray-500 mt-4 md:mt-0">© 2023 Native Content Relationships. All rights reserved.</p>
+</div>
+</div>
+</footer>
+</body></html>

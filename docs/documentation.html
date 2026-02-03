@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Developer Documentation - Native Content Relationships</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0da6f2",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["Fira Code", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; font-size: 20px; }
+        .filled-icon { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111618] dark:text-white flex flex-col min-h-screen">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#101c22]/90 backdrop-blur-md">
+<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-3 group">
+<a href="index.html" class="flex items-center gap-3 group">
+<img alt="Native Content Relationships Logo" class="h-8 w-8 rounded-md animate-float" data-alt="Native Content Relationships plugin logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdZrTkVCuBmkFcB2MT-UQqCT8Doh2dln3mnYH6j8gU2cepiOUC4IQu47wrJidRO9nefWgYQHu5WfnZNArIsRnTBcIjXJSHLT9UggiloRB5AfldMWEfGKaJWEXNI00aQS4qQYjLW8d8yZdFegX_7ZbVfwqYLvMWmxW9t_aAj0xV9B4i9JmOsUeePLrIpNMSHKdgASTlI39GsFxZZsOEAUfY7rLOp-1RcCOswJd-QlAwjIhhzB52sQZBkTKOBxE6Pwk2UyJlAJICF_XO"/>
+<span class="text-lg font-bold tracking-tight text-[#111618] dark:text-white transition-colors group-hover:text-primary">Native Content Relationships</span>
+</a>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="features.html">Features</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="architecture.html">Architecture</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="use-cases.html">Use Cases</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors" href="documentation.html">Docs</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors" href="#">GitHub</a>
+<button class="flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white transition-all hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                    Download
+                </button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 w-full max-w-[1440px] mx-auto">
+<!-- Left Sidebar -->
+<aside class="hidden lg:flex w-72 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-[#101c22] h-[calc(100vh-64px)] sticky top-[64px] overflow-y-auto">
+<div class="p-4 flex flex-col gap-6">
+<!-- Sidebar Search -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="material-symbols-outlined text-gray-400">search</span>
+</div>
+<input class="block w-full p-2.5 pl-10 text-sm text-gray-900 border border-gray-200 rounded-lg bg-gray-50 focus:ring-primary focus:border-primary dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white" placeholder="Search docs..." type="text"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3">
+<kbd class="inline-flex items-center border border-gray-200 rounded px-1.5 text-[10px] font-mono text-gray-400 dark:border-gray-700">⌘K</kbd>
+</div>
+</div>
+<!-- Navigation Tree -->
+<nav class="flex flex-col gap-1">
+<div class="mb-2">
+<h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider dark:text-gray-400">Documentation</h3>
+</div>
+<!-- Active Item -->
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg group" href="#">
+<span class="material-symbols-outlined filled-icon text-[20px]">rocket_launch</span>
+<span class="text-sm font-medium">Getting Started</span>
+</a>
+<!-- Sub Items -->
+<div class="pl-10 pr-2 flex flex-col border-l border-gray-100 dark:border-gray-800 ml-5 my-1 gap-1">
+<a class="block py-1.5 text-sm font-medium text-primary pl-2 border-l-2 border-primary -ml-[1px]" href="#">Introduction</a>
+<a class="block py-1.5 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white pl-2 border-l-2 border-transparent hover:border-gray-300" href="#">Installation</a>
+<a class="block py-1.5 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white pl-2 border-l-2 border-transparent hover:border-gray-300" href="#">Configuration</a>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors mt-1" href="#">
+<span class="material-symbols-outlined text-[20px]">code</span>
+<span class="text-sm font-medium">API Reference</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">webhook</span>
+<span class="text-sm font-medium">Hooks &amp; Filters</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">lightbulb</span>
+<span class="text-sm font-medium">Examples</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-4 border-t border-gray-100 dark:border-gray-800">
+<div class="flex items-center gap-3 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+<div class="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex items-center justify-center text-white font-bold text-xs" data-alt="User avatar placeholder with initials JD">
+                        JD
+                    </div>
+<div class="flex flex-col">
+<span class="text-xs font-medium text-gray-900 dark:text-white">Logged in as Dev</span>
+<span class="text-[10px] text-gray-500">Pro License Active</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 min-w-0 py-8 px-8 md:px-12 bg-background-light dark:bg-background-dark">
+<div class="max-w-3xl mx-auto">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Developer</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="font-medium text-gray-900 dark:text-white">Getting Started</span>
+</div>
+<!-- Page Header -->
+<div class="mb-10 border-b border-gray-200 dark:border-gray-800 pb-8">
+<h1 class="text-4xl font-extrabold tracking-tight text-[#111618] dark:text-white mb-4">Developer Documentation</h1>
+<p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Welcome to the developer hub. Learn how to extend Native Content Relationships programmatically using our robust API and hooks system.
+                    </p>
+</div>
+<!-- Content Sections -->
+<div class="space-y-12">
+<!-- Introduction Section -->
+<section id="introduction">
+<p class="text-base leading-7 text-gray-700 dark:text-gray-300 mb-4">
+                            The Native Content Relationships plugin allows you to define strict or loose relationships between any WordPress post types. While the UI offers extensive controls, the real power lies in the code-first approach for themes and complex integrations.
+                        </p>
+<div class="flex p-4 mb-4 text-sm text-blue-800 border border-blue-200 rounded-lg bg-blue-50 dark:bg-blue-900/20 dark:text-blue-200 dark:border-blue-800/50" role="alert">
+<span class="material-symbols-outlined mr-3 text-primary">info</span>
+<div>
+<span class="font-bold">Note:</span> Ensure you have version 2.4.0 or higher installed to use the functions described below.
+                            </div>
+</div>
+</section>
+<!-- Quick Start Section -->
+<section class="scroll-mt-24" id="quick-start">
+<div class="flex items-center gap-3 mb-6">
+<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Quick Start</h2>
+<span class="bg-primary/10 text-primary text-xs font-semibold px-2 py-1 rounded">Recommended</span>
+</div>
+<p class="text-base leading-7 text-gray-700 dark:text-gray-300 mb-6">
+                            To register a relationship programmatically, use the <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-pink-600 dark:text-pink-400">ncr_register_relationship</code> function hooked into WordPress's <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-pink-600 dark:text-pink-400">init</code> action.
+                        </p>
+<!-- Code Block -->
+<div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-[#1e293b] shadow-lg">
+<div class="flex items-center justify-between px-4 py-2 bg-[#0f172a] border-b border-gray-700">
+<span class="text-xs font-mono text-gray-400">functions.php</span>
+<button class="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+                                    Copy
+                                </button>
+</div>
+<div class="p-4 overflow-x-auto">
+<pre class="font-mono text-sm leading-6 text-gray-300"><code><span class="text-purple-400">add_action</span><span class="text-gray-400">(</span><span class="text-green-400">'init'</span><span class="text-gray-400">,</span> <span class="text-blue-400">function</span><span class="text-gray-400">() {</span>
+    <span class="text-gray-500">// Register a Many-to-Many relationship between Books and Authors</span>
+    <span class="text-blue-400">ncr_register_relationship</span><span class="text-gray-400">(</span><span class="text-green-400">'books'</span><span class="text-gray-400">,</span> <span class="text-green-400">'authors'</span><span class="text-gray-400">, [</span>
+        <span class="text-green-400">'cardinality'</span> <span class="text-purple-400">=&gt;</span> <span class="text-green-400">'many-to-many'</span><span class="text-gray-400">,</span>
+        <span class="text-green-400">'reciprocal'</span>  <span class="text-purple-400">=&gt;</span> <span class="text-blue-400">true</span><span class="text-gray-400">,</span>
+        <span class="text-green-400">'meta'</span>        <span class="text-purple-400">=&gt;</span> <span class="text-gray-400">[</span>
+            <span class="text-green-400">'role'</span> <span class="text-purple-400">=&gt;</span> <span class="text-green-400">'string'</span>
+        <span class="text-gray-400">]</span>
+    <span class="text-gray-400">]);</span>
+<span class="text-gray-400">});</span></code></pre>
+</div>
+</div>
+<div class="mt-4">
+<a class="inline-flex items-center text-sm font-medium text-primary hover:underline" href="#">
+                                View full API documentation for ncr_register_relationship
+                                <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+</a>
+</div>
+</section>
+<!-- Next Steps -->
+<section class="border-t border-gray-200 dark:border-gray-800 pt-8">
+<h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Next Steps</h3>
+<div class="grid sm:grid-cols-2 gap-4">
+<a class="group block p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:shadow-md transition-all" href="#">
+<span class="material-symbols-outlined text-primary mb-3 text-3xl group-hover:scale-110 transition-transform">webhook</span>
+<h4 class="font-bold text-gray-900 dark:text-white mb-2">Explore Hooks</h4>
+<p class="text-sm text-gray-500 dark:text-gray-400">Customize behavior during save, update, and delete actions.</p>
+</a>
+<a class="group block p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:shadow-md transition-all" href="#">
+<span class="material-symbols-outlined text-purple-500 mb-3 text-3xl group-hover:scale-110 transition-transform">terminal</span>
+<h4 class="font-bold text-gray-900 dark:text-white mb-2">CLI Commands</h4>
+<p class="text-sm text-gray-500 dark:text-gray-400">Manage relationships directly from your terminal using WP-CLI.</p>
+</a>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Right Sidebar (TOC) -->
+<aside class="hidden xl:block w-64 p-8 sticky top-[64px] h-[calc(100vh-64px)] overflow-y-auto">
+<div class="mb-4">
+<h5 class="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">On this page</h5>
+<ul class="space-y-3 border-l border-gray-200 dark:border-gray-700">
+<li>
+<a class="block pl-4 text-sm font-medium border-l-2 border-primary -ml-[1px] text-primary" href="#introduction">Introduction</a>
+</li>
+<li>
+<a class="block pl-4 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-l-2 border-transparent hover:border-gray-300 transition-colors" href="#quick-start">Quick Start</a>
+</li>
+<li>
+<a class="block pl-4 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-l-2 border-transparent hover:border-gray-300 transition-colors" href="#parameters">Parameters</a>
+</li>
+<li>
+<a class="block pl-4 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-l-2 border-transparent hover:border-gray-300 transition-colors" href="#return-values">Return Values</a>
+</li>
+<li>
+<a class="block pl-4 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-l-2 border-transparent hover:border-gray-300 transition-colors" href="#troubleshooting">Troubleshooting</a>
+</li>
+</ul>
+</div>
+<div class="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+<p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Have questions?</p>
+<a class="text-sm font-bold text-primary hover:underline flex items-center gap-1" href="#">
+                    Join our Discord
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+</aside>
+</div>
+</body></html>
