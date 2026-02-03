@@ -12,11 +12,11 @@ This directory contains favicon files, SEO assets, and integration icons for the
 - manifest.json - Web app manifest
 
 ### Integration Icons
-- wordpress.svg - WordPress integration icon
-- woocommerce.svg - WooCommerce integration icon
-- wpml.svg - WPML multilingual integration icon
-- gutenberg.svg - Gutenberg block editor integration icon
-- elementor.svg - Elementor page builder integration icon
+- wordpress-logo-svgrepo-com.svg - WordPress integration icon
+- woocommerce-icon-svgrepo-com.svg - WooCommerce integration icon
+- wpml-svgrepo-com.svg - WPML multilingual integration icon
+- gutenberg-svgrepo-com.svg - Gutenberg block editor integration icon
+- elementor-svgrepo-com.svg - Elementor page builder integration icon
 - icon-128x128.png - Main plugin icon from WordPress.org
 
 ## Usage
