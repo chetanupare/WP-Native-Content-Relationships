@@ -1,7 +1,11 @@
 <?php
 /**
- * Capability Control
- * Manages permissions for relationship operations
+ * Capability Control.
+ *
+ * Manages permissions for relationship operations.
+ *
+ * @package NativeContentRelationships
+ * @since   1.0.0
  */
 
 // Exit if accessed directly
@@ -12,17 +16,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 class NATICORE_Capabilities {
 
 	/**
-	 * Instance
+	 * Singleton instance.
+	 *
+	 * @since 1.0.0
+	 * @var NATICORE_Capabilities|null
 	 */
 	private static $instance = null;
 
 	/**
-	 * Flag to prevent infinite recursion
+	 * Flag to prevent infinite recursion during capability mapping.
+	 *
+	 * @since 1.0.0
+	 * @var bool
 	 */
 	private static $mapping_in_progress = false;
 
 	/**
-	 * Get instance
+	 * Get singleton instance.
+	 *
+	 * @since  1.0.0
+	 * @return NATICORE_Capabilities
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -32,7 +45,9 @@ class NATICORE_Capabilities {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * @since 1.0.0
 	 */
 	private function __construct() {
 		add_filter( 'map_meta_cap', array( $this, 'map_meta_caps' ), 10, 4 );

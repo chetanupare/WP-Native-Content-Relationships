@@ -1,7 +1,11 @@
 <?php
 /**
- * Safe Deletion Handling
- * Cleans up relationships when content is trashed or deleted
+ * Safe Deletion Handling.
+ *
+ * Cleans up relationships when content is trashed or deleted.
+ *
+ * @package NativeContentRelationships
+ * @since   1.0.0
  */
 
 // Exit if accessed directly
@@ -12,12 +16,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 class NATICORE_Cleanup {
 
 	/**
-	 * Instance
+	 * Singleton instance.
+	 *
+	 * @since 1.0.0
+	 * @var NATICORE_Cleanup|null
 	 */
 	private static $instance = null;
 
 	/**
-	 * Get instance
+	 * Get singleton instance.
+	 *
+	 * @since  1.0.0
+	 * @return NATICORE_Cleanup
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -27,7 +37,11 @@ class NATICORE_Cleanup {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * Registers hooks for cleaning up relationships on post deletion.
+	 *
+	 * @since 1.0.0
 	 */
 	private function __construct() {
 		// Clean up on post deletion

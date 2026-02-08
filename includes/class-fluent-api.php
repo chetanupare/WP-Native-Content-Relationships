@@ -1,7 +1,11 @@
 <?php
 /**
- * Fluent API for Content Relationships
- * Chainable, IDE-friendly API wrapper
+ * Fluent API for Content Relationships.
+ *
+ * Provides a chainable, IDE-friendly API wrapper for managing relationships.
+ *
+ * @package NativeContentRelationships
+ * @since   1.0.0
  */
 
 // Exit if accessed directly
@@ -25,32 +29,50 @@ function naticore() {
 class NATICORE_Fluent_API {
 
 	/**
-	 * Instance
+	 * Singleton instance.
+	 *
+	 * @since 1.0.0
+	 * @var NATICORE_Fluent_API|null
 	 */
 	private static $instance = null;
 
 	/**
-	 * Current from_id
+	 * Source post ID for the current chain.
+	 *
+	 * @since 1.0.0
+	 * @var int|null
 	 */
 	private $from_id = null;
 
 	/**
-	 * Current to_id
+	 * Target post ID for the current chain.
+	 *
+	 * @since 1.0.0
+	 * @var int|null
 	 */
 	private $to_id = null;
 
 	/**
-	 * Current type
+	 * Relationship type for the current chain.
+	 *
+	 * @since 1.0.0
+	 * @var string
 	 */
 	private $type = 'related_to';
 
 	/**
-	 * Current direction
+	 * Relationship direction for the current chain.
+	 *
+	 * @since 1.0.0
+	 * @var string|null
 	 */
 	private $direction = null;
 
 	/**
-	 * Get instance
+	 * Get singleton instance.
+	 *
+	 * @since  1.0.0
+	 * @return NATICORE_Fluent_API
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -60,7 +82,9 @@ class NATICORE_Fluent_API {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * @since 1.0.0
 	 */
 	private function __construct() {
 		// Reset state
@@ -68,7 +92,10 @@ class NATICORE_Fluent_API {
 	}
 
 	/**
-	 * Reset state
+	 * Reset the fluent chain state.
+	 *
+	 * @since  1.0.0
+	 * @return void
 	 */
 	private function reset() {
 		$this->from_id   = null;

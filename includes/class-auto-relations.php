@@ -1,7 +1,11 @@
 <?php
 /**
- * Automatic Relations on Publish
- * Rule-based automation
+ * Automatic Relations on Publish.
+ *
+ * Rule-based automation for creating relationships when posts are published.
+ *
+ * @package NativeContentRelationships
+ * @since   1.0.0
  */
 
 // Exit if accessed directly
@@ -12,12 +16,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 class NATICORE_Auto_Relations {
 
 	/**
-	 * Instance
+	 * Singleton instance.
+	 *
+	 * @since 1.0.0
+	 * @var NATICORE_Auto_Relations|null
 	 */
 	private static $instance = null;
 
 	/**
-	 * Get instance
+	 * Get singleton instance.
+	 *
+	 * @since  1.0.0
+	 * @return NATICORE_Auto_Relations
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -27,7 +37,11 @@ class NATICORE_Auto_Relations {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * Registers publish hooks for auto-relation creation when enabled.
+	 *
+	 * @since 1.0.0
 	 */
 	private function __construct() {
 		$settings = NATICORE_Settings::get_instance();
@@ -40,7 +54,13 @@ class NATICORE_Auto_Relations {
 	}
 
 	/**
-	 * Auto-relation to parent page
+	 * Automatically create a 'part_of' relation to the parent page on publish.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int     $post_id Post ID being published.
+	 * @param WP_Post $post    Post object being published.
+	 * @return void
 	 */
 	public function auto_relation_to_parent( $post_id, $post ) {
 		// Skip revisions and autosaves

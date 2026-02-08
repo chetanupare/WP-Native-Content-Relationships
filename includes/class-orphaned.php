@@ -1,7 +1,11 @@
 <?php
 /**
- * Orphaned Relationships Checker
- * Weekly admin notice
+ * Orphaned Relationships Checker.
+ *
+ * Detects orphaned relationships and displays a weekly admin notice.
+ *
+ * @package NativeContentRelationships
+ * @since   1.0.0
  */
 
 // Exit if accessed directly
@@ -12,12 +16,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 class NATICORE_Orphaned {
 
 	/**
-	 * Instance
+	 * Singleton instance.
+	 *
+	 * @since 1.0.0
+	 * @var NATICORE_Orphaned|null
 	 */
 	private static $instance = null;
 
 	/**
-	 * Get instance
+	 * Get singleton instance.
+	 *
+	 * @since  1.0.0
+	 * @return NATICORE_Orphaned
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -27,7 +37,11 @@ class NATICORE_Orphaned {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * Registers admin hooks for orphaned relationship detection.
+	 *
+	 * @since 1.0.0
 	 */
 	private function __construct() {
 		// Only load admin functionality in admin context
@@ -40,7 +54,10 @@ class NATICORE_Orphaned {
 	}
 
 	/**
-	 * Maybe check for orphaned relationships
+	 * Check for orphaned relationships if a week has passed since last check.
+	 *
+	 * @since  1.0.0
+	 * @return void
 	 */
 	public function maybe_check_orphaned() {
 		// Only check once per week
@@ -63,7 +80,10 @@ class NATICORE_Orphaned {
 	}
 
 	/**
-	 * Count orphaned relationships
+	 * Count orphaned relationships where from_id or to_id references a deleted post.
+	 *
+	 * @since  1.0.0
+	 * @return int Number of orphaned relationships.
 	 */
 	private function count_orphaned() {
 		global $wpdb;
@@ -81,7 +101,10 @@ class NATICORE_Orphaned {
 	}
 
 	/**
-	 * Show orphaned notice
+	 * Display an admin notice when orphaned relationships are detected.
+	 *
+	 * @since  1.0.0
+	 * @return void
 	 */
 	public function show_orphaned_notice() {
 		$count = get_option( 'naticore_orphaned_count', 0 );
