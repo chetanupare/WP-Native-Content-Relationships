@@ -41,6 +41,8 @@ class NATICORE_Admin {
 		add_action( 'wp_ajax_naticore_search_products', array( $this, 'ajax_search_products' ) );
 		add_action( 'wp_ajax_naticore_add_relation', array( $this, 'ajax_add_relation' ) );
 		add_action( 'wp_ajax_naticore_remove_relation', array( $this, 'ajax_remove_relation' ) );
+
+		add_action( 'admin_notices', array( $this, 'render_activation_notice' ) );
 	}
 
 	/**
@@ -383,5 +385,40 @@ class NATICORE_Admin {
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Render activation notice
+	 */
+	public function render_activation_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// Check if we should show the notice
+		if ( ! get_transient( 'naticore_activation_notice' ) ) {
+			return;
+		}
+
+		// Delete transient so it only shows once
+		delete_transient( 'naticore_activation_notice' );
+
+		$settings_url = admin_url( 'options-general.php?page=naticore-settings' );
+		$docs_url     = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
+		?>
+		<div class="notice notice-info is-dismissible">
+			<p>
+				<strong><?php esc_html_e( 'Native Content Relationships is active!', 'native-content-relationships' ); ?></strong>
+				<?php
+				printf(
+					/* translators: 1: Settings URL, 2: Documentation URL */
+					wp_kses_post( __( 'Please <a href="%1$s">visit the settings page</a> to configure the plugin or <a href="%2$s" target="_blank">read the documentation</a> to get started.', 'native-content-relationships' ) ),
+					esc_url( $settings_url ),
+					esc_url( $docs_url )
+				);
+				?>
+			</p>
+		</div>
+		<?php
 	}
 }

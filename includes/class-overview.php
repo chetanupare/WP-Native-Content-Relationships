@@ -325,15 +325,30 @@ class NATICORE_Overview {
 	 * Add overview page
 	 */
 	public function add_overview_page() {
-		$hook = add_management_page(
-			__( 'Content Relationships', 'native-content-relationships' ),
-			__( 'Content Relationships', 'native-content-relationships' ),
+		// Parent slug is the same as the main settings page slug
+		$hook = add_submenu_page(
+			'naticore-settings',
+			__( 'Relationship Overview', 'native-content-relationships' ),
+			__( 'Internal Overview', 'native-content-relationships' ),
 			'manage_options',
 			'naticore-overview',
 			array( $this, 'render_overview_page' )
 		);
 
 		add_action( "load-$hook", array( $this, 'add_screen_options' ) );
+		add_action( "admin_print_styles-$hook", array( $this, 'enqueue_styles' ) );
+	}
+
+	/**
+	 * Enqueue styles
+	 */
+	public function enqueue_styles() {
+		wp_enqueue_style(
+			'naticore-settings',
+			NATICORE_PLUGIN_URL . 'assets/settings.css',
+			array(),
+			NATICORE_VERSION
+		);
 	}
 
 	/**
@@ -372,16 +387,38 @@ class NATICORE_Overview {
 		$table->prepare_items();
 
 		?>
-		<div class="wrap">
+		<div class="wrap naticore-overview-container">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<p class="description" id="naticore-overview-desc">
-				<?php esc_html_e( 'Overview of all content relationships. To edit relationships, use the "Related Content" meta box on individual posts.', 'native-content-relationships' ); ?>
-			</p>
 			
-			<form method="get" aria-labelledby="naticore-overview-desc">
-				<input type="hidden" name="page" value="naticore-overview" />
-				<?php $table->display(); ?>
-			</form>
+			<div class="naticore-overview-header">
+				<p class="description">
+					<?php esc_html_e( 'Audit and monitor all content relationships across your site.', 'native-content-relationships' ); ?>
+				</p>
+			</div>
+
+			<?php if ( empty( $table->items ) && ! isset( $_GET['s'] ) ) : ?>
+				<div class="naticore-empty-state card">
+					<div class="naticore-empty-state-content">
+						<span class="dashicons dashicons-rest-api"></span>
+						<h2><?php esc_html_e( 'No Relationships Found', 'native-content-relationships' ); ?></h2>
+						<p><?php esc_html_e( 'You haven\'t created any content relationships yet. Start by editing a post or product and using the "Related Content" box.', 'native-content-relationships' ); ?></p>
+						<div class="naticore-empty-state-actions">
+							<a href="<?php echo esc_url( admin_url( 'edit.php' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Go to Posts', 'native-content-relationships' ); ?></a>
+							<?php if ( class_exists( 'WooCommerce' ) ) : ?>
+								<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=product' ) ); ?>" class="button button-secondary"><?php esc_html_e( 'Go to Products', 'native-content-relationships' ); ?></a>
+							<?php endif; ?>
+						</div>
+					</div>
+				</div>
+			<?php else : ?>
+				<form method="get">
+					<input type="hidden" name="page" value="naticore-overview" />
+					<?php 
+					$table->search_box( __( 'Search Relationships', 'native-content-relationships' ), 'naticore-search' );
+					$table->display(); 
+					?>
+				</form>
+			<?php endif; ?>
 		</div>
 		<?php
 	}

@@ -211,6 +211,9 @@ class NATICORE_Plugin {
 		self::load_includes_static();
 		NATICORE_Database::create_table();
 		flush_rewrite_rules();
+
+		// Set transient to show activation notice
+		set_transient( 'naticore_activation_notice', true, 30 );
 	}
 
 	/**

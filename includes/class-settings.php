@@ -87,6 +87,8 @@ class NATICORE_Settings {
 				return 'naticore-settings-woocommerce';
 			case 'privacy':
 				return 'naticore-settings-privacy';
+			case 'import_export':
+				return 'naticore-settings-import-export';
 			case 'developer':
 				return 'naticore-settings-developer';
 			case 'general':
@@ -103,6 +105,7 @@ class NATICORE_Settings {
 			'general'            => __( 'General', 'native-content-relationships' ),
 			'relationship_types' => __( 'Relationship Types', 'native-content-relationships' ),
 			'woocommerce'        => __( 'WooCommerce', 'native-content-relationships' ),
+			'import_export'      => __( 'Import/Export', 'native-content-relationships' ),
 			'privacy'            => __( 'Privacy', 'native-content-relationships' ),
 		);
 
@@ -185,6 +188,9 @@ class NATICORE_Settings {
 				break;
 			case 'privacy':
 				$this->register_privacy_settings();
+				break;
+			case 'import_export':
+				$this->register_import_export_settings();
 				break;
 			case 'developer':
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
@@ -301,6 +307,14 @@ class NATICORE_Settings {
 		);
 
 		add_settings_field(
+			'debug_tools',
+			'', // No title, will be rendered manually
+			array( $this, 'render_developer_debug_tools' ),
+			$page,
+			'naticore_developer'
+		);
+
+		add_settings_field(
 			'debug_logging',
 			'', // No title, will be rendered manually
 			array( $this, 'render_debug_logging' ),
@@ -331,6 +345,36 @@ class NATICORE_Settings {
 			$page,
 			'naticore_developer'
 		);
+	}
+
+	/**
+	 * Register Import/Export tab settings
+	 */
+	private function register_import_export_settings() {
+		$page = $this->get_page_slug();
+		add_settings_section(
+			'naticore_import_export',
+			'', // No title, will be rendered manually
+			'__return_false',
+			$page
+		);
+
+		add_settings_field(
+			'import_export_ui',
+			'', // No title, will be rendered manually
+			array( $this, 'render_import_export_tab' ),
+			$page,
+			'naticore_import_export'
+		);
+	}
+
+	/**
+	 * Render Import/Export tab content
+	 */
+	public function render_import_export_tab() {
+		if ( class_exists( 'NATICORE_Import_Export' ) ) {
+			NATICORE_Import_Export::get_instance()->render_import_export_page();
+		}
 	}
 
 	/**
@@ -373,7 +417,17 @@ class NATICORE_Settings {
 					<?php
 					settings_fields( 'naticore_settings' );
 					do_settings_sections( $this->get_page_slug() );
-					if ( $current_tab !== 'developer' || ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+					
+					// Don't show global submit button on developer tab (unless debug) or on import/export tab (which has its own buttons).
+					$show_submit = true;
+					if ( $current_tab === 'developer' && ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+						$show_submit = false;
+					}
+					if ( $current_tab === 'import_export' ) {
+						$show_submit = false;
+					}
+
+					if ( $show_submit ) {
 						submit_button();
 					}
 					?>
@@ -411,46 +465,110 @@ class NATICORE_Settings {
 	}
 
 	public function render_relationship_types_manage_ui() {
-		$types = array();
-		if ( class_exists( 'NATICORE_Relation_Types' ) ) {
-			$types = NATICORE_Relation_Types::get_types();
-		}
+		$settings = $this->get_settings();
+		$type_config = isset( $settings['relationship_types_config'] ) ? $settings['relationship_types_config'] : array();
+		
+		// Built-in types.
+		// We get them from the class property since they might be filtered out in get_types().
+		$reflection = new ReflectionClass( 'NATICORE_Relation_Types' );
+		$default_types_prop = $reflection->getProperty( 'default_types' );
+		$default_types_prop->setAccessible( true );
+		$built_in_defaults = $default_types_prop->getValue();
+
+		// Custom types from settings.
+		$custom_types = isset( $type_config['custom'] ) && is_array( $type_config['custom'] ) ? $type_config['custom'] : array();
 		?>
 		<div class="naticore-card">
-			<h3><?php esc_html_e( 'Relationship Types', 'native-content-relationships' ); ?></h3>
-			<p class="description"><?php esc_html_e( 'These are the registered relationship types available in the editor meta box.', 'native-content-relationships' ); ?></p>
-			<?php if ( empty( $types ) ) : ?>
-				<p class="description"><?php esc_html_e( 'No relationship types are currently registered.', 'native-content-relationships' ); ?></p>
-			<?php else : ?>
-				<div class="naticore-widefat-wrap">
-					<table class="widefat striped">
-						<thead>
+			<h3><?php esc_html_e( 'Built-in Relationship Types', 'native-content-relationships' ); ?></h3>
+			<p class="description"><?php esc_html_e( 'Enable or disable the default relationship types provided by the plugin.', 'native-content-relationships' ); ?></p>
+			
+			<div class="naticore-widefat-wrap">
+				<table class="widefat striped">
+					<thead>
+						<tr>
+							<th><?php esc_html_e( 'Status', 'native-content-relationships' ); ?></th>
+							<th><?php esc_html_e( 'Slug', 'native-content-relationships' ); ?></th>
+							<th><?php esc_html_e( 'Label', 'native-content-relationships' ); ?></th>
+							<th><?php esc_html_e( 'Config', 'native-content-relationships' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ( $built_in_defaults as $slug => $args ) : 
+							$is_enabled = ! isset( $type_config['built_in'][ $slug ]['enabled'] ) || $type_config['built_in'][ $slug ]['enabled'];
+							?>
 							<tr>
-								<th><?php esc_html_e( 'Slug', 'native-content-relationships' ); ?></th>
-								<th><?php esc_html_e( 'Label', 'native-content-relationships' ); ?></th>
-								<th><?php esc_html_e( 'Direction', 'native-content-relationships' ); ?></th>
-								<th><?php esc_html_e( 'Allowed Post Types', 'native-content-relationships' ); ?></th>
+								<td>
+									<label class="naticore-switch">
+										<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[relationship_types_config][built_in][<?php echo esc_attr( $slug ); ?>][enabled]" value="1" <?php checked( $is_enabled ); ?>>
+										<span class="naticore-slider round"></span>
+									</label>
+								</td>
+								<td><code><?php echo esc_html( $slug ); ?></code></td>
+								<td><?php echo esc_html( $args['label'] ); ?></td>
+								<td>
+									<span class="naticore-badge"><?php echo esc_html( ! empty( $args['bidirectional'] ) ? __( 'Bidirectional', 'native-content-relationships' ) : __( 'One-way', 'native-content-relationships' ) ); ?></span>
+									<?php if ( $args['supports_users'] ) : ?>
+										<span class="naticore-badge green"><?php esc_html_e( 'Users', 'native-content-relationships' ); ?></span>
+									<?php endif; ?>
+									<?php if ( $args['supports_terms'] ) : ?>
+										<span class="naticore-badge blue"><?php esc_html_e( 'Terms', 'native-content-relationships' ); ?></span>
+									<?php endif; ?>
+								</td>
 							</tr>
-						</thead>
-						<tbody>
-							<?php foreach ( $types as $slug => $args ) : ?>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Custom Relationship Types', 'native-content-relationships' ); ?></h3>
+			<p class="description"><?php esc_html_e( 'Define your own relationship types. These will be available alongside the built-in types.', 'native-content-relationships' ); ?></p>
+			
+			<div id="naticore-custom-types-container">
+				<table class="widefat striped" id="naticore-custom-types-table">
+					<thead>
+						<tr>
+							<th><?php esc_html_e( 'Slug', 'native-content-relationships' ); ?></th>
+							<th><?php esc_html_e( 'Label', 'native-content-relationships' ); ?></th>
+							<th><?php esc_html_e( 'Bidirectional', 'native-content-relationships' ); ?></th>
+							<th><?php esc_html_e( 'Actions', 'native-content-relationships' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php if ( empty( $custom_types ) ) : ?>
+							<tr class="no-items"><td colspan="4"><?php esc_html_e( 'No custom types defined.', 'native-content-relationships' ); ?></td></tr>
+						<?php else : ?>
+							<?php foreach ( $custom_types as $slug => $args ) : ?>
 								<tr>
-									<td><code><?php echo esc_html( $slug ); ?></code></td>
-									<td><?php echo esc_html( isset( $args['label'] ) ? $args['label'] : $slug ); ?></td>
-									<td><?php echo esc_html( ! empty( $args['bidirectional'] ) ? __( 'Bidirectional', 'native-content-relationships' ) : __( 'One-way', 'native-content-relationships' ) ); ?></td>
+									<td><input type="text" name="<?php echo esc_attr( $this->option_name ); ?>[relationship_types_config][custom][<?php echo esc_attr( $slug ); ?>][slug]" value="<?php echo esc_attr( $slug ); ?>" readonly></td>
+									<td><input type="text" name="<?php echo esc_attr( $this->option_name ); ?>[relationship_types_config][custom][<?php echo esc_attr( $slug ); ?>][label]" value="<?php echo esc_attr( $args['label'] ); ?>"></td>
 									<td>
-										<?php
-										$allowed = isset( $args['allowed_post_types'] ) && is_array( $args['allowed_post_types'] ) ? $args['allowed_post_types'] : array();
-										echo esc_html( empty( $allowed ) ? __( 'All public types', 'native-content-relationships' ) : implode( ', ', $allowed ) );
-										?>
+										<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[relationship_types_config][custom][<?php echo esc_attr( $slug ); ?>][bidirectional]" value="1" <?php checked( ! empty( $args['bidirectional'] ) ); ?>>
 									</td>
+									<td><button type="button" class="button naticore-remove-custom-type"><?php esc_html_e( 'Remove', 'native-content-relationships' ); ?></button></td>
 								</tr>
 							<?php endforeach; ?>
-						</tbody>
-					</table>
+						<?php endif; ?>
+					</tbody>
+				</table>
+				<div class="naticore-actions-bar">
+					<button type="button" class="button button-primary" id="naticore-add-custom-type"><?php esc_html_e( 'Add Custom Type', 'native-content-relationships' ); ?></button>
 				</div>
-			<?php endif; ?>
+			</div>
 		</div>
+
+		<!-- Template for new custom type row -->
+		<script type="text/template" id="naticore-custom-type-row-template">
+			<tr>
+				<td><input type="text" name="<?php echo esc_attr( $this->option_name ); ?>[relationship_types_config][custom][{{ID}}][slug]" placeholder="my_type" required></td>
+				<td><input type="text" name="<?php echo esc_attr( $this->option_name ); ?>[relationship_types_config][custom][{{ID}}][label]" placeholder="My Type" required></td>
+				<td>
+					<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[relationship_types_config][custom][{{ID}}][bidirectional]" value="1" checked>
+				</td>
+				<td><button type="button" class="button naticore-remove-custom-type"><?php esc_html_e( 'Remove', 'native-content-relationships' ); ?></button></td>
+			</tr>
+		</script>
 		<?php
 	}
 
@@ -558,9 +676,6 @@ class NATICORE_Settings {
 		return isset( $settings[ $key ] ) ? $settings[ $key ] : $default;
 	}
 
-	/**
-	 * Sanitize settings
-	 */
 	public function sanitize_settings( $input ) {
 		$sanitized = array();
 
@@ -606,6 +721,35 @@ class NATICORE_Settings {
 		$remove_data_on_uninstall              = isset( $input['remove_data_on_uninstall'] ) ? 1 : 0;
 		$sanitized['remove_data_on_uninstall'] = $remove_data_on_uninstall;
 		update_option( 'naticore_remove_data_on_uninstall', (bool) $remove_data_on_uninstall );
+
+		// Relationship Types Config
+		$sanitized['relationship_types_config'] = array(
+			'built_in' => array(),
+			'custom'   => array(),
+		);
+
+		if ( isset( $input['relationship_types_config']['built_in'] ) && is_array( $input['relationship_types_config']['built_in'] ) ) {
+			foreach ( $input['relationship_types_config']['built_in'] as $slug => $config ) {
+				$sanitized['relationship_types_config']['built_in'][ sanitize_key( $slug ) ] = array(
+					'enabled' => isset( $config['enabled'] ) ? 1 : 0,
+				);
+			}
+		}
+
+		if ( isset( $input['relationship_types_config']['custom'] ) && is_array( $input['relationship_types_config']['custom'] ) ) {
+			foreach ( $input['relationship_types_config']['custom'] as $raw_slug => $config ) {
+				$slug = sanitize_key( isset( $config['slug'] ) ? $config['slug'] : $raw_slug );
+				if ( empty( $slug ) ) {
+					continue;
+				}
+				$sanitized['relationship_types_config']['custom'][ $slug ] = array(
+					'label'         => sanitize_text_field( $config['label'] ),
+					'bidirectional' => isset( $config['bidirectional'] ) ? 1 : 0,
+					'from_type'     => 'post',
+					'to_type'       => 'post',
+				);
+			}
+		}
 
 		return $sanitized;
 	}

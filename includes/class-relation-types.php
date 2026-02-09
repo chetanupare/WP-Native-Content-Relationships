@@ -127,9 +127,25 @@ class NATICORE_Relation_Types {
 	 * Initialize
 	 */
 	public static function init() {
+		// Load settings to check for disabled/custom types.
+		$settings = get_option( 'naticore_settings', array() );
+		$type_config = isset( $settings['relationship_types_config'] ) ? $settings['relationship_types_config'] : array();
+		
 		// Register default types.
 		foreach ( self::$default_types as $slug => $args ) {
-			self::register( $slug, $args );
+			// Check if type is disabled in settings.
+			$is_disabled = isset( $type_config['built_in'][ $slug ]['enabled'] ) && ! $type_config['built_in'][ $slug ]['enabled'];
+			
+			if ( ! $is_disabled ) {
+				self::register( $slug, $args );
+			}
+		}
+
+		// Register custom types from settings.
+		if ( isset( $type_config['custom'] ) && is_array( $type_config['custom'] ) ) {
+			foreach ( $type_config['custom'] as $slug => $args ) {
+				self::register( $slug, $args );
+			}
 		}
 
 		// Allow filtering.

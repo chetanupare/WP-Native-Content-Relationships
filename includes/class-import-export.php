@@ -35,59 +35,48 @@ class NATICORE_Import_Export {
 			return;
 		}
 
-		add_action( 'admin_menu', array( $this, 'add_import_export_page' ) );
 		add_action( 'admin_init', array( $this, 'handle_export' ) );
 		add_action( 'admin_init', array( $this, 'handle_import' ) );
 	}
 
-	/**
-	 * Add import/export page
-	 */
-	public function add_import_export_page() {
-		add_submenu_page(
-			'tools.php',
-			__( 'Import/Export Relationships', 'native-content-relationships' ),
-			__( 'Import/Export Relationships', 'native-content-relationships' ),
-			'manage_options',
-			'naticore-import-export',
-			array( $this, 'render_import_export_page' )
-		);
-	}
 
-	/**
-	 * Render import/export page
-	 */
 	public function render_import_export_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
 		?>
-		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			
-			<div class="naticore-import-export">
-				<div class="naticore-export-section" style="margin-bottom: 30px; padding: 20px; background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 2px;">
-					<h2><?php esc_html_e( 'Export Relationships', 'native-content-relationships' ); ?></h2>
-					<p><?php esc_html_e( 'Export all relationships to a JSON file for backup or migration.', 'native-content-relationships' ); ?></p>
-					<form method="post" action="">
-						<?php wp_nonce_field( 'naticore_export', 'naticore_export_nonce' ); ?>
-						<input type="hidden" name="action" value="naticore_export" />
-						<?php submit_button( esc_html__( 'Export Relationships', 'native-content-relationships' ), 'primary', 'submit', false ); ?>
-					</form>
-				</div>
+		<div class="naticore-import-export-wrap">
+			<div class="naticore-card">
+				<h3><?php esc_html_e( 'Export Relationships', 'native-content-relationships' ); ?></h3>
+				<p class="description"><?php esc_html_e( 'Download all existing content relationships as a JSON file. This is recommended before performing any bulk imports or migrations.', 'native-content-relationships' ); ?></p>
 				
-				<div class="naticore-import-section" style="padding: 20px; background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 2px;">
-					<h2><?php esc_html_e( 'Import Relationships', 'native-content-relationships' ); ?></h2>
-					<p><?php esc_html_e( 'Import relationships from a JSON file. Duplicates and invalid entries will be skipped.', 'native-content-relationships' ); ?></p>
-					<form method="post" enctype="multipart/form-data" action="">
-						<?php wp_nonce_field( 'naticore_import', 'naticore_import_nonce' ); ?>
-						<input type="hidden" name="action" value="naticore_import" />
-						<p>
-							<input type="file" name="import_file" accept=".json" required />
-						</p>
-						<?php submit_button( __( 'Import Relationships', 'native-content-relationships' ), 'primary', 'submit', false ); ?>
-					</form>
+				<form method="post" action="">
+					<?php wp_nonce_field( 'naticore_export', 'naticore_export_nonce' ); ?>
+					<input type="hidden" name="action" value="naticore_export" />
+					<div class="naticore-actions-bar" style="justify-content: flex-start; margin-top: 15px;">
+						<?php submit_button( esc_html__( 'Download Export File', 'native-content-relationships' ), 'primary', 'submit', false ); ?>
+					</div>
+				</form>
+			</div>
+			
+			<div class="naticore-card">
+				<h3><?php esc_html_e( 'Import Relationships', 'native-content-relationships' ); ?></h3>
+				<p class="description"><?php esc_html_e( 'Upload a previously exported JSON file to restore or migrate relationships. Existing identical relationships will be skipped to prevent duplicates.', 'native-content-relationships' ); ?></p>
+				
+				<form method="post" enctype="multipart/form-data" action="">
+					<?php wp_nonce_field( 'naticore_import', 'naticore_import_nonce' ); ?>
+					<input type="hidden" name="action" value="naticore_import" />
+					<div class="naticore-import-field" style="margin: 20px 0;">
+						<input type="file" name="import_file" accept=".json" required />
+					</div>
+					<div class="naticore-actions-bar" style="justify-content: flex-start;">
+						<?php submit_button( __( 'Start Import', 'native-content-relationships' ), 'primary', 'submit', false ); ?>
+					</div>
+				</form>
+				
+				<div class="naticore-notice">
+					<p><strong><?php esc_html_e( 'Important:', 'native-content-relationships' ); ?></strong> <?php esc_html_e( 'Importing will not delete existing relationships. It only adds new ones from your file. Ensure the destination site has the same content (IDs) for the import to work correctly.', 'native-content-relationships' ); ?></p>
 				</div>
 			</div>
 		</div>
