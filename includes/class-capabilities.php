@@ -54,49 +54,29 @@ class NATICORE_Capabilities {
 		}
 
 		// Handle relationship capabilities
-		if ( 'naticore_create_relation' === $cap ) {
+		if ( 'naticore_create_relation' === $cap || 'naticore_delete_relation' === $cap ) {
 
 			$from_id = isset( $args[0] ) ? absint( $args[0] ) : 0;
 			$to_id   = isset( $args[1] ) ? absint( $args[1] ) : 0;
+			$type    = isset( $args[2] ) ? sanitize_key( $args[2] ) : 'related_to';
 
-			if ( $from_id && $to_id ) {
-				$from_post = get_post( $from_id );
+			if ( $from_id ) {
+				$type_info = NATICORE_Relation_Types::get_type( $type );
+				$from_type = $type_info ? $type_info['from_type'] : 'post';
 
-				if ( $from_post ) {
-					// Map to edit_post capability for the source post
-					// Temporarily remove our filter to prevent infinite recursion
-					remove_filter( 'map_meta_cap', array( $this, 'map_meta_caps' ), 10 );
-					$edit_caps = map_meta_cap( 'edit_post', $user_id, $from_id );
-					add_filter( 'map_meta_cap', array( $this, 'map_meta_caps' ), 10, 4 );
-					$caps = $edit_caps;
+				// Use flag to prevent infinite recursion
+				self::$mapping_in_progress = true;
 
-				} else {
-					$caps[] = 'do_not_allow';
+				if ( 'post' === $from_type ) {
+					$caps = map_meta_cap( 'edit_post', $user_id, $from_id );
+				} elseif ( 'user' === $from_type ) {
+					$caps = map_meta_cap( 'edit_user', $user_id, $from_id );
+				} elseif ( 'term' === $from_type ) {
+					// Terms generally use manage_categories or similar, but edit_term is meta cap
+					$caps = map_meta_cap( 'edit_term', $user_id, $from_id );
 				}
-			} else {
-				$caps[] = 'do_not_allow';
-			}
-		}
 
-		if ( 'naticore_delete_relation' === $cap ) {
-
-			$from_id = isset( $args[0] ) ? absint( $args[0] ) : 0;
-			$to_id   = isset( $args[1] ) ? absint( $args[1] ) : 0;
-
-			if ( $from_id && $to_id ) {
-				$from_post = get_post( $from_id );
-
-				if ( $from_post ) {
-					// Map to edit_post capability for the source post
-					// Use flag to prevent infinite recursion
-					self::$mapping_in_progress = true;
-					$edit_caps                 = map_meta_cap( 'edit_post', $user_id, $from_id );
-					self::$mapping_in_progress = false;
-					$caps                      = $edit_caps;
-
-				} else {
-					$caps[] = 'do_not_allow';
-				}
+				self::$mapping_in_progress = false;
 			} else {
 				$caps[] = 'do_not_allow';
 			}

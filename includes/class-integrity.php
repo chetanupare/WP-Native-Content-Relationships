@@ -111,33 +111,48 @@ class NATICORE_Integrity {
 			$seen[ $key ] = true;
 
 			// Check for broken references
-			$from_post = get_post( $rel->from_id );
-			$to_post   = get_post( $rel->to_id );
+			$type_info = NATICORE_Relation_Types::get_type( $rel->type );
+			$from_type = $type_info ? $type_info['from_type'] : 'post';
+			$to_type   = $rel->to_type;
 
-			if ( ! $from_post || ! $to_post ) {
+			$from_exists = false;
+			if ( 'post' === $from_type ) {
+				$from_exists = (bool) get_post( $rel->from_id );
+			} elseif ( 'user' === $from_type ) {
+				$from_exists = (bool) get_userdata( $rel->from_id );
+			} elseif ( 'term' === $from_type ) {
+				$from_exists = (bool) get_term( $rel->from_id );
+			}
+
+			$to_exists = false;
+			if ( 'post' === $to_type ) {
+				$to_exists = (bool) get_post( $rel->to_id );
+			} elseif ( 'user' === $to_type ) {
+				$to_exists = (bool) get_userdata( $rel->to_id );
+			} elseif ( 'term' === $to_type ) {
+				$term      = get_term( $rel->to_id );
+				$to_exists = (bool) ( $term && ! is_wp_error( $term ) );
+			}
+
+			if ( ! $from_exists || ! $to_exists ) {
 				$to_delete[] = $rel->id;
 				++$issues['broken'];
 				++$cleaned;
 				continue;
 			}
 
-			// Check for invalid types
-			if ( ! NATICORE_Relation_Types::exists( $rel->type ) ) {
-				$to_delete[] = $rel->id;
-				++$issues['invalid'];
-				++$cleaned;
-				continue;
-			}
-
-			// Check post type restrictions
-			$type_info = NATICORE_Relation_Types::get_type( $rel->type );
-			if ( $type_info && ! empty( $type_info['allowed_post_types'] ) ) {
-				$allowed = $type_info['allowed_post_types'];
-				if ( ! in_array( $from_post->post_type, $allowed, true ) || ! in_array( $to_post->post_type, $allowed, true ) ) {
-					$to_delete[] = $rel->id;
-					++$issues['invalid'];
-					++$cleaned;
-					continue;
+			// Check post type restrictions (only if both are posts)
+			if ( 'post' === $from_type && 'post' === $to_type ) {
+				$from_post = get_post( $rel->from_id );
+				$to_post   = get_post( $rel->to_id );
+				if ( $from_post && $to_post && $type_info && ! empty( $type_info['allowed_post_types'] ) ) {
+					$allowed = $type_info['allowed_post_types'];
+					if ( ! in_array( $from_post->post_type, $allowed, true ) || ! in_array( $to_post->post_type, $allowed, true ) ) {
+						$to_delete[] = $rel->id;
+						++$issues['invalid'];
+						++$cleaned;
+						continue;
+					}
 				}
 			}
 		}

@@ -2,7 +2,7 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Native Content Relationships 1.0.12\n"
+"Project-Id-Version: Native Content Relationships 1.0.13\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/native-content-relationships\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"

@@ -70,18 +70,7 @@ class NATICORE_User_Relations_Ajax {
 			wp_send_json_error( 'Missing required parameters' );
 		}
 
-		// Check capabilities
-		if ( 'user' === $to_type ) {
-			// Post to user relationship
-			if ( ! current_user_can( 'edit_post', $from_id ) ) {
-				wp_send_json_error( 'Insufficient permissions' );
-			}
-		} elseif ( 'user' !== $to_type ) {
-			// User to post relationship
-			if ( ! current_user_can( 'edit_user', $from_id ) ) {
-				wp_send_json_error( 'Insufficient permissions' );
-			}
-		}
+		// Permissions are handled in NATICORE_API::add_relation via NATICORE_Capabilities.
 
 		// Add the relationship
 		$result = wp_add_relation( $from_id, $to_id, $type, null, $to_type );
@@ -117,18 +106,7 @@ class NATICORE_User_Relations_Ajax {
 			wp_send_json_error( 'Missing required parameters' );
 		}
 
-		// Check capabilities
-		if ( 'user' === $to_type ) {
-			// Post to user relationship
-			if ( ! current_user_can( 'edit_post', $from_id ) ) {
-				wp_send_json_error( 'Insufficient permissions' );
-			}
-		} elseif ( 'user' !== $to_type ) {
-			// User to post relationship
-			if ( ! current_user_can( 'edit_user', $from_id ) ) {
-				wp_send_json_error( 'Insufficient permissions' );
-			}
-		}
+		// Permissions are handled in NATICORE_API::remove_relation via NATICORE_Capabilities.
 
 		// Remove the relationship
 		$result = wp_remove_relation( $from_id, $to_id, $type, $to_type );

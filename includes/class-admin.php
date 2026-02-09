@@ -245,21 +245,18 @@ class NATICORE_Admin {
 		);
 
 		// Add title search via posts_where
-		add_filter(
-			'posts_where',
-			function ( $where ) use ( $search_term ) {
-				global $wpdb;
-				$where .= $wpdb->prepare( " AND ({$wpdb->posts}.post_title LIKE %s OR {$wpdb->posts}.post_content LIKE %s)", $search_term, $search_term );
-				return $where;
-			},
-			10,
-			1
-		);
+		$search_filter = function ( $where ) use ( $search_term ) {
+			global $wpdb;
+			$where .= $wpdb->prepare( " AND ({$wpdb->posts}.post_title LIKE %s OR {$wpdb->posts}.post_content LIKE %s)", $search_term, $search_term );
+			return $where;
+		};
+
+		add_filter( 'posts_where', $search_filter );
 
 		$query = new WP_Query( $args );
 
-		// Remove filter after query
-		remove_all_filters( 'posts_where' );
+		// Remove filter after query safely
+		remove_filter( 'posts_where', $search_filter );
 
 		$results = array();
 		if ( $query->have_posts() ) {

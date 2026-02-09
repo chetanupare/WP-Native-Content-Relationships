@@ -13,14 +13,8 @@
 		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop" />
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
 		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.Found" />
-		<exclude name="WordPress.PHP.YodaConditions.NotYoda" />
-		<exclude name="WordPress.Security.NonceVerification.Recommended" />
-		<exclude name="WordPress.PHP.StrictInArray.MissingTrueStrict" />
-		<exclude name="Universal.Files.SeparateFunctionsFromOO.Mixed" />
 		<exclude name="WordPress.WP.Capabilities.Unknown" />
 		<exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames.defaultFound" />
-		<exclude name="WordPress.DB.PreparedSQL.InterpolatedNotPrepared" />
-		<exclude name="WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare" />
 		<exclude name="WordPress.WP.AlternativeFunctions.json_encode_json_encode" />
 		<exclude name="WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents" />
 		<exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound" />

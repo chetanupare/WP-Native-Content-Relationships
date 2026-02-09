@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.12
+Stable tag: 1.0.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -258,6 +258,14 @@ This plugin provides comprehensive Elementor Dynamic Tags for displaying relatio
 5. Term editor relationships  
 
 == Changelog ==
+
+= 1.0.13 =
+* **NEW**: Comprehensive CONTRIBUTING.md guidelines and security policy
+* **NEW**: Issue templates, automation, and contributor guidelines
+* **FIX**: CodeQL syntax errors and duplicate workflow fixes
+* **FIX**: Deprecated function usage and i18n inconsistencies
+* **IMPROVED**: Updated Elementor tag names to naticore- prefix
+* **IMPROVED**: Code quality standards and PHPDoc documentation
 
 = 1.0.12 =
 * **NEW**: Comprehensive Elementor Dynamic Tags integration
