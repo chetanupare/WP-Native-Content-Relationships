@@ -29,7 +29,32 @@ class NATICORE_Database {
 	 * Constructor
 	 */
 	private function __construct() {
-		// Nothing to do here
+		$this->maybe_upgrade();
+	}
+
+	/**
+	 * Maybe upgrade database schema
+	 */
+	public function maybe_upgrade() {
+		$current_schema = get_option( 'ncr_schema_version', '1.0' );
+
+		if ( version_compare( $current_schema, NCR_SCHEMA_VERSION, '<' ) ) {
+			self::create_table();
+			
+			// Fallback: dbDelta is notoriously finicky with indexes on existing tables.
+			// Force add the index if it still doesn't exist.
+			global $wpdb;
+			$table = self::get_table_name();
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Schema audit
+			$index_exists = $wpdb->get_var( $wpdb->prepare( "SHOW INDEX FROM $table WHERE Key_name = %s", 'type_lookup' ) );
+			
+			if ( ! $index_exists ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Performance optimization
+				$wpdb->query( "ALTER TABLE $table ADD INDEX type_lookup (type, from_id, to_id)" );
+			}
+
+			update_option( 'ncr_schema_version', NCR_SCHEMA_VERSION );
+		}
 	}
 
 	/**
@@ -79,23 +104,25 @@ class NATICORE_Database {
 			to_user_id bigint(20) unsigned NULL,
 			to_term_id bigint(20) unsigned NULL,
 			created_at datetime DEFAULT CURRENT_TIMESTAMP,
-			PRIMARY KEY (id),
-			KEY from_id (from_id),
-			KEY to_id (to_id),
-			KEY type (type),
-			KEY from_type (from_id, type),
-			KEY to_type (to_id, type),
-			KEY to_user_id (to_user_id),
-			KEY to_term_id (to_term_id),
-			KEY to_type_combined (to_type, to_id),
-			UNIQUE KEY unique_relation (from_id, to_id, type, to_type)
+			PRIMARY KEY  (id),
+			KEY  from_id (from_id),
+			KEY  to_id (to_id),
+			KEY  type (type),
+			KEY  from_type (from_id, type),
+			KEY  to_type (to_id, type),
+			KEY  to_user_id (to_user_id),
+			KEY  to_term_id (to_term_id),
+			KEY  to_type_combined (to_type, to_id),
+			KEY  type_lookup (type, from_id, to_id),
+			UNIQUE KEY  unique_relation (from_id, to_id, type, to_type)
 		) $charset_collate;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
 
-		// Store version
+		// Update both version markers
 		update_option( 'naticore_db_version', NATICORE_VERSION );
+		update_option( 'ncr_schema_version', NCR_SCHEMA_VERSION );
 	}
 
 	/**

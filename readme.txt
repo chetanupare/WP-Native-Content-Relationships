@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.19
+Stable tag: 1.0.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -258,6 +258,12 @@ This plugin provides comprehensive Elementor Dynamic Tags for displaying relatio
 5. Term editor relationships  
 
 == Changelog ==
+
+= 1.0.20 =
+* **NEW**: Schema Versioning Guard (`NCR_SCHEMA_VERSION` 1.1)
+* **NEW**: Micro-Optimized Query Layer with composite indexes for 1M+ rows
+* **NEW**: WordPress Site Health integration for relationship integrity
+* **DEV**: Formalized database upgrade routine
 
 = 1.0.19 =
 * **PERFORMANCE**: Implemented chunked integrity processing to support 100k+ relationships

@@ -3,7 +3,7 @@
  * Plugin Name: Native Content Relationships
  * Plugin URI: https://wordpress.org/plugins/native-content-relationships
  * Description: A native content relationship system for WordPress. Relate posts, pages, custom post types, users, and terms with semantic relationship types.
- * Version: 1.0.19
+ * Version: 1.0.20
  * Author: Chetan Upare
  * Author URI: https://github.com/chetanupare
  * License: GPL v2 or later
@@ -21,10 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'NATICORE_VERSION', '1.0.19' );
+define( 'NATICORE_VERSION', '1.0.20' );
 define( 'NATICORE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NATICORE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'NATICORE_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'NCR_SCHEMA_VERSION', '1.1' );
 
 /**
  * Main plugin class
@@ -124,10 +125,14 @@ class NATICORE_Plugin {
 			require_once NATICORE_PLUGIN_DIR . 'includes/class-overview.php';
 			NATICORE_Overview::get_instance();
 		}
-
 		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/class-integrity.php' ) ) {
 			require_once NATICORE_PLUGIN_DIR . 'includes/class-integrity.php';
 			NATICORE_Integrity::get_instance();
+		}
+
+		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/class-site-health.php' ) ) {
+			require_once NATICORE_PLUGIN_DIR . 'includes/class-site-health.php';
+			NATICORE_Site_Health::get_instance();
 		}
 
 		if ( file_exists( NATICORE_PLUGIN_DIR . 'includes/class-import-export.php' ) ) {

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.20] - 2026-02-11
+
+### Added
+- **Schema Versioning Guard**: Formalized schema tracking with `NCR_SCHEMA_VERSION` 1.1.
+- **Optimized Query Layer**: Added composite and covering indexes for enterprise-scale performance.
+- **Site Health Summary**: Lightweight integration with core WordPress health checks for relationship auditing.
+
+### Improved
+- Structured database upgrade routine to prevent silent data drift.
+
 ## [1.0.19] - 2026-02-11
 
 ### Performance
