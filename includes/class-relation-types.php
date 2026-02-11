@@ -185,6 +185,7 @@ class NATICORE_Relation_Types {
 			'to'                 => 'post',
 			'bidirectional'      => true,
 			'allowed_post_types' => array(), // Empty array = all post types allowed.
+			'max_connections'    => 0,       // 0 = Unlimited.
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -416,11 +417,12 @@ if ( ! function_exists( 'ncr_register_relation_type' ) ) {
 	 *
 	 * @since 1.0.15
 	 * @param array $args {
-	 *     @type string $name          Unique slug for the relationship type.
-	 *     @type string $label         Display label.
-	 *     @type string $from          Object type (post, user, term).
-	 *     @type string $to            Object type (post, user, term).
-	 *     @type bool   $bidirectional Whether the relationship is two-way.
+	 *     @type string $name            Unique slug for the relationship type.
+	 *     @type string $label           Display label.
+	 *     @type string $from            Object type (post, user, term).
+	 *     @type string $to              Object type (post, user, term).
+	 *     @type bool   $bidirectional   Whether the relationship is two-way.
+	 *     @type int    $max_connections Maximum number of relationships of this type allowed from source.
 	 * }
 	 * @return bool|WP_Error
 	 */
@@ -429,5 +431,20 @@ if ( ! function_exists( 'ncr_register_relation_type' ) ) {
 			return new WP_Error( 'class_not_loaded', 'NATICORE_Relation_Types class is not loaded yet.' );
 		}
 		return NATICORE_Relation_Types::register( $args );
+	}
+}
+
+if ( ! function_exists( 'ncr_get_registered_relation_types' ) ) {
+	/**
+	 * Get all formally registered relationship types.
+	 *
+	 * @since 1.0.16
+	 * @return array
+	 */
+	function ncr_get_registered_relation_types() {
+		if ( ! class_exists( 'NATICORE_Relation_Types' ) ) {
+			return array();
+		}
+		return NATICORE_Relation_Types::get_types();
 	}
 }

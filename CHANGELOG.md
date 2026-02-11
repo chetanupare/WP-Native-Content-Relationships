@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.16] - 2026-02-11
+
+### Added
+- Formal Relationship Type Registry helper `ncr_get_registered_relation_types()`
+- Enforced directional logic in `add_relation` based on type registry
+- Support for `max_connections` constraint to limit relationships per type
+- REST API endpoint `GET /naticore/v1/types` to expose formal registry
+
+### Improved
+- Bypassed cache for connection constraint checks to ensure real-time enforcement
+- Enhanced REST API validation for relationship creation
+
 ## [1.0.15] - 2026-02-11
 
 ### Added

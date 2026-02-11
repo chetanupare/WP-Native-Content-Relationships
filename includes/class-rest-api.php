@@ -100,6 +100,17 @@ class NATICORE_REST_API {
 			)
 		);
 
+		// Get registered relationship types.
+		register_rest_route(
+			'naticore/v1',
+			'/types',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_relationship_types' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
+			)
+		);
+
 		// Add relationship
 		register_rest_route(
 			'naticore/v1',
@@ -335,7 +346,7 @@ class NATICORE_REST_API {
 		$type    = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : 'related_to';
 		$to_type = isset( $params['to_type'] ) ? sanitize_text_field( $params['to_type'] ) : 'post';
 
-		// Validate required parameters
+		// Validate required parameters.
 		if ( ! $from_id || ! $to_id ) {
 			return new WP_Error(
 				'naticore_missing_params',
@@ -344,16 +355,31 @@ class NATICORE_REST_API {
 			);
 		}
 
-		// Validate to_type
-		if ( ! in_array( $to_type, array( 'post', 'user', 'term' ), true ) ) {
+		// Validate Relationship Type exists.
+		$type_info = NATICORE_Relation_Types::get_type( $type );
+		if ( ! $type_info ) {
 			return new WP_Error(
-				'naticore_invalid_to_type',
-				__( 'Invalid to_type specified.', 'native-content-relationships' ),
+				'naticore_invalid_type',
+				__( 'Invalid relationship type.', 'native-content-relationships' ),
 				array( 'status' => 400 )
 			);
 		}
 
-		// Check if relationship already exists
+		// Validate Object Types match registry.
+		if ( $type_info['from'] !== 'post' && $type_info['from'] !== 'user' && $type_info['from'] !== 'term' ) {
+			// This shouldn't happen with the new registry but just in case.
+		}
+
+		// Validate to_type matches registry if applicable.
+		if ( $to_type !== $type_info['to'] ) {
+			return new WP_Error(
+				'naticore_invalid_to_type',
+				sprintf( __( 'Invalid target type for this relationship. Expected: %s', 'native-content-relationships' ), $type_info['to'] ),
+				array( 'status' => 400 )
+			);
+		}
+
+		// Check if relationship already exists.
 		if ( wp_is_related( $from_id, $to_id, $type, null, $to_type ) ) {
 			return new WP_Error(
 				'naticore_relation_exists',
@@ -533,12 +559,12 @@ class NATICORE_REST_API {
 	public function permissions_check( $request ) {
 		$method = $request->get_method();
 		$route  = $request->get_route();
-
-		// Check if read-only mode is enabled
+ 
+		// Check if read-only mode is enabled.
 		$settings = NATICORE_Settings::get_instance();
 		$readonly = $settings->get_setting( 'readonly_mode', false );
-
-		// If read-only mode is enabled, only allow GET requests
+ 
+		// If read-only mode is enabled, only allow GET requests.
 		if ( $readonly && 'GET' !== $method ) {
 			return new WP_Error(
 				'naticore_readonly_mode',
@@ -546,8 +572,8 @@ class NATICORE_REST_API {
 				array( 'status' => 403 )
 			);
 		}
-
-		// Check basic permissions
+ 
+		// Check basic permissions.
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error(
 				'naticore_insufficient_permissions',
@@ -555,10 +581,10 @@ class NATICORE_REST_API {
 				array( 'status' => 403 )
 			);
 		}
-
-		// Additional checks for specific operations
+ 
+		// Additional checks for specific operations.
 		if ( strpos( $route, '/bulk' ) !== false ) {
-			// Bulk operations require higher permissions
+			// Bulk operations require higher permissions.
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return new WP_Error(
 					'naticore_insufficient_permissions',
@@ -567,7 +593,18 @@ class NATICORE_REST_API {
 				);
 			}
 		}
-
+ 
 		return true;
+	}
+
+	/**
+	 * Get all registered relationship types.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response The response object.
+	 */
+	public function get_relationship_types( $request ) {
+		$types = NATICORE_Relation_Types::get_types();
+		return rest_ensure_response( $types );
 	}
 }

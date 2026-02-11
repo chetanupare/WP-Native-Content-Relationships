@@ -216,13 +216,30 @@ class NATICORE_API {
 			}
 		}
 
-		// Check max relationships limit.
+		// Check static max relationships limit from settings.
 		$max_relationships = $settings->get_setting( 'max_relationships', 0 );
 		if ( $max_relationships > 0 ) {
 			$current_count = count( self::get_all_relations( $from_id ) );
 			if ( $current_count >= $max_relationships ) {
 				/* translators: %d: Maximum number of relationships allowed */
 				return new WP_Error( 'max_relationships', sprintf( __( 'Maximum relationships limit (%d) reached for this post.', 'native-content-relationships' ), $max_relationships ) );
+			}
+		}
+
+		// Check type-level max_connections limit.
+		if ( isset( $type_info['max_connections'] ) && $type_info['max_connections'] > 0 ) {
+			// Bypass cache for enforcement check using direct DB query.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Constraint enforcement requires real-time data.
+			$type_count = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s AND to_type = %s",
+					$from_id,
+					$type,
+					$to_type
+				)
+			);
+			if ( $type_count >= $type_info['max_connections'] ) {
+				return new WP_Error( 'max_connections_reached', sprintf( __( 'Relationship limit reached for type "%s": max %d allowed.', 'native-content-relationships' ), $type_info['label'], $type_info['max_connections'] ) );
 			}
 		}
 
@@ -242,10 +259,10 @@ class NATICORE_API {
 
 		// Determine direction.
 		if ( null === $direction ) {
-			// Default direction is derived from type, but can be overridden by global setting.
+			// Default direction is derived from type, but can be overridden by global setting IF type supports it.
 			$settings          = NATICORE_Settings::get_instance();
 			$default_direction = $settings->get_setting( 'default_direction', $type_supports_bidirectional ? 'bidirectional' : 'unidirectional' );
-			$direction         = 'bidirectional' === $default_direction ? 'bidirectional' : 'unidirectional';
+			$direction         = ( 'bidirectional' === $default_direction && $type_supports_bidirectional ) ? 'bidirectional' : 'unidirectional';
 		}
 
 		// Validate direction value.
@@ -253,7 +270,7 @@ class NATICORE_API {
 			$direction = 'unidirectional';
 		}
 
-		// Enforce type capability: one-way types must stay one-way.
+		// Enforce type capability: one-way types MUST stay one-way.
 		if ( ! $type_supports_bidirectional ) {
 			$direction = 'unidirectional';
 		}

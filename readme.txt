@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.15
+Stable tag: 1.0.16
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -258,6 +258,13 @@ This plugin provides comprehensive Elementor Dynamic Tags for displaying relatio
 5. Term editor relationships  
 
 == Changelog ==
+
+= 1.0.16 =
+* **NEW**: Formal Relationship Type Registry with `ncr_get_registered_relation_types()`
+* **NEW**: Enforced Directional Logic (blocked reverse writes for one-way types)
+* **NEW**: Relationship constraints support with `max_connections` (e.g. "One Post to One Author")
+* **NEW**: REST API endpoint `GET /naticore/v1/types` to expose registry
+* **IMPROVED**: Enhanced verification layer in REST relationship creation
 
 = 1.0.15 =
 * **NEW**: Formal Relationship Type Registration API for developers
