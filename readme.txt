@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.21
+Stable tag: 1.0.22
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -259,11 +259,12 @@ This plugin provides comprehensive Elementor Dynamic Tags for displaying relatio
 
 == Changelog ==
 
+= 1.0.22 =
+* Infrastructure-Grade Benchmarks: Refined docs/PERFORMANCE.md with high-fidelity metrics.
+* Enhanced Benchmarking Suite: Support for Mean/P95 latency and buffer pool warming.
+* Performance: Validated sub-2ms P95 latency at 1M rows.
+
 = 1.0.21 =
-* Public Performance Documentation: 100k vs 1M row benchmarks.
-* Automated Regression Suite: Validates constraints, directionality, and integrity.
-* Enhanced Developer API: Global ncr_add_relation() and ncr_get_relations() helpers.
-* Core: Standardized index provisioning results.
 
 = 1.0.20 =
 * **NEW**: Schema Versioning Guard (`NCR_SCHEMA_VERSION` 1.1)
