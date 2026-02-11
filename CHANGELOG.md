@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.19] - 2026-02-11
+
+### Performance
+- Implemented **Chunked Integrity Processing** (memory-bounded batches) to support large-scale relationship graphs (100k+ records).
+- SQL-native duplicate identification to eliminate massive PHP memory buffers.
+- Optimized object cache clearing between batches to ensure stability on shared hosting.
+
+### Improved
+- WP-CLI `wp content-relations check` now streams progress in real-time.
+- Added `--batch-size` parameter for fine-tuning scan performance.
+
 ## [1.0.18] - 2026-02-11
 
 ### Added

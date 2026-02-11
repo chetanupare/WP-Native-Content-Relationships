@@ -89,119 +89,183 @@ class NATICORE_Integrity {
 	}
 
 	/**
-	 * Run integrity check
+	 * Run integrity check with performance optimizations.
 	 *
-	 * @param bool $fix Whether to actually delete invalid records.
-	 * @return array Results with cleaned count and issues
+	 * @param bool     $fix        Whether to actually delete invalid records.
+	 * @param int      $batch_size Number of records to process per chunk.
+	 * @param callable $callback   Optional callback for real-time issue reporting.
+	 * @return array Results with issue counts and fixing status.
 	 */
-	public function run_integrity_check( $fix = true ) {
+	public function run_integrity_check( $fix = true, $batch_size = 1000, $callback = null ) {
 		global $wpdb;
+		$table = "{$wpdb->prefix}content_relations";
 
-		$cleaned = 0;
-		$issues  = array(
-			'duplicates'  => array(),
-			'orphaned'    => array(),
-			'unregistered' => array(),
-			'constraints' => array(),
-			'direction'   => array(),
-			'invalid'     => array(), // Legacy bucket
+		$stats = array(
+			'cleaned'      => 0,
+			'duplicates'   => 0,
+			'orphaned'     => 0,
+			'unregistered' => 0,
+			'constraints'  => 0,
+			'direction'    => 0,
+			'invalid'      => 0,
 		);
 
-		// Get all relationships
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Integrity check
-		$all_relations = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}content_relations`" );
-
-		$seen      = array();
-		$to_delete = array();
+		// 1. SQL-Native Duplicate Detection (Avoids massive $seen array in PHP)
+		// Identifying groups with count > 1
+		$duplicate_sets = $wpdb->get_results( "SELECT from_id, to_id, type, COUNT(*) as cnt FROM `$table` GROUP BY from_id, to_id, type HAVING cnt > 1" );
 		
-		// Track connections for constraint checks
-		$connection_counts = array();
+		foreach ( $duplicate_sets as $set ) {
+			// Select all but the oldest ID for this set
+			$ids_to_remove = $wpdb->get_col( $wpdb->prepare(
+				"SELECT id FROM `$table` WHERE from_id = %d AND to_id = %d AND type = %s ORDER BY id ASC LIMIT %d, 999999",
+				$set->from_id,
+				$set->to_id,
+				$set->type,
+				1 // Skip the first one
+			) );
 
-		foreach ( $all_relations as $rel ) {
-			$key = $rel->from_id . '|' . $rel->to_id . '|' . $rel->type;
-
-			// 1. Check for duplicates
-			if ( isset( $seen[ $key ] ) ) {
-				$to_delete[] = $rel->id;
-				$issues['duplicates'][] = $rel->id;
-				++$cleaned;
-				continue;
-			}
-			$seen[ $key ] = true;
-
-			// 2. Check for unregistered types
-			if ( function_exists( 'ncr_has_unregistered_type' ) && ncr_has_unregistered_type( $rel ) ) {
-				$to_delete[] = $rel->id;
-				$issues['unregistered'][] = $rel->id;
-				++$cleaned;
-				continue;
-			}
-
-			// 3. Check for orphaned relationships
-			if ( function_exists( 'ncr_is_orphaned_relation' ) && ncr_is_orphaned_relation( $rel ) ) {
-				$to_delete[] = $rel->id;
-				$issues['orphaned'][] = $rel->id;
-				++$cleaned;
-				continue;
-			}
-
-			// 4. Check for directional inconsistencies (One-way type used as bidirectional)
-			if ( function_exists( 'ncr_has_directional_inconsistency' ) && ncr_has_directional_inconsistency( $rel ) ) {
-				$to_delete[] = $rel->id;
-				$issues['direction'][] = $rel->id;
-				++$cleaned;
-				continue;
-			}
-
-			// 5. Check for max_connections violations (Historical)
-			$type_info = NATICORE_Relation_Types::get_type( $rel->type );
-			if ( $type_info && $type_info['max_connections'] > 0 ) {
-				$constraint_key = $rel->from_id . '|' . $rel->type . '|' . $rel->to_type;
-				if ( ! isset( $connection_counts[ $constraint_key ] ) ) {
-					$connection_counts[ $constraint_key ] = 0;
+			if ( ! empty( $ids_to_remove ) ) {
+				$stats['duplicates'] += count( $ids_to_remove );
+				if ( $callback ) {
+					call_user_func( $callback, 'duplicates', $ids_to_remove );
 				}
-				$connection_counts[ $constraint_key ]++;
+				if ( $fix ) {
+					$ids_string = implode( ',', array_map( 'absint', $ids_to_remove ) );
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->query( "DELETE FROM `$table` WHERE id IN ($ids_string)" );
+				}
+			}
+		}
 
-				if ( $connection_counts[ $constraint_key ] > $type_info['max_connections'] ) {
-					$to_delete[] = $rel->id;
-					$issues['constraints'][] = $rel->id;
-					++$cleaned;
+		// 2. Chunked Iterative Checks (Orphans, Constraints, Direction)
+		$last_id = 0;
+		$connection_counts = array(); // Semi-stateless: we only track constraints per batch/session
+
+		while ( true ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$relations = $wpdb->get_results( $wpdb->prepare(
+				"SELECT * FROM `$table` WHERE id > %d ORDER BY id ASC LIMIT %d",
+				$last_id,
+				$batch_size
+			) );
+
+			if ( empty( $relations ) ) {
+				break;
+			}
+
+			$batch_to_delete = array();
+			$batch_issues    = array(
+				'orphaned'     => array(),
+				'unregistered' => array(),
+				'constraints'  => array(),
+				'direction'    => array(),
+				'invalid'      => array(),
+			);
+
+			foreach ( $relations as $rel ) {
+				$last_id = $rel->id;
+
+				// A. Check for unregistered types
+				if ( function_exists( 'ncr_has_unregistered_type' ) && ncr_has_unregistered_type( $rel ) ) {
+					$batch_to_delete[] = $rel->id;
+					$batch_issues['unregistered'][] = $rel->id;
 					continue;
 				}
-			}
 
-			// 6. Legacy post type restriction check
-			if ( 'post' === $rel->to_type ) {
-				$from_type = $type_info ? $type_info['from_type'] : 'post';
-				if ( 'post' === $from_type ) {
-					$from_post = get_post( $rel->from_id );
-					$to_post   = get_post( $rel->to_id );
-					if ( $from_post && $to_post && $type_info && ! empty( $type_info['allowed_post_types'] ) ) {
-						$allowed = $type_info['allowed_post_types'];
-						if ( ! in_array( $from_post->post_type, $allowed, true ) || ! in_array( $to_post->post_type, $allowed, true ) ) {
-							$to_delete[] = $rel->id;
-							$issues['invalid'][] = $rel->id;
-							++$cleaned;
-							continue;
+				// B. Check for orphaned relationships
+				if ( function_exists( 'ncr_is_orphaned_relation' ) && ncr_is_orphaned_relation( $rel ) ) {
+					$batch_to_delete[] = $rel->id;
+					$batch_issues['orphaned'][] = $rel->id;
+					continue;
+				}
+
+				// C. Check for directional inconsistencies
+				if ( function_exists( 'ncr_has_directional_inconsistency' ) && ncr_has_directional_inconsistency( $rel ) ) {
+					$batch_to_delete[] = $rel->id;
+					$batch_issues['direction'][] = $rel->id;
+					continue;
+				}
+
+				// D. Check for max_connections violations (Historical)
+				$type_info = NATICORE_Relation_Types::get_type( $rel->type );
+				if ( $type_info && $type_info['max_connections'] > 0 ) {
+					$constraint_key = $rel->from_id . '|' . $rel->type . '|' . $rel->to_type;
+					if ( ! isset( $connection_counts[ $constraint_key ] ) ) {
+						// Only count valid relations that aren't already flagged for deletion
+						// We initialize count by querying preceding IDs if this is the start of a deep scan
+						// But for simplicity in chunked runs, we just accumulate.
+						$connection_counts[ $constraint_key ] = 0;
+					}
+					$connection_counts[ $constraint_key ]++;
+
+					if ( $connection_counts[ $constraint_key ] > $type_info['max_connections'] ) {
+						$batch_to_delete[] = $rel->id;
+						$batch_issues['constraints'][] = $rel->id;
+						continue;
+					}
+				}
+
+				// E. Legacy post type restriction check
+				if ( 'post' === $rel->to_type ) {
+					$from_type = $type_info ? $type_info['from_type'] : 'post';
+					if ( 'post' === $from_type ) {
+						$from_post = get_post( $rel->from_id );
+						$to_post   = get_post( $rel->to_id );
+						if ( $from_post && $to_post && $type_info && ! empty( $type_info['allowed_post_types'] ) ) {
+							$allowed = $type_info['allowed_post_types'];
+							if ( ! in_array( $from_post->post_type, $allowed, true ) || ! in_array( $to_post->post_type, $allowed, true ) ) {
+								$batch_to_delete[] = $rel->id;
+								$batch_issues['invalid'][] = $rel->id;
+								continue;
+							}
 						}
 					}
 				}
 			}
-		}
 
-		// Delete invalid relationships if not dry-run
-		if ( $fix && ! empty( $to_delete ) ) {
-			$ids = array_map( 'absint', $to_delete );
-			if ( ! empty( $ids ) ) {
-				$ids_string = implode( ',', $ids );
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table delete
-				$wpdb->query( "DELETE FROM `{$wpdb->prefix}content_relations` WHERE id IN ($ids_string)" );
+			// Update stats and trigger callback for batch
+			foreach ( $batch_issues as $type => $ids ) {
+				if ( ! empty( $ids ) ) {
+					$stats[ $type ] += count( $ids );
+					if ( $callback ) {
+						call_user_func( $callback, $type, $ids );
+					}
+				}
+			}
+
+			// Execute batch delete
+			if ( $fix && ! empty( $batch_to_delete ) ) {
+				$ids_string = implode( ',', array_map( 'absint', $batch_to_delete ) );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( "DELETE FROM `$table` WHERE id IN ($ids_string)" );
+			}
+
+			$stats['cleaned'] += count( $batch_to_delete );
+
+			// Prevent accidental infinite loop and bound execution if needed
+			if ( count( $relations ) < $batch_size ) {
+				break;
+			}
+			
+			// Optional: Clear object cache between chunks to free memory
+			if ( function_exists( 'wp_cache_flush_runtime' ) ) {
+				wp_cache_flush_runtime();
 			}
 		}
 
+		// Sum up all issues for legacy compatibility with notices
+		$legacy_issues = array(
+			'duplicates'  => $stats['duplicates'],
+			'orphaned'    => $stats['orphaned'],
+			'unregistered' => $stats['unregistered'],
+			'constraints' => $stats['constraints'],
+			'direction'   => $stats['direction'],
+			'invalid'     => $stats['invalid'],
+		);
+
 		return array(
-			'cleaned' => $cleaned,
-			'issues'  => $issues,
+			'cleaned' => $stats['cleaned'] + $stats['duplicates'],
+			'issues'  => $legacy_issues,
 			'fixing'  => $fix,
 		);
 	}
@@ -229,17 +293,17 @@ class NATICORE_Integrity {
 		$message      = sprintf( $message_text, $cleaned_count );
 
 		$details = array();
-		if ( count( $notice['issues']['duplicates'] ) > 0 ) {
+		if ( $notice['issues']['duplicates'] > 0 ) {
 			/* translators: %d: Number of duplicate relationships */
-			$details[] = sprintf( _n( '%d duplicate', '%d duplicates', count( $notice['issues']['duplicates'] ), 'native-content-relationships' ), count( $notice['issues']['duplicates'] ) );
+			$details[] = sprintf( _n( '%d duplicate', '%d duplicates', $notice['issues']['duplicates'], 'native-content-relationships' ), $notice['issues']['duplicates'] );
 		}
-		if ( count( $notice['issues']['orphaned'] ) > 0 ) {
+		if ( $notice['issues']['orphaned'] > 0 ) {
 			/* translators: %d: Number of broken references */
-			$details[] = sprintf( _n( '%d broken reference', '%d broken references', count( $notice['issues']['orphaned'] ), 'native-content-relationships' ), count( $notice['issues']['orphaned'] ) );
+			$details[] = sprintf( _n( '%d broken reference', '%d broken references', $notice['issues']['orphaned'], 'native-content-relationships' ), $notice['issues']['orphaned'] );
 		}
-		if ( count( $notice['issues']['unregistered'] ) > 0 ) {
+		if ( $notice['issues']['unregistered'] > 0 ) {
 			/* translators: %d: Number of invalid types */
-			$details[] = sprintf( _n( '%d invalid type', '%d invalid types', count( $notice['issues']['unregistered'] ), 'native-content-relationships' ), count( $notice['issues']['unregistered'] ) );
+			$details[] = sprintf( _n( '%d invalid type', '%d invalid types', $notice['issues']['unregistered'], 'native-content-relationships' ), $notice['issues']['unregistered'] );
 		}
 
 		if ( ! empty( $details ) ) {

@@ -198,30 +198,47 @@ class NATICORE_WP_CLI {
 	 * @when after_wp_load
 	 */
 	public function check( $args, $assoc_args ) {
-		$fix     = isset( $assoc_args['fix'] );
-		$verbose = isset( $assoc_args['verbose'] );
+		$fix        = isset( $assoc_args['fix'] );
+		$verbose    = isset( $assoc_args['verbose'] );
+		$batch_size = isset( $assoc_args['batch-size'] ) ? absint( $assoc_args['batch-size'] ) : 1000;
 		
 		$integrity = NATICORE_Integrity::get_instance();
-		$results   = $integrity->run_integrity_check( $fix );
+		
+		$callback = function( $type, $ids ) use ( $verbose ) {
+			if ( $verbose ) {
+				foreach ( $ids as $id ) {
+					WP_CLI::line( sprintf( '[%s] Found issue with ID: %d', strtoupper( $type ), $id ) );
+				}
+			}
+		};
+
+		if ( $fix ) {
+			WP_CLI::line( sprintf( 'Starting integrity cleanup (Batch size: %d)...', $batch_size ) );
+		} else {
+			WP_CLI::line( sprintf( 'Starting integrity check (Batch size: %d, use --fix to clean up)...', $batch_size ) );
+		}
+
+		$results = $integrity->run_integrity_check( $fix, $batch_size, $callback );
 
 		if ( $results['cleaned'] > 0 ) {
 			if ( $fix ) {
 				WP_CLI::success( sprintf( 'Cleaned up %d invalid relationships.', $results['cleaned'] ) );
 			} else {
-				WP_CLI::warning( sprintf( 'Found %d invalid relationships. Run with --fix to clean up.', $results['cleaned'] ) );
+				WP_CLI::warning( sprintf( 'Found %d invalid relationships.', $results['cleaned'] ) );
 			}
 
-			if ( $verbose || ! $fix ) {
+			// Show summary table if not already verbose stream
+			if ( ! $verbose ) {
 				$items = array();
-				foreach ( $results['issues'] as $type => $ids ) {
-					foreach ( $ids as $id ) {
+				foreach ( $results['issues'] as $type => $count ) {
+					if ( $count > 0 ) {
 						$items[] = array(
-							'ID'    => $id,
 							'Issue' => $type,
+							'Count' => $count,
 						);
 					}
 				}
-				WP_CLI\Utils\format_items( 'table', $items, array( 'ID', 'Issue' ) );
+				WP_CLI\Utils\format_items( 'table', $items, array( 'Issue', 'Count' ) );
 			}
 		} else {
 			WP_CLI::success( 'All relationships are valid.' );
@@ -244,15 +261,16 @@ class NATICORE_WP_CLI {
 	 * @when after_wp_load
 	 */
 	public function sync( $args, $assoc_args ) {
-		$dry_run = isset( $assoc_args['dry-run'] );
+		$dry_run    = isset( $assoc_args['dry-run'] );
+		$batch_size = isset( $assoc_args['batch-size'] ) ? absint( $assoc_args['batch-size'] ) : 1000;
 
 		if ( $dry_run ) {
-			WP_CLI::line( 'Dry run mode - no changes will be made' );
+			WP_CLI::line( sprintf( 'Dry run mode - auditing relationships (Batch size: %d)', $batch_size ) );
 		}
 
 		// Run integrity check
 		$integrity = NATICORE_Integrity::get_instance();
-		$results   = $integrity->run_integrity_check( ! $dry_run );
+		$results   = $integrity->run_integrity_check( ! $dry_run, $batch_size );
 
 		if ( $dry_run ) {
 			if ( $results['cleaned'] > 0 ) {
