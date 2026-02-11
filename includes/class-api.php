@@ -132,7 +132,7 @@ class NATICORE_API {
 		// Validate relation type exists.
 		$type_info = NATICORE_Relation_Types::get_type( $type );
 		if ( ! $type_info ) {
-			return new WP_Error( 'invalid_relation_type', __( 'Invalid relationship type.', 'native-content-relationships' ) );
+			return new WP_Error( 'ncr_invalid_type', __( 'Invalid relationship type.', 'native-content-relationships' ) );
 		}
 		$from_type = $type_info['from_type'];
 
@@ -205,24 +205,24 @@ class NATICORE_API {
 		);
 
 		if ( $existing ) {
-			return new WP_Error( 'relation_exists', __( 'This relationship already exists.', 'native-content-relationships' ) );
+			return new WP_Error( 'ncr_relation_exists', __( 'This relationship already exists.', 'native-content-relationships' ) );
 		}
 
 		// Check for infinite loops (A → B → A) - respect settings.
 		$settings = NATICORE_Settings::get_instance();
 		if ( $settings->get_setting( 'prevent_circular', 1 ) ) {
 			if ( self::would_create_loop( $from_id, $to_id, $type ) ) {
-				return new WP_Error( 'infinite_loop', __( 'This relationship would create an infinite loop.', 'native-content-relationships' ) );
+				return new WP_Error( 'ncr_infinite_loop', __( 'This relationship would create an infinite loop.', 'native-content-relationships' ) );
 			}
 		}
 
 		// Check static max relationships limit from settings.
-		$max_relationships = $settings->get_setting( 'max_relationships', 0 );
-		if ( $max_relationships > 0 ) {
+		$ncr_max_relationships = $settings->get_setting( 'ncr_max_relationships', 0 );
+		if ( $ncr_max_relationships > 0 ) {
 			$current_count = count( self::get_all_relations( $from_id ) );
-			if ( $current_count >= $max_relationships ) {
+			if ( $current_count >= $ncr_max_relationships ) {
 				/* translators: %d: Maximum number of relationships allowed */
-				return new WP_Error( 'max_relationships', sprintf( __( 'Maximum relationships limit (%d) reached for this post.', 'native-content-relationships' ), $max_relationships ) );
+				return new WP_Error( 'ncr_max_relationships', sprintf( __( 'Maximum relationships limit (%d) reached for this post.', 'native-content-relationships' ), $ncr_max_relationships ) );
 			}
 		}
 
@@ -239,19 +239,19 @@ class NATICORE_API {
 				)
 			);
 			if ( $type_count >= $type_info['max_connections'] ) {
-				return new WP_Error( 'max_connections_reached', sprintf( __( 'Relationship limit reached for type "%s": max %d allowed.', 'native-content-relationships' ), $type_info['label'], $type_info['max_connections'] ) );
+				return new WP_Error( 'ncr_max_connections_exceeded', sprintf( __( 'Relationship limit reached for type "%s": max %d allowed.', 'native-content-relationships' ), $type_info['label'], $type_info['max_connections'] ) );
 			}
 		}
 
 		// Validate relation type exists.
 		if ( ! NATICORE_Relation_Types::exists( $type ) ) {
-			return new WP_Error( 'invalid_relation_type', __( 'Invalid relationship type.', 'native-content-relationships' ) );
+			return new WP_Error( 'ncr_invalid_type', __( 'Invalid relationship type.', 'native-content-relationships' ) );
 		}
 
 		// Check if post types are allowed for this relation type (only for post-to-post).
 		if ( 'post' === $from_type && 'post' === $to_type ) {
 			if ( ! NATICORE_Relation_Types::are_post_types_allowed( $type, $from_post->post_type, $to_post->post_type ) ) {
-				return new WP_Error( 'post_type_not_allowed', __( 'This relationship type is not allowed between these post types.', 'native-content-relationships' ) );
+				return new WP_Error( 'ncr_post_type_not_allowed', __( 'This relationship type is not allowed between these post types.', 'native-content-relationships' ) );
 			}
 		}
 
@@ -277,6 +277,13 @@ class NATICORE_API {
 
 		// Generate deterministic hash for this relationship.
 		$relation_hash = self::generate_relation_hash( $from_id, $to_id, $type );
+
+		/**
+		 * FUTURE CONSIDERATION: Atomic Writes
+		 * For bidirectional relationships or multi-object writes, we may want to implement
+		 * transactional safety using $wpdb->query( 'START TRANSACTION' ) if supported.
+		 * Currently, we rely on failure-first logic before writes.
+		 */
 
 		// Insert relationship.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table insert

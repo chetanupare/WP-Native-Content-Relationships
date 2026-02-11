@@ -349,7 +349,7 @@ class NATICORE_REST_API {
 		// Validate required parameters.
 		if ( ! $from_id || ! $to_id ) {
 			return new WP_Error(
-				'naticore_missing_params',
+				'ncr_missing_params',
 				__( 'from_id and to_id are required.', 'native-content-relationships' ),
 				array( 'status' => 400 )
 			);
@@ -359,7 +359,7 @@ class NATICORE_REST_API {
 		$type_info = NATICORE_Relation_Types::get_type( $type );
 		if ( ! $type_info ) {
 			return new WP_Error(
-				'naticore_invalid_type',
+				'ncr_invalid_type',
 				__( 'Invalid relationship type.', 'native-content-relationships' ),
 				array( 'status' => 400 )
 			);
@@ -373,7 +373,7 @@ class NATICORE_REST_API {
 		// Validate to_type matches registry if applicable.
 		if ( $to_type !== $type_info['to'] ) {
 			return new WP_Error(
-				'naticore_invalid_to_type',
+				'ncr_invalid_to_type',
 				sprintf( __( 'Invalid target type for this relationship. Expected: %s', 'native-content-relationships' ), $type_info['to'] ),
 				array( 'status' => 400 )
 			);
@@ -382,7 +382,7 @@ class NATICORE_REST_API {
 		// Check if relationship already exists.
 		if ( wp_is_related( $from_id, $to_id, $type, null, $to_type ) ) {
 			return new WP_Error(
-				'naticore_relation_exists',
+				'ncr_relation_exists',
 				__( 'Relationship already exists.', 'native-content-relationships' ),
 				array( 'status' => 409 )
 			);
@@ -418,7 +418,7 @@ class NATICORE_REST_API {
 		// Validate required parameters
 		if ( ! $from_id || ! $to_id ) {
 			return new WP_Error(
-				'naticore_missing_params',
+				'ncr_missing_params',
 				__( 'from_id and to_id are required.', 'native-content-relationships' ),
 				array( 'status' => 400 )
 			);
@@ -427,7 +427,7 @@ class NATICORE_REST_API {
 		// Check if relationship exists
 		if ( ! wp_is_related( $from_id, $to_id, $type, null, $to_type ) ) {
 			return new WP_Error(
-				'naticore_relation_not_found',
+				'ncr_relation_not_found',
 				__( 'Relationship not found.', 'native-content-relationships' ),
 				array( 'status' => 404 )
 			);

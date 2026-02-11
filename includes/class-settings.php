@@ -262,9 +262,9 @@ class NATICORE_Settings {
 		);
 
 		add_settings_field(
-			'max_relationships',
+			'ncr_max_relationships',
 			'', // No title, will be rendered manually
-			array( $this, 'render_max_relationships' ),
+			array( $this, 'render_ncr_max_relationships' ),
 			$page,
 			'naticore_limits'
 		);
@@ -693,7 +693,7 @@ class NATICORE_Settings {
 		$sanitized['cleanup_on_delete'] = isset( $input['cleanup_on_delete'] ) && $input['cleanup_on_delete'] === 'keep' ? 'keep' : 'remove';
 
 		// Max relationships
-		$sanitized['max_relationships'] = isset( $input['max_relationships'] ) ? absint( $input['max_relationships'] ) : 0;
+		$sanitized['ncr_max_relationships'] = isset( $input['ncr_max_relationships'] ) ? absint( $input['ncr_max_relationships'] ) : 0;
 
 		// Auto relation
 		$sanitized['auto_relation_enabled'] = isset( $input['auto_relation_enabled'] ) ? 1 : 0;
@@ -841,9 +841,9 @@ class NATICORE_Settings {
 	/**
 	 * Render max relationships field
 	 */
-	public function render_max_relationships() {
+	public function render_ncr_max_relationships() {
 		$settings = $this->get_settings();
-		$max      = isset( $settings['max_relationships'] ) ? $settings['max_relationships'] : 0;
+		$max      = isset( $settings['ncr_max_relationships'] ) ? $settings['ncr_max_relationships'] : 0;
 		?>
 		<div class="naticore-card">
 			<h3><?php esc_html_e( 'Maximum Relationships per Item', 'native-content-relationships' ); ?></h3>
@@ -852,7 +852,7 @@ class NATICORE_Settings {
 				<input 
 					type="number" 
 					id="naticore-max-relationships"
-					name="<?php echo esc_attr( $this->option_name ); ?>[max_relationships]" 
+					name="<?php echo esc_attr( $this->option_name ); ?>[ncr_max_relationships]" 
 					value="<?php echo esc_attr( $max ); ?>" 
 					min="0" 
 					step="1" 

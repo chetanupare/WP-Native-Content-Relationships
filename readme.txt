@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.16
+Stable tag: 1.0.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -258,6 +258,11 @@ This plugin provides comprehensive Elementor Dynamic Tags for displaying relatio
 5. Term editor relationships  
 
 == Changelog ==
+
+= 1.0.17 =
+* **REFINED**: Standardized relationship error codes with `ncr_` prefix (e.g. `ncr_max_connections_exceeded`)
+* **SECURITY**: Implemented relationship registry locking to prevent late/unsafe registrations after `init:20`
+* **DOCS**: Added architectural notes regarding future atomic write considerations
 
 = 1.0.16 =
 * **NEW**: Formal Relationship Type Registry with `ncr_get_registered_relation_types()`

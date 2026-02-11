@@ -25,6 +25,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class NATICORE_Relation_Types {
 
 	/**
+	 * Whether the registry is locked
+	 *
+	 * @var bool
+	 */
+	private static $locked = false;
+
+	/**
 	 * Registered relation types
 	 *
 	 * @var array
@@ -167,6 +174,10 @@ class NATICORE_Relation_Types {
 	 * @return bool|WP_Error
 	 */
 	public static function register( $slug, $args = array() ) {
+		if ( self::$locked ) {
+			return new WP_Error( 'ncr_registry_locked', __( 'Relationship registry is locked. Registration must happen before init:20.', 'native-content-relationships' ) );
+		}
+
 		// Support both (slug, args) and (args with name) formats.
 		if ( is_array( $slug ) && isset( $slug['name'] ) ) {
 			$args = $slug;
@@ -176,7 +187,7 @@ class NATICORE_Relation_Types {
 		$slug = sanitize_key( $slug );
 
 		if ( empty( $slug ) ) {
-			return new WP_Error( 'invalid_slug', __( 'Relation type slug cannot be empty.', 'native-content-relationships' ) );
+			return new WP_Error( 'ncr_invalid_slug', __( 'Relation type slug cannot be empty.', 'native-content-relationships' ) );
 		}
 
 		$defaults = array(
@@ -193,7 +204,7 @@ class NATICORE_Relation_Types {
 		// Object type mapping and validation.
 		$valid_objects = array( 'post', 'user', 'term' );
 		if ( ! in_array( $args['from'], $valid_objects, true ) || ! in_array( $args['to'], $valid_objects, true ) ) {
-			return new WP_Error( 'invalid_object_type', sprintf( __( 'Invalid object types. Allowed: %s', 'native-content-relationships' ), implode( ', ', $valid_objects ) ) );
+			return new WP_Error( 'ncr_invalid_object_type', sprintf( __( 'Invalid object types. Allowed: %s', 'native-content-relationships' ), implode( ', ', $valid_objects ) ) );
 		}
 
 		// Derived flags for internal compatibility.
@@ -204,11 +215,11 @@ class NATICORE_Relation_Types {
 
 		// Strict validation.
 		if ( $args['supports_users'] && $args['supports_terms'] ) {
-			return new WP_Error( 'invalid_combination', __( 'Direct user-to-term relationships are not currently supported.', 'native-content-relationships' ) );
+			return new WP_Error( 'ncr_invalid_combination', __( 'Direct user-to-term relationships are not currently supported.', 'native-content-relationships' ) );
 		}
 
 		if ( ! is_string( $args['label'] ) || empty( $args['label'] ) ) {
-			return new WP_Error( 'invalid_label', __( 'Relation type label must be a non-empty string.', 'native-content-relationships' ) );
+			return new WP_Error( 'ncr_invalid_label', __( 'Relation type label must be a non-empty string.', 'native-content-relationships' ) );
 		}
 
 		if ( ! is_bool( $args['bidirectional'] ) ) {
@@ -396,7 +407,26 @@ class NATICORE_Relation_Types {
 
 		return $term_types;
 	}
+
+	/**
+	 * Lock the registry.
+	 */
+	public static function lock() {
+		self::$locked = true;
+	}
+
+	/**
+	 * Check if the registry is locked.
+	 *
+	 * @return bool
+	 */
+	public static function is_locked() {
+		return self::$locked;
+	}
 }
+
+// Lock registry on init.
+add_action( 'init', array( 'NATICORE_Relation_Types', 'lock' ), 20 );
 
 // Make function available globally
 if ( ! function_exists( 'register_content_relation_type' ) ) {
