@@ -1,0 +1,46 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Native Content Relationships 1.0.24\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/native-content-relationships\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: French <fr_FR@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-11T09:41:49+00:00\n"
+"PO-Revision-Date: 2026-02-11 10:00+0000\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: native-content-relationships\n"
+
+#. Plugin Name of the plugin
+#: native-content-relationships.php
+msgid "Native Content Relationships"
+msgstr "Relations de Contenu Natives"
+
+#. Description of the plugin
+#: native-content-relationships.php
+msgid "A native content relationship system for WordPress. Relate posts, pages, custom post types, users, and terms with semantic relationship types."
+msgstr "Un système natif de relations de contenu pour WordPress. Reliez des articles, des pages, des types de publication personnalisés, des utilisateurs et des termes avec des types de relation sémantiques."
+
+#: includes/class-admin.php:64
+#: includes/class-editors.php:161
+#: includes/class-editors.php:202
+#: includes/class-seo.php:142
+msgid "Related Content"
+msgstr "Contenu Associé"
+
+#: includes/class-admin.php:155
+msgid "Search content..."
+msgstr "Rechercher du contenu..."
+
+#: includes/class-api.php:112
+msgid "This relationship is not allowed."
+msgstr "Cette relation n'est pas autorisée."
+
+#: includes/class-api.php:119
+msgid "You do not have permission to create this relationship."
+msgstr "Vous n'avez pas la permission de créer cette relation."
+
+#: includes/class-overview.php:290
+msgid "No relationships found."
+msgstr "Aucune relation trouvée."

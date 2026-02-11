@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.24] - 2026-02-11
+
+### Added
+- Translations: Added Spanish (es_ES), German (de_DE), French (fr_FR), and Portuguese (pt_BR) support.
+- Localization: Included master `.pot` file for community translations.
+- Core: Improved internationalization (i18n) for admin interfaces.
+
 ## [1.0.23] - 2026-02-11
 
 ### Changed

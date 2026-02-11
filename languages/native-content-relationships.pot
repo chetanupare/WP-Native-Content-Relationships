@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Native Content Relationships 1.0.13\n"
+"Project-Id-Version: Native Content Relationships 1.0.23\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/native-content-relationships\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-02-04T09:59:15+00:00\n"
+"POT-Creation-Date: 2026-02-11T09:41:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: native-content-relationships\n"
@@ -111,38 +111,41 @@ msgstr ""
 msgid "Migrated %d relationships."
 msgstr ""
 
-#: includes/class-admin.php:62
+#: includes/class-admin.php:64
 #: includes/class-editors.php:161
 #: includes/class-editors.php:202
 #: includes/class-seo.php:142
 msgid "Related Content"
 msgstr ""
 
-#: includes/class-admin.php:116
+#: includes/class-admin.php:118
 #: includes/class-overview.php:267
 #: includes/class-settings-old.php:561
 #: includes/class-settings-old.php:636
-#: includes/class-settings.php:440
-#: includes/class-settings.php:661
+#: includes/class-settings.php:509
+#: includes/class-settings.php:534
+#: includes/class-settings.php:805
 #: includes/class-woocommerce.php:275
 msgid "Bidirectional"
 msgstr ""
 
-#: includes/class-admin.php:116
+#: includes/class-admin.php:118
 #: includes/class-overview.php:269
 #: includes/class-settings-old.php:563
-#: includes/class-settings.php:440
+#: includes/class-settings.php:509
 #: includes/class-woocommerce.php:275
 msgid "One-way"
 msgstr ""
 
 #. translators: %s: Post title
-#: includes/class-admin.php:132
+#: includes/class-admin.php:134
 #, php-format
 msgid "Remove relationship to %s"
 msgstr ""
 
-#: includes/class-admin.php:136
+#: includes/class-admin.php:138
+#: includes/class-settings.php:549
+#: includes/class-settings.php:569
 #: includes/class-user-relations.php:103
 #: includes/class-user-relations.php:199
 #: includes/class-user-relations.php:405
@@ -151,114 +154,139 @@ msgid "Remove"
 msgstr ""
 
 #. translators: %s: Relationship type label
-#: includes/class-admin.php:146
+#: includes/class-admin.php:148
 #, php-format
 msgid "Search content to add as %s"
 msgstr ""
 
-#: includes/class-admin.php:153
+#: includes/class-admin.php:155
 msgid "Search content..."
 msgstr ""
 
 #. translators: %s: Relationship type label
-#: includes/class-admin.php:160
+#: includes/class-admin.php:162
 #, php-format
 msgid "Type to search for content to relate with type %s"
 msgstr ""
 
-#: includes/class-admin.php:163
+#: includes/class-admin.php:165
 msgid "Search results"
 msgstr ""
 
-#: includes/class-admin.php:202
+#: includes/class-admin.php:204
 msgid "Searching..."
 msgstr ""
 
-#: includes/class-admin.php:203
+#: includes/class-admin.php:205
 msgid "No results found."
 msgstr ""
 
-#: includes/class-admin.php:219
-#: includes/class-admin.php:292
+#: includes/class-admin.php:221
+#: includes/class-admin.php:291
 msgid "Search term required."
 msgstr ""
 
-#: includes/class-admin.php:223
+#: includes/class-admin.php:225
 msgid "WooCommerce is not active."
 msgstr ""
 
-#: includes/class-admin.php:356
-#: includes/class-admin.php:379
+#: includes/class-admin.php:355
+#: includes/class-admin.php:378
 msgid "Invalid parameters."
+msgstr ""
+
+#: includes/class-admin.php:411
+msgid "Native Content Relationships is active!"
+msgstr ""
+
+#. translators: 1: Settings URL, 2: Documentation URL
+#: includes/class-admin.php:415
+#, php-format
+msgid "Please <a href=\"%1$s\">visit the settings page</a> to configure the plugin or <a href=\"%2$s\" target=\"_blank\">read the documentation</a> to get started."
 msgstr ""
 
 #: includes/class-api.php:112
 msgid "This relationship is not allowed."
 msgstr ""
 
-#: includes/class-api.php:120
+#: includes/class-api.php:119
 msgid "You do not have permission to create this relationship."
 msgstr ""
 
-#: includes/class-api.php:129
+#: includes/class-api.php:128
 msgid "Invalid content ID."
 msgstr ""
 
 #: includes/class-api.php:134
+#: includes/class-api.php:252
+#: includes/class-rest-api.php:363
+msgid "Invalid relationship type."
+msgstr ""
+
+#: includes/class-api.php:140
 msgid "Content cannot be related to itself."
 msgstr ""
 
-#: includes/class-api.php:141
+#: includes/class-api.php:148
 msgid "Target post does not exist."
 msgstr ""
 
-#: includes/class-api.php:146
+#: includes/class-api.php:153
 msgid "Target user does not exist."
 msgstr ""
 
-#: includes/class-api.php:151
+#: includes/class-api.php:158
 msgid "Target term does not exist."
 msgstr ""
 
-#: includes/class-api.php:158
+#: includes/class-api.php:170
 msgid "Source post does not exist."
 msgstr ""
 
-#: includes/class-api.php:168
-msgid "Relationships for published posts are locked. Use the admin interface or WP-CLI to modify."
+#: includes/class-api.php:175
+msgid "Source user does not exist."
 msgstr ""
 
-#: includes/class-api.php:186
-msgid "This relationship already exists."
+#: includes/class-api.php:180
+msgid "Source term does not exist."
 msgstr ""
 
 #: includes/class-api.php:193
+msgid "Relationships for published posts are locked. Use the admin interface or WP-CLI to modify."
+msgstr ""
+
+#: includes/class-api.php:212
+msgid "This relationship already exists."
+msgstr ""
+
+#: includes/class-api.php:219
 msgid "This relationship would create an infinite loop."
 msgstr ""
 
 #. translators: %d: Maximum number of relationships allowed
-#: includes/class-api.php:203
+#: includes/class-api.php:229
 #, php-format
 msgid "Maximum relationships limit (%d) reached for this post."
 msgstr ""
 
-#: includes/class-api.php:209
-msgid "Invalid relationship type."
-msgstr ""
-
-#: includes/class-api.php:215
-msgid "This relationship type is not allowed between these post types."
+#: includes/class-api.php:246
+#, php-format
+msgid "Relationship limit reached for type \"%s\": max %d allowed."
 msgstr ""
 
 #: includes/class-api.php:259
+msgid "This relationship type is not allowed between these post types."
+msgstr ""
+
+#: includes/class-api.php:311
 msgid "Failed to create relationship."
 msgstr ""
 
-#: includes/class-api.php:456
+#: includes/class-api.php:508
 msgid "You do not have permission to delete this relationship."
 msgstr ""
 
-#: includes/class-api.php:502
+#: includes/class-api.php:554
 msgid "Failed to remove relationship."
 msgstr ""
 
@@ -282,50 +310,59 @@ msgstr ""
 msgid "from() and to() must be called before remove()."
 msgstr ""
 
-#: includes/class-import-export.php:49
-#: includes/class-import-export.php:50
-msgid "Import/Export Relationships"
-msgstr ""
-
-#: includes/class-import-export.php:71
-#: includes/class-import-export.php:76
+#: includes/class-import-export.php:51
 msgid "Export Relationships"
 msgstr ""
 
-#: includes/class-import-export.php:72
-msgid "Export all relationships to a JSON file for backup or migration."
+#: includes/class-import-export.php:52
+msgid "Download all existing content relationships as a JSON file. This is recommended before performing any bulk imports or migrations."
 msgstr ""
 
-#: includes/class-import-export.php:81
-#: includes/class-import-export.php:89
+#: includes/class-import-export.php:58
+msgid "Download Export File"
+msgstr ""
+
+#: includes/class-import-export.php:64
 msgid "Import Relationships"
 msgstr ""
 
-#: includes/class-import-export.php:82
-msgid "Import relationships from a JSON file. Duplicates and invalid entries will be skipped."
+#: includes/class-import-export.php:65
+msgid "Upload a previously exported JSON file to restore or migrate relationships. Existing identical relationships will be skipped to prevent duplicates."
 msgstr ""
 
-#: includes/class-import-export.php:182
-#: includes/class-import-export.php:194
+#: includes/class-import-export.php:74
+msgid "Start Import"
+msgstr ""
+
+#: includes/class-import-export.php:79
+msgid "Important:"
+msgstr ""
+
+#: includes/class-import-export.php:79
+msgid "Importing will not delete existing relationships. It only adds new ones from your file. Ensure the destination site has the same content (IDs) for the import to work correctly."
+msgstr ""
+
+#: includes/class-import-export.php:171
+#: includes/class-import-export.php:183
 msgid "Error uploading file."
 msgstr ""
 
-#: includes/class-import-export.php:219
+#: includes/class-import-export.php:208
 msgid "Invalid JSON file."
 msgstr ""
 
-#: includes/class-import-export.php:272
+#: includes/class-import-export.php:261
 msgid "Import Complete:"
 msgstr ""
 
 #. translators: 1: Number of relationships imported, 2: Number of relationships skipped
-#: includes/class-import-export.php:275
+#: includes/class-import-export.php:264
 #, php-format
 msgid "%1$d relationships imported, %2$d skipped."
 msgstr ""
 
 #. translators: %d: Number of invalid relationships cleaned up
-#: includes/class-integrity.php:176
+#: includes/class-integrity.php:287
 #, php-format
 msgid "%d invalid relationship was cleaned up."
 msgid_plural "%d invalid relationships were cleaned up."
@@ -333,7 +370,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: Number of duplicate relationships
-#: includes/class-integrity.php:187
+#: includes/class-integrity.php:298
 #, php-format
 msgid "%d duplicate"
 msgid_plural "%d duplicates"
@@ -341,7 +378,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: Number of broken references
-#: includes/class-integrity.php:191
+#: includes/class-integrity.php:302
 #, php-format
 msgid "%d broken reference"
 msgid_plural "%d broken references"
@@ -349,19 +386,19 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: Number of invalid types
-#: includes/class-integrity.php:195
+#: includes/class-integrity.php:306
 #, php-format
 msgid "%d invalid type"
 msgid_plural "%d invalid types"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-integrity.php:205
+#: includes/class-integrity.php:316
 #: includes/class-orphaned.php:103
 msgid "Content Relationships:"
 msgstr ""
 
-#: includes/class-integrity.php:207
+#: includes/class-integrity.php:318
 #: includes/class-orphaned.php:117
 msgid "View all relationships"
 msgstr ""
@@ -388,7 +425,6 @@ msgstr ""
 
 #: includes/class-overview.php:51
 #: includes/class-settings-old.php:545
-#: includes/class-settings.php:431
 #: includes/elementor/class-related-posts-tag.php:85
 #: includes/elementor/class-related-terms-tag.php:85
 #: includes/elementor/class-related-users-tag.php:85
@@ -409,108 +445,147 @@ msgstr ""
 msgid "No relationships found."
 msgstr ""
 
-#: includes/class-overview.php:329
-#: includes/class-overview.php:330
-#: includes/class-settings-old.php:89
-#: includes/class-settings-old.php:90
-#: includes/class-settings.php:122
-#: includes/class-settings.php:123
-#: includes/class-user-relations.php:85
-#: includes/elementor/class-elementor-integration.php:88
-msgid "Content Relationships"
+#: includes/class-overview.php:331
+msgid "Relationship Overview"
 msgstr ""
 
-#: includes/class-overview.php:346
+#: includes/class-overview.php:332
+msgid "Internal Overview"
+msgstr ""
+
+#: includes/class-overview.php:361
 msgid "Relationships per page"
 msgstr ""
 
-#: includes/class-overview.php:378
-msgid "Overview of all content relationships. To edit relationships, use the \"Related Content\" meta box on individual posts."
+#: includes/class-overview.php:395
+msgid "Audit and monitor all content relationships across your site."
 msgstr ""
 
-#: includes/class-relation-types.php:157
+#: includes/class-overview.php:403
+msgid "No Relationships Found"
+msgstr ""
+
+#: includes/class-overview.php:404
+msgid "You haven't created any content relationships yet. Start by editing a post or product and using the \"Related Content\" box."
+msgstr ""
+
+#: includes/class-overview.php:406
+msgid "Go to Posts"
+msgstr ""
+
+#: includes/class-overview.php:408
+msgid "Go to Products"
+msgstr ""
+
+#: includes/class-overview.php:417
+msgid "Search Relationships"
+msgstr ""
+
+#: includes/class-relation-types.php:178
+msgid "Relationship registry is locked. Registration must happen before init:20."
+msgstr ""
+
+#: includes/class-relation-types.php:190
 msgid "Relation type slug cannot be empty."
 msgstr ""
 
-#: includes/class-relation-types.php:174
+#: includes/class-relation-types.php:207
+#, php-format
+msgid "Invalid object types. Allowed: %s"
+msgstr ""
+
+#: includes/class-relation-types.php:218
+msgid "Direct user-to-term relationships are not currently supported."
+msgstr ""
+
+#: includes/class-relation-types.php:222
 msgid "Relation type label must be a non-empty string."
 msgstr ""
 
-#: includes/class-rest-api.php:342
-#: includes/class-rest-api.php:396
-#: includes/class-rest-api.php:450
+#: includes/class-rest-api.php:353
+#: includes/class-rest-api.php:422
+#: includes/class-rest-api.php:476
 msgid "from_id and to_id are required."
 msgstr ""
 
-#: includes/class-rest-api.php:351
-msgid "Invalid to_type specified."
+#: includes/class-rest-api.php:377
+#, php-format
+msgid "Invalid target type for this relationship. Expected: %s"
 msgstr ""
 
-#: includes/class-rest-api.php:360
+#: includes/class-rest-api.php:386
 msgid "Relationship already exists."
 msgstr ""
 
-#: includes/class-rest-api.php:375
+#: includes/class-rest-api.php:401
 msgid "Relationship created successfully."
 msgstr ""
 
-#: includes/class-rest-api.php:405
+#: includes/class-rest-api.php:431
 msgid "Relationship not found."
 msgstr ""
 
-#: includes/class-rest-api.php:419
+#: includes/class-rest-api.php:445
 msgid "Relationship removed successfully."
 msgstr ""
 
-#: includes/class-rest-api.php:437
+#: includes/class-rest-api.php:463
 msgid "Relationships must be a non-empty array."
 msgstr ""
 
-#: includes/class-rest-api.php:545
+#: includes/class-rest-api.php:571
 msgid "Plugin is in read-only mode. Modifications are not allowed."
 msgstr ""
 
-#: includes/class-rest-api.php:554
+#: includes/class-rest-api.php:580
 msgid "You do not have sufficient permissions to manage relationships."
 msgstr ""
 
-#: includes/class-rest-api.php:565
+#: includes/class-rest-api.php:591
 msgid "You do not have sufficient permissions to perform bulk operations."
 msgstr ""
 
 #: includes/class-settings-old.php:70
 #: includes/class-settings-old.php:375
-#: includes/class-settings.php:103
+#: includes/class-settings.php:105
 msgid "General"
 msgstr ""
 
 #: includes/class-settings-old.php:71
 #: includes/class-settings-old.php:378
-#: includes/class-settings.php:104
-#: includes/class-settings.php:420
+#: includes/class-settings.php:106
 msgid "Relationship Types"
 msgstr ""
 
 #: includes/class-settings-old.php:72
-#: includes/class-settings.php:105
+#: includes/class-settings.php:107
 #: includes/class-woocommerce.php:319
 msgid "WooCommerce"
 msgstr ""
 
 #: includes/class-settings-old.php:73
 #: includes/class-settings-old.php:382
-#: includes/class-settings.php:106
+#: includes/class-settings.php:109
 msgid "Privacy"
 msgstr ""
 
 #: includes/class-settings-old.php:78
 #: includes/class-settings-old.php:386
-#: includes/class-settings.php:111
+#: includes/class-settings.php:114
 msgid "Developer"
 msgstr ""
 
+#: includes/class-settings-old.php:89
+#: includes/class-settings-old.php:90
+#: includes/class-settings.php:125
+#: includes/class-settings.php:126
+#: includes/class-user-relations.php:85
+#: includes/elementor/class-elementor-integration.php:88
+msgid "Content Relationships"
+msgstr ""
+
 #: includes/class-settings-old.php:101
-#: includes/class-settings.php:137
+#: includes/class-settings.php:140
 msgid "Settings"
 msgstr ""
 
@@ -598,17 +673,18 @@ msgid "Manage relationship types. These are controlled vocabulary — not free t
 msgstr ""
 
 #: includes/class-settings-old.php:543
-#: includes/class-settings.php:429
+#: includes/class-settings.php:490
+#: includes/class-settings.php:532
 msgid "Slug"
 msgstr ""
 
 #: includes/class-settings-old.php:544
-#: includes/class-settings.php:430
+#: includes/class-settings.php:491
+#: includes/class-settings.php:533
 msgid "Label"
 msgstr ""
 
 #: includes/class-settings-old.php:546
-#: includes/class-settings.php:432
 msgid "Allowed Post Types"
 msgstr ""
 
@@ -633,7 +709,7 @@ msgid "Configure general behavior for content relationships."
 msgstr ""
 
 #: includes/class-settings-old.php:609
-#: includes/class-settings.php:623
+#: includes/class-settings.php:767
 #: includes/class-woocommerce.php:341
 msgid "Enable Relationships For"
 msgstr ""
@@ -659,7 +735,7 @@ msgid "Remove relations automatically"
 msgstr ""
 
 #: includes/class-settings-old.php:657
-#: includes/class-settings.php:688
+#: includes/class-settings.php:832
 msgid "Keep but mark as orphaned"
 msgstr ""
 
@@ -688,7 +764,7 @@ msgid "Configure safety and permission settings."
 msgstr ""
 
 #: includes/class-settings-old.php:754
-#: includes/class-settings.php:768
+#: includes/class-settings.php:912
 msgid "Prevent circular relationships"
 msgstr ""
 
@@ -725,7 +801,7 @@ msgid "Auto-enabled in local environment."
 msgstr ""
 
 #: includes/class-settings-old.php:843
-#: includes/class-settings.php:867
+#: includes/class-settings.php:1011
 msgid "Enable REST API"
 msgstr ""
 
@@ -733,260 +809,322 @@ msgstr ""
 msgid "Enable REST API endpoints for headless WordPress."
 msgstr ""
 
-#: includes/class-settings.php:367
+#: includes/class-settings.php:108
+msgid "Import/Export"
+msgstr ""
+
+#: includes/class-settings.php:411
 msgid "Content Relationships Settings"
 msgstr ""
 
-#: includes/class-settings.php:393
+#: includes/class-settings.php:447
 msgid "Common Use Cases"
 msgstr ""
 
-#: includes/class-settings.php:396
+#: includes/class-settings.php:450
 msgid "Accessories (One-way)"
 msgstr ""
 
-#: includes/class-settings.php:398
+#: includes/class-settings.php:452
 msgid "Camera → Lens → Tripod"
 msgstr ""
 
-#: includes/class-settings.php:401
+#: includes/class-settings.php:455
 msgid "Related Products (Bidirectional)"
 msgstr ""
 
-#: includes/class-settings.php:403
+#: includes/class-settings.php:457
 msgid "Similar or alternative items"
 msgstr ""
 
-#: includes/class-settings.php:406
+#: includes/class-settings.php:460
 msgid "Bundles / Kits"
 msgstr ""
 
-#: includes/class-settings.php:408
+#: includes/class-settings.php:462
 msgid "Multiple products grouped together"
 msgstr ""
 
-#: includes/class-settings.php:421
-msgid "These are the registered relationship types available in the editor meta box."
+#: includes/class-settings.php:482
+msgid "Built-in Relationship Types"
 msgstr ""
 
-#: includes/class-settings.php:423
-msgid "No relationship types are currently registered."
+#: includes/class-settings.php:483
+msgid "Enable or disable the default relationship types provided by the plugin."
 msgstr ""
 
-#: includes/class-settings.php:444
-msgid "All public types"
+#: includes/class-settings.php:489
+msgid "Status"
 msgstr ""
 
-#: includes/class-settings.php:463
+#: includes/class-settings.php:492
+msgid "Config"
+msgstr ""
+
+#: includes/class-settings.php:511
+msgid "Users"
+msgstr ""
+
+#: includes/class-settings.php:514
+msgid "Terms"
+msgstr ""
+
+#: includes/class-settings.php:525
+msgid "Custom Relationship Types"
+msgstr ""
+
+#: includes/class-settings.php:526
+msgid "Define your own relationship types. These will be available alongside the built-in types."
+msgstr ""
+
+#: includes/class-settings.php:535
+msgid "Actions"
+msgstr ""
+
+#: includes/class-settings.php:540
+msgid "No custom types defined."
+msgstr ""
+
+#: includes/class-settings.php:556
+msgid "Add Custom Type"
+msgstr ""
+
+#: includes/class-settings.php:581
 #: includes/class-woocommerce.php:347
 msgid "Products"
 msgstr ""
 
-#: includes/class-settings.php:464
+#: includes/class-settings.php:582
 msgid "Variations"
 msgstr ""
 
-#: includes/class-settings.php:465
+#: includes/class-settings.php:583
 #: includes/class-woocommerce.php:355
 msgid "Orders"
 msgstr ""
 
-#: includes/class-settings.php:469
+#: includes/class-settings.php:587
 #: includes/class-woocommerce.php:173
 #: includes/class-woocommerce.php:185
 msgid "Product Relationships"
 msgstr ""
 
-#: includes/class-settings.php:473
+#: includes/class-settings.php:591
 msgid "Unlock accessories, bundles, and related product logic."
 msgstr ""
 
-#: includes/class-settings.php:475
+#: includes/class-settings.php:593
 msgid "WooCommerce is not active. These settings will take effect once WooCommerce is enabled."
 msgstr ""
 
-#: includes/class-settings.php:479
+#: includes/class-settings.php:597
 msgid "Enable for WooCommerce Products"
 msgstr ""
 
-#: includes/class-settings.php:497
+#: includes/class-settings.php:615
 msgid "Sync Linked Products"
 msgstr ""
 
-#: includes/class-settings.php:500
+#: includes/class-settings.php:618
 msgid "Sync to WooCommerce upsells and cross-sells"
 msgstr ""
 
-#: includes/class-settings.php:502
+#: includes/class-settings.php:620
 msgid "When enabled, relationship updates can be mirrored into WooCommerce linked products for compatibility."
 msgstr ""
 
-#: includes/class-settings.php:511
+#: includes/class-settings.php:629
 msgid "Privacy & Data"
 msgstr ""
 
-#: includes/class-settings.php:514
+#: includes/class-settings.php:632
 msgid "Remove all plugin data on uninstall"
 msgstr ""
 
-#: includes/class-settings.php:516
+#: includes/class-settings.php:634
 msgid "If enabled, uninstalling the plugin will delete the relationships table and plugin options. If disabled, only options are removed."
 msgstr ""
 
-#: includes/class-settings.php:624
+#: includes/class-settings.php:768
 msgid "Enable relationships only where they are needed to keep the editor clean and fast."
 msgstr ""
 
-#: includes/class-settings.php:647
+#: includes/class-settings.php:791
 msgid "Default Relationship Direction"
 msgstr ""
 
-#: includes/class-settings.php:653
+#: includes/class-settings.php:797
 msgid "One-way (Recommended)"
 msgstr ""
 
-#: includes/class-settings.php:654
+#: includes/class-settings.php:798
 msgid "Best for parent → child or product → accessory relationships."
 msgstr ""
 
-#: includes/class-settings.php:662
+#: includes/class-settings.php:806
 msgid "Ideal for related products, alternatives, or mutual links."
 msgstr ""
 
-#: includes/class-settings.php:666
+#: includes/class-settings.php:810
 msgid "Most stores use one-way for accessories and bidirectional for related products."
 msgstr ""
 
-#: includes/class-settings.php:679
+#: includes/class-settings.php:823
 msgid "When Content Is Deleted"
 msgstr ""
 
-#: includes/class-settings.php:684
+#: includes/class-settings.php:828
 msgid "Remove relationships automatically"
 msgstr ""
 
-#: includes/class-settings.php:692
+#: includes/class-settings.php:836
 msgid "Orphaned relationships are ignored but kept for audits and historical data."
 msgstr ""
 
-#: includes/class-settings.php:705
+#: includes/class-settings.php:849
 msgid "Maximum Relationships per Item"
 msgstr ""
 
-#: includes/class-settings.php:717
+#: includes/class-settings.php:861
 msgid "Unlimited"
 msgstr ""
 
-#: includes/class-settings.php:720
+#: includes/class-settings.php:864
 msgid "Set a limit to prevent excessive cross-links. Use 0 for unlimited (recommended for WooCommerce)."
 msgstr ""
 
-#: includes/class-settings.php:733
+#: includes/class-settings.php:877
 msgid "Smart Auto-Linking"
 msgstr ""
 
-#: includes/class-settings.php:742
+#: includes/class-settings.php:886
 msgid "Auto-create relationship on publish"
 msgstr ""
 
-#: includes/class-settings.php:745
+#: includes/class-settings.php:889
 msgid "Automatically links a post or product to its parent page using a part_of relationship."
 msgstr ""
 
-#: includes/class-settings.php:746
+#: includes/class-settings.php:890
 msgid "Helpful for category landing pages and grouped products."
 msgstr ""
 
-#: includes/class-settings.php:759
+#: includes/class-settings.php:903
 msgid "Circular Relationship Protection"
 msgstr ""
 
-#: includes/class-settings.php:771
+#: includes/class-settings.php:915
 msgid "Stops infinite loops (Product A → B → A). Self-links are always blocked."
 msgstr ""
 
-#: includes/class-settings.php:793
+#: includes/class-settings.php:937
 msgid "Environment:"
 msgstr ""
 
-#: includes/class-settings.php:797
+#: includes/class-settings.php:941
 msgid "Developer Options"
 msgstr ""
 
-#: includes/class-settings.php:803
+#: includes/class-settings.php:947
 msgid "Debug Logging"
 msgstr ""
 
-#: includes/class-settings.php:805
+#: includes/class-settings.php:949
 msgid "Log relationship operations to debug.log"
 msgstr ""
 
-#: includes/class-settings.php:813
-#: includes/class-settings.php:889
+#: includes/class-settings.php:957
+#: includes/class-settings.php:1033
 msgid "Query Debug Mode"
 msgstr ""
 
-#: includes/class-settings.php:815
+#: includes/class-settings.php:959
 msgid "Show query performance in admin"
 msgstr ""
 
-#: includes/class-settings.php:829
+#: includes/class-settings.php:973
 msgid "Read-Only Mode"
 msgstr ""
 
-#: includes/class-settings.php:835
+#: includes/class-settings.php:979
 msgid "Enable Read-Only Mode"
 msgstr ""
 
-#: includes/class-settings.php:837
+#: includes/class-settings.php:981
 msgid "Prevent all modifications to relationships (create, update, delete). Only read operations will be allowed."
 msgstr ""
 
-#: includes/class-settings.php:841
+#: includes/class-settings.php:985
 msgid "⚠️ Warning:"
 msgstr ""
 
-#: includes/class-settings.php:843
+#: includes/class-settings.php:987
 msgid "Users will not be able to create, edit, or delete relationships"
 msgstr ""
 
-#: includes/class-settings.php:844
+#: includes/class-settings.php:988
 msgid "REST API write operations will be blocked"
 msgstr ""
 
-#: includes/class-settings.php:845
+#: includes/class-settings.php:989
 msgid "Admin interface will be view-only"
 msgstr ""
 
-#: includes/class-settings.php:846
+#: includes/class-settings.php:990
 msgid "Use this for maintenance or to freeze relationship data"
 msgstr ""
 
-#: includes/class-settings.php:861
+#: includes/class-settings.php:1005
 msgid "REST API"
 msgstr ""
 
-#: includes/class-settings.php:869
+#: includes/class-settings.php:1013
 msgid "Enable REST API endpoints for headless WordPress and external applications."
 msgstr ""
 
-#: includes/class-settings.php:883
+#: includes/class-settings.php:1027
 msgid "Query Debug"
 msgstr ""
 
-#: includes/class-settings.php:891
+#: includes/class-settings.php:1035
 msgid "Log all database queries for debugging relationship operations."
 msgstr ""
 
-#: includes/class-settings.php:896
+#: includes/class-settings.php:1040
 msgid "Query debug mode is active. Check your debug.log file for detailed query information."
 msgstr ""
 
-#: includes/class-user-relations-ajax.php:96
+#: includes/class-site-health.php:43
+msgid "Relationship Integrity"
+msgstr ""
+
+#: includes/class-site-health.php:54
+msgid "Content Relationship Integrity"
+msgstr ""
+
+#: includes/class-site-health.php:57
+msgid "Relationships"
+msgstr ""
+
+#: includes/class-site-health.php:62
+msgid "The relationship graph is being monitored for integrity."
+msgstr ""
+
+#: includes/class-site-health.php:67
+msgid "Run Manual Integrity Check"
+msgstr ""
+
+#. translators: %d: count of issues
+#: includes/class-site-health.php:82
+#, php-format
+msgid "Found %d potential integrity issues in your relationships. It is recommended to run a fix."
+msgstr ""
+
+#: includes/class-user-relations-ajax.php:85
 msgid "Relationship added successfully"
 msgstr ""
 
-#: includes/class-user-relations-ajax.php:142
+#: includes/class-user-relations-ajax.php:120
 msgid "Relationship removed successfully"
 msgstr ""
 
