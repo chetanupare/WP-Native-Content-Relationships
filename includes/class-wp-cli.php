@@ -198,14 +198,31 @@ class NATICORE_WP_CLI {
 	 * @when after_wp_load
 	 */
 	public function check( $args, $assoc_args ) {
+		$fix     = isset( $assoc_args['fix'] );
+		$verbose = isset( $assoc_args['verbose'] );
+		
 		$integrity = NATICORE_Integrity::get_instance();
-		$results   = $integrity->run_integrity_check();
+		$results   = $integrity->run_integrity_check( $fix );
 
 		if ( $results['cleaned'] > 0 ) {
-			WP_CLI::warning( sprintf( 'Cleaned up %d invalid relationships.', $results['cleaned'] ) );
-			WP_CLI::line( sprintf( '  - %d duplicates', $results['issues']['duplicates'] ) );
-			WP_CLI::line( sprintf( '  - %d broken references', $results['issues']['broken'] ) );
-			WP_CLI::line( sprintf( '  - %d invalid types', $results['issues']['invalid'] ) );
+			if ( $fix ) {
+				WP_CLI::success( sprintf( 'Cleaned up %d invalid relationships.', $results['cleaned'] ) );
+			} else {
+				WP_CLI::warning( sprintf( 'Found %d invalid relationships. Run with --fix to clean up.', $results['cleaned'] ) );
+			}
+
+			if ( $verbose || ! $fix ) {
+				$items = array();
+				foreach ( $results['issues'] as $type => $ids ) {
+					foreach ( $ids as $id ) {
+						$items[] = array(
+							'ID'    => $id,
+							'Issue' => $type,
+						);
+					}
+				}
+				WP_CLI\Utils\format_items( 'table', $items, array( 'ID', 'Issue' ) );
+			}
 		} else {
 			WP_CLI::success( 'All relationships are valid.' );
 		}
@@ -235,10 +252,14 @@ class NATICORE_WP_CLI {
 
 		// Run integrity check
 		$integrity = NATICORE_Integrity::get_instance();
-		$results   = $integrity->run_integrity_check();
+		$results   = $integrity->run_integrity_check( ! $dry_run );
 
 		if ( $dry_run ) {
-			WP_CLI::line( sprintf( 'Would clean up %d invalid relationships.', $results['cleaned'] ) );
+			if ( $results['cleaned'] > 0 ) {
+				WP_CLI::line( sprintf( 'Would clean up %d invalid relationships.', $results['cleaned'] ) );
+			} else {
+				WP_CLI::success( 'All relationships are valid.' );
+			}
 		} elseif ( $results['cleaned'] > 0 ) {
 				WP_CLI::success( sprintf( 'Cleaned up %d invalid relationships.', $results['cleaned'] ) );
 		} else {

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.18] - 2026-02-11
+
+### Added
+- Relationship Integrity Engine with modular helper system
+- Expanded health checks (orphans, unregistered types, constraints, directional consistency)
+- Modular helper file: `includes/helpers/integrity-helpers.php`
+
+### Improved
+- WP-CLI `wp content-relations check` command with detailed reporting and `--fix` support
+
 ## [1.0.17] - 2026-02-11
 
 ### Refined
