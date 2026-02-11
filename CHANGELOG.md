@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.15] - 2026-02-11
+
+### Added
+- Formal Relationship Type Registration API (ncr_register_relation_type)
+- Strict schema validation for relationship definitions
+- Validation layer for preventing invalid object types and combinations
+
+### Improved
+- Refactored internal relationship type registration mapping
+- Enhanced developer API with a formal registry
+
 ## [1.0.14] - 2026-02-11
 
 ### Added

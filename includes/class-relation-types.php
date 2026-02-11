@@ -167,6 +167,12 @@ class NATICORE_Relation_Types {
 	 * @return bool|WP_Error
 	 */
 	public static function register( $slug, $args = array() ) {
+		// Support both (slug, args) and (args with name) formats.
+		if ( is_array( $slug ) && isset( $slug['name'] ) ) {
+			$args = $slug;
+			$slug = $args['name'];
+		}
+
 		$slug = sanitize_key( $slug );
 
 		if ( empty( $slug ) ) {
@@ -175,17 +181,31 @@ class NATICORE_Relation_Types {
 
 		$defaults = array(
 			'label'              => ucwords( str_replace( '_', ' ', $slug ) ),
+			'from'               => 'post',
+			'to'                 => 'post',
 			'bidirectional'      => true,
-			'allowed_post_types' => array(), // Empty array = all post types allowed
-			'supports_users'     => false,
-			'supports_terms'     => false,
-			'from_type'          => 'post',
-			'to_type'            => 'post',
+			'allowed_post_types' => array(), // Empty array = all post types allowed.
 		);
 
 		$args = wp_parse_args( $args, $defaults );
 
-		// Validate
+		// Object type mapping and validation.
+		$valid_objects = array( 'post', 'user', 'term' );
+		if ( ! in_array( $args['from'], $valid_objects, true ) || ! in_array( $args['to'], $valid_objects, true ) ) {
+			return new WP_Error( 'invalid_object_type', sprintf( __( 'Invalid object types. Allowed: %s', 'native-content-relationships' ), implode( ', ', $valid_objects ) ) );
+		}
+
+		// Derived flags for internal compatibility.
+		$args['supports_users'] = ( 'user' === $args['from'] || 'user' === $args['to'] );
+		$args['supports_terms'] = ( 'term' === $args['from'] || 'term' === $args['to'] );
+		$args['from_type']      = $args['from'];
+		$args['to_type']        = $args['to'];
+
+		// Strict validation.
+		if ( $args['supports_users'] && $args['supports_terms'] ) {
+			return new WP_Error( 'invalid_combination', __( 'Direct user-to-term relationships are not currently supported.', 'native-content-relationships' ) );
+		}
+
 		if ( ! is_string( $args['label'] ) || empty( $args['label'] ) ) {
 			return new WP_Error( 'invalid_label', __( 'Relation type label must be a non-empty string.', 'native-content-relationships' ) );
 		}
@@ -379,11 +399,35 @@ class NATICORE_Relation_Types {
 
 // Make function available globally
 if ( ! function_exists( 'register_content_relation_type' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
+	/**
+	 * Legacy registration function
+	 */
 	function register_content_relation_type( $slug, $args = array() ) {
 		if ( ! class_exists( 'NATICORE_Relation_Types' ) ) {
 			return new WP_Error( 'class_not_loaded', 'NATICORE_Relation_Types class is not loaded yet.' );
 		}
 		return NATICORE_Relation_Types::register( $slug, $args );
+	}
+}
+
+if ( ! function_exists( 'ncr_register_relation_type' ) ) {
+	/**
+	 * Formally register a relationship type with schema validation.
+	 *
+	 * @since 1.0.15
+	 * @param array $args {
+	 *     @type string $name          Unique slug for the relationship type.
+	 *     @type string $label         Display label.
+	 *     @type string $from          Object type (post, user, term).
+	 *     @type string $to            Object type (post, user, term).
+	 *     @type bool   $bidirectional Whether the relationship is two-way.
+	 * }
+	 * @return bool|WP_Error
+	 */
+	function ncr_register_relation_type( $args ) {
+		if ( ! class_exists( 'NATICORE_Relation_Types' ) ) {
+			return new WP_Error( 'class_not_loaded', 'NATICORE_Relation_Types class is not loaded yet.' );
+		}
+		return NATICORE_Relation_Types::register( $args );
 	}
 }
