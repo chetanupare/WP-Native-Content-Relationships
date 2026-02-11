@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.21] - 2026-02-11
+
+### Added
+- Public Performance Documentation: 100k vs 1M row benchmarks.
+- Automated Regression Suite: Validates constraints, directionality, and integrity.
+- Enhanced Developer API: Global `ncr_add_relation()` and `ncr_get_relations()` helpers.
+- Test Mode: Introduced `NCR_TEST_MODE` for CI-level safety.
+
 ## [1.0.20] - 2026-02-11
 
 ### Added

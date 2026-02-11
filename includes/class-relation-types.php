@@ -455,6 +455,25 @@ if ( ! function_exists( 'ncr_register_relation_type' ) ) {
 	 *     @type int    $max_connections Maximum number of relationships of this type allowed from source.
 	 * }
 	 * @return bool|WP_Error
+	/* End of NATICORE_Relation_Types class */
+}
+
+if ( ! function_exists( 'ncr_register_relation_type' ) ) {
+	/**
+	 * Register a new relationship type.
+	 *
+	 * @since 1.0.15
+	 * @param array $args {
+	 *     Relationship type arguments.
+	 *
+	 *     @type string $name            Unique slug for the relationship type.
+	 *     @type string $label           Display label.
+	 *     @type string $from            Object type (post, user, term).
+	 *     @type string $to              Object type (post, user, term).
+	 *     @type bool   $bidirectional   Whether the relationship is two-way.
+	 *     @type int    $max_connections Maximum number of relationships of this type allowed from source.
+	 * }
+	 * @return bool|WP_Error
 	 */
 	function ncr_register_relation_type( $args ) {
 		if ( ! class_exists( 'NATICORE_Relation_Types' ) ) {
