@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.14] - 2026-02-11
+
+### Added
+- Dedicated Import/Export tab in settings
+- Empty state UI for Relationship Overview page
+- Post-activation admin notice with quick links
+- Quick link to documentation (https://chetanupare.github.io/WP-Native-Content-Relationships/)
+
+### Changed
+- Moved Relationship Overview from Tools to Settings menu
+- Improved layout organization in settings page
+
+### Fixed
+- CSS specificity issues affecting table headers in settings cards
+
 ## [1.0.13] - 2026-02-09
 
 ### Added

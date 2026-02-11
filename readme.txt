@@ -259,6 +259,13 @@ This plugin provides comprehensive Elementor Dynamic Tags for displaying relatio
 
 == Changelog ==
 
+= 1.0.14 =
+* **NEW**: Integrated Import/Export as a dedicated settings tab
+* **NEW**: Added empty state UI for cleaner Relationship Overview experience
+* **NEW**: Added dismissible post-activation notice with documentation links
+* **IMPROVED**: Moved Relationship Overview from Tools to Settings menu for better organization
+* **FIX**: Resolved CSS specificity issues in card-based settings layout
+
 = 1.0.13 =
 * **NEW**: Comprehensive CONTRIBUTING.md guidelines and security policy
 * **NEW**: Issue templates, automation, and contributor guidelines
