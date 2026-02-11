@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.22
+Stable tag: 1.0.23
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -257,7 +257,26 @@ This plugin provides comprehensive Elementor Dynamic Tags for displaying relatio
 4. User profile relationships  
 5. Term editor relationships  
 
+== Performance & Scale ==
+
+Native Content Relationships is built for high-volume WordPress sites.
+
+* Composite covering indexes for fast relationship lookups
+* SQL-native validation logic for integrity checks
+* Chunked processing to prevent memory spikes
+* Streaming WP-CLI operations for large datasets
+* Bounded memory usage (<5MB during full graph scans)
+
+Benchmarks confirm stable performance with 1,000,000+ relationship rows under InnoDB.
+
+[View Full Performance Report](https://github.com/chetanupare/WP-Native-Content-Relationships/blob/main/docs/PERFORMANCE.md)
+
 == Changelog ==
+
+= 1.0.23 =
+* Clean Release: Removed development artifacts (docs, tests, benchmarks) from distribution.
+* Documentation: Updated readme to link to external performance report.
+* Infrastructure: Verified 1M row benchmarks (see GitHub).
 
 = 1.0.22 =
 * Infrastructure-Grade Benchmarks: Refined docs/PERFORMANCE.md with high-fidelity metrics.

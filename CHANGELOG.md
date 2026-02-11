@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Release date: 2026-02-11
-- Version: 1.0.22
+## [1.0.23] - 2026-02-11
+
+### Changed
+- Clean Release: Removed development artifacts (`docs`, `benchmarks`, `tests`, `vendor`) from distribution.
+- Documentation: Updated readme to link to external GitHub performance report.
+- Infrastructure: Verified 1M row benchmarks (see `docs/PERFORMANCE.md` on GitHub).
+
+## [1.0.22] - 2026-02-11
 - Infrastructure-Grade Benchmarks: Refined `docs/PERFORMANCE.md` with Mean/P95 metrics and complexity classes.
 - Enhanced Benchmarking Suite: Added support for Mean/P95 latency, multi-iteration trials, and buffer pool warming.
 - Methodology: Documented deterministic data generation and priming phases to reduce measurement noise.
