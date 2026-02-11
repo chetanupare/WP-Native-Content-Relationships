@@ -9,5 +9,14 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "scripts": {
+        "lint": "phpcs --standard=WordPress --extensions=php includes/ native-content-relationships.php",
+        "fix": "phpcbf --standard=WordPress --extensions=php includes/ native-content-relationships.php",
+        "analyze": "phpstan analyze includes/ native-content-relationships.php --level=5",
+        "test": [
+            "@lint",
+            "@analyze"
+        ]
     }
 }
