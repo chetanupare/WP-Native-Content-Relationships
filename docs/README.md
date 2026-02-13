@@ -1,44 +1,46 @@
-# Native Content Relationships - Documentation
+# Native Content Relationships — Documentation
 
-This folder contains the GitHub Pages documentation site for the Native Content Relationships WordPress plugin.
+This folder is the source for the **VitePress** documentation site.
 
-## Pages
+## Develop locally
 
-- **index.html** - Landing page with overview and features
-- **features.html** - Detailed feature descriptions
-- **use-cases.html** - Real-world use cases and examples
-- **architecture.html** - Technical architecture and performance details
-- **documentation.html** - Developer documentation and API reference
+From the **plugin root** (one level up):
 
-## Navigation
+```bash
+npm install
+npm run docs:dev
+```
 
-All pages include consistent navigation with:
-- Logo linking to home page
-- Main navigation menu
-- GitHub link
-- Download button
+Open the URL VitePress prints (e.g. with base path `/WP-Native-Content-Relationships/` for GitHub Pages).
 
-## Setup
+## Build for production
 
-This site is configured for GitHub Pages using Jekyll with:
-- Tailwind CSS for styling
-- Responsive design
-- Dark mode support
-- SEO optimization
+```bash
+npm run docs:build
+```
 
-## Deployment
+Output is in `docs/.vitepress/dist`. Deploy that folder to GitHub Pages or any static host.
 
-The site automatically deploys when changes are pushed to the main branch.
+## Structure
 
----
+| Path | Purpose |
+|------|--------|
+| `index.md` | Home page |
+| `guide/getting-started.md` | First steps |
+| `technical/architecture.md` | System design, components |
+| `technical/performance.md` | Benchmarks, scaling |
+| `product/features.md` | Feature overview |
+| `internal/expansion-plan.md` | 90-day plan (internal) |
+| `.vitepress/config.mts` | VitePress config |
+| `public/` | Static assets (logo, etc.) |
 
-## Quick Links
+Original long-form docs (e.g. `ARCHITECTURE.md`, `PERFORMANCE.md`, `MUST_HAVE_FEATURES.md`, `90-DAY-EXPANSION-PLAN.md`) remain in this folder as canonical sources; the VitePress pages either mirror them or summarize and link.
+
+## Legacy
+
+The old Jekyll site (`_config.yml`, `*.html` pages) is no longer used. The live site is built with VitePress. The HTML files are kept for reference only.
+
+## Links
 
 - [WordPress.org Plugin](https://wordpress.org/plugins/native-content-relationships/)
-- [GitHub Repository](https://github.com/chetanupare/WP-Native-Content-Relationships)
-- [Main Plugin README](../README.md)
-- [Support](https://github.com/chetanupare/WP-Native-Content-Relationships/issues)
-
-## License
-
-GPLv2 or later
+- [GitHub](https://github.com/chetanupare/WP-Native-Content-Relationships)

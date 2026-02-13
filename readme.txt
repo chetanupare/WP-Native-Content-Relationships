@@ -74,6 +74,17 @@ This plugin is designed to be **core-friendly, developer-focused, and future-pro
 • AJAX-powered search for posts, users, and terms  
 • Modern UI matching WordPress admin style  
 
+== Stability & Backward Compatibility ==
+
+**Schema stable from 1.x onward. Backward compatibility guaranteed.**
+
+We lock the core before expanding. Ecosystem and agency confidence depend on it.
+
+* **Database schema stability** — The relationship table and `NCR_SCHEMA_VERSION` are stable in the 1.x line. Any future schema change will be additive (new columns/indexes) or run through a documented migration; no breaking table or column renames without a major version.
+* **Backward compatibility promise** — Public PHP APIs (functions, hooks, WP_Query arguments), shortcodes, and REST endpoints will not be removed or changed in breaking ways within the 1.x branch. Deprecations will be announced and supported for at least one minor version.
+* **Versioning policy** — 1.x = stable core. Minor/patch releases may add features and fix bugs; they will not break existing integrations. A major version (2.x) would be the only place for intentional breaking changes, with a clear migration path.
+* **Namespacing discipline** — One internal prefix: `ncr_` (functions, hooks, options), `NCR_` (classes, constants), `ncr-` (CSS/IDs/handles). No new alternate prefixes; documented and consistent so extensions and ecosystem plugins can rely on a stable surface.
+
 == Performance & Architecture ==
 
 • Dedicated indexed database table  

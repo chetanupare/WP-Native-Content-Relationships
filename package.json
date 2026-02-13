@@ -1,0 +1,16 @@
+{
+  "name": "native-content-relationships",
+  "version": "1.0.28",
+  "private": true,
+  "overrides": {
+    "@babel/parser": "^7.24.0"
+  },
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.0"
+  }
+}
