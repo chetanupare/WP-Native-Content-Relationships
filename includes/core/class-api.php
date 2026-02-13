@@ -994,6 +994,59 @@ class NATICORE_API {
 
 		return $exists;
 	}
+
+	/**
+	 * Copy all relationships from one post to another (e.g. after duplicating a post).
+	 *
+	 * @since 1.0.25
+	 * @param int        $from_post_id   Source post ID.
+	 * @param int        $to_post_id     Destination post ID.
+	 * @param array|null $relation_types Optional. Only copy these relation type slugs. Null = copy all.
+	 * @return array{ copied: int, skipped: int, errors: array } Counts and any WP_Error messages.
+	 */
+	public static function copy_relations( $from_post_id, $to_post_id, $relation_types = null ) {
+		global $wpdb;
+
+		$from_post_id = absint( $from_post_id );
+		$to_post_id   = absint( $to_post_id );
+		if ( ! $from_post_id || ! $to_post_id || $from_post_id === $to_post_id ) {
+			return array( 'copied' => 0, 'skipped' => 0, 'errors' => array() );
+		}
+
+		$where  = 'from_id = %d';
+		$params = array( $from_post_id );
+		if ( is_array( $relation_types ) && ! empty( $relation_types ) ) {
+			$relation_types = array_map( 'sanitize_key', $relation_types );
+			$placeholders   = implode( ',', array_fill( 0, count( $relation_types ), '%s' ) );
+			$where         .= " AND type IN ($placeholders)";
+			$params        = array_merge( $params, $relation_types );
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table read
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where}", $params ) );
+
+		$copied = 0;
+		$skipped = 0;
+		$errors = array();
+
+		foreach ( (array) $rows as $row ) {
+			$to_type = isset( $row->to_type ) ? $row->to_type : 'post';
+			if ( ! in_array( $to_type, array( 'post', 'user', 'term' ), true ) ) {
+				$to_type = 'post';
+			}
+			$result = self::add_relation( $to_post_id, (int) $row->to_id, $row->type, null, $to_type );
+			if ( is_wp_error( $result ) ) {
+				$errors[] = $result->get_error_message();
+				$skipped++;
+			} else {
+				$copied++;
+			}
+		}
+
+		do_action( 'naticore_after_duplicate_post', $from_post_id, $to_post_id, array( 'copied' => $copied, 'skipped' => $skipped ) );
+
+		return array( 'copied' => $copied, 'skipped' => $skipped, 'errors' => $errors );
+	}
 }
 
 // Make functions available globally (backward compatibility)
@@ -1209,59 +1262,6 @@ if ( ! function_exists( 'wp_get_term_related_posts' ) ) {
 		}
 
 		return $related_posts;
-	}
-
-	/**
-	 * Copy all relationships from one post to another (e.g. after duplicating a post).
-	 *
-	 * @since 1.0.25
-	 * @param int        $from_post_id   Source post ID.
-	 * @param int        $to_post_id     Destination post ID.
-	 * @param array|null $relation_types Optional. Only copy these relation type slugs. Null = copy all.
-	 * @return array{ copied: int, skipped: int, errors: array } Counts and any WP_Error messages.
-	 */
-	public static function copy_relations( $from_post_id, $to_post_id, $relation_types = null ) {
-		global $wpdb;
-
-		$from_post_id = absint( $from_post_id );
-		$to_post_id   = absint( $to_post_id );
-		if ( ! $from_post_id || ! $to_post_id || $from_post_id === $to_post_id ) {
-			return array( 'copied' => 0, 'skipped' => 0, 'errors' => array() );
-		}
-
-		$where  = 'from_id = %d';
-		$params = array( $from_post_id );
-		if ( is_array( $relation_types ) && ! empty( $relation_types ) ) {
-			$relation_types = array_map( 'sanitize_key', $relation_types );
-			$placeholders   = implode( ',', array_fill( 0, count( $relation_types ), '%s' ) );
-			$where         .= " AND type IN ($placeholders)";
-			$params        = array_merge( $params, $relation_types );
-		}
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table read
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where}", $params ) );
-
-		$copied = 0;
-		$skipped = 0;
-		$errors = array();
-
-		foreach ( (array) $rows as $row ) {
-			$to_type = isset( $row->to_type ) ? $row->to_type : 'post';
-			if ( ! in_array( $to_type, array( 'post', 'user', 'term' ), true ) ) {
-				$to_type = 'post';
-			}
-			$result = self::add_relation( $to_post_id, (int) $row->to_id, $row->type, null, $to_type );
-			if ( is_wp_error( $result ) ) {
-				$errors[] = $result->get_error_message();
-				$skipped++;
-			} else {
-				$copied++;
-			}
-		}
-
-		do_action( 'naticore_after_duplicate_post', $from_post_id, $to_post_id, array( 'copied' => $copied, 'skipped' => $skipped ) );
-
-		return array( 'copied' => $copied, 'skipped' => $skipped, 'errors' => $errors );
 	}
 }
 
