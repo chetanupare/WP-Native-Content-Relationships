@@ -12,12 +12,40 @@
 	var NCR = {
 		init: function () {
 			this.bindEvents();
+			if ( typeof naticoreData !== 'undefined' && naticoreData.manualOrderEnabled ) {
+				this.initSortable();
+			}
+		},
+
+		syncRelationOrder: function ( $list ) {
+			var type = $list.data( 'relation-type' );
+			var ids  = [];
+			$list.find( '.naticore-relation-item[data-relation-id]' ).each( function () {
+				ids.push( $( this ).data( 'relation-id' ) );
+			} );
+			$list.siblings( '.naticore-order-input' ).val( ids.join( ',' ) );
+		},
+
+		initSortable: function () {
+			$( '.naticore-sortable' ).each( function () {
+				var $list = $( this );
+				NCR.syncRelationOrder( $list );
+				$list.sortable( {
+					axis: 'y',
+					handle: '.naticore-relation-title',
+					placeholder: 'naticore-relation-item naticore-sortable-placeholder',
+					update: function () {
+						NCR.syncRelationOrder( $list );
+					}
+				} );
+			} );
 		},
 
 		bindEvents: function () {
 			// Search input
 			$( document ).on( 'input', '.naticore-search-input', this.handleSearch );
 			$( document ).on( 'input', '.naticore-product-search', this.handleProductSearch );
+			$( document ).on( 'click', '.naticore-suggest-btn', this.handleSuggestRelated );
 			$( document ).on( 'click', '.naticore-remove-relation', this.handleRemove );
 			$( document ).on( 'click', '.naticore-search-result', this.handleAddRelation );
 			$( document ).on(
@@ -72,6 +100,47 @@
 				300
 			);
 			$input.data( 'timeout', timeout );
+		},
+
+		handleSuggestRelated: function () {
+			var $btn          = $( this );
+			var relationType  = $btn.data( 'relation-type' );
+			var currentPostId = $( '#post_ID' ).val() || 0;
+			var $addRelation  = $btn.closest( '.naticore-add-relation' );
+			var $results     = $addRelation.find( '.naticore-suggest-results' );
+
+			if ( ! currentPostId ) {
+				alert( 'Please save the post first.' );
+				return;
+			}
+
+			$results.html( '<div class="naticore-loading">' + ( naticoreData.strings.suggesting || 'Suggesting...' ) + '</div>' ).show();
+
+			$.ajax( {
+				url: naticoreData.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'naticore_suggest_related',
+					nonce: naticoreData.nonce,
+					current_post_id: currentPostId
+				},
+				success: function ( response ) {
+					if ( response.success && response.data.length > 0 ) {
+						var html = '';
+						$.each( response.data, function ( i, item ) {
+							html += '<div class="naticore-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
+							html += '<strong>' + item.title + '</strong> <small>(' + item.type + ')</small>';
+							html += '</div>';
+						} );
+						$results.html( html );
+					} else {
+						$results.html( '<div class="naticore-no-results">' + ( naticoreData.strings.noSuggestions || 'No suggestions.' ) + '</div>' );
+					}
+				},
+				error: function () {
+					$results.html( '<div class="naticore-error">Error loading suggestions.</div>' );
+				}
+			} );
 		},
 
 		performSearch: function ($input, search, relationType, currentPostId) {
@@ -215,9 +284,14 @@
 					},
 					success: function (response) {
 						if (response.success) {
-							$button.closest( '.naticore-relation-item' ).fadeOut(
+							var $item = $button.closest( '.naticore-relation-item' );
+							var $list = $item.closest( '.naticore-sortable' );
+							$item.fadeOut(
 								function () {
 									$( this ).remove();
+									if ( $list.length && typeof NCR.syncRelationOrder === 'function' ) {
+										NCR.syncRelationOrder( $list );
+									}
 								}
 							);
 						} else {

@@ -80,17 +80,33 @@ class NATICORE_Editors {
 				'editor_script'   => 'naticore-gutenberg',
 				'render_callback' => array( $this, 'render_related_posts_block' ),
 				'attributes'      => array(
-					'relationType' => array(
+					'relationType'   => array(
 						'type'    => 'string',
 						'default' => 'related_to',
 					),
-					'limit'        => array(
+					'limit'          => array(
 						'type'    => 'number',
 						'default' => 5,
 					),
-					'order'        => array(
+					'order'          => array(
 						'type'    => 'string',
 						'default' => 'date',
+					),
+					'layout'         => array(
+						'type'    => 'string',
+						'default' => 'list',
+					),
+					'showThumbnail'  => array(
+						'type'    => 'boolean',
+						'default' => false,
+					),
+					'excerptLength'  => array(
+						'type'    => 'number',
+						'default' => 0,
+					),
+					'wrapperClass'   => array(
+						'type'    => 'string',
+						'default' => '',
 					),
 				),
 			)
@@ -115,7 +131,7 @@ class NATICORE_Editors {
 	}
 
 	/**
-	 * Render related posts block
+	 * Render related posts block (delegates to shortcode for consistent markup and layout options)
 	 */
 	public function render_related_posts_block( $attributes ) {
 		global $post;
@@ -124,54 +140,20 @@ class NATICORE_Editors {
 			return '';
 		}
 
-		$relation_type = isset( $attributes['relationType'] ) ? $attributes['relationType'] : 'related_to';
-		$limit         = isset( $attributes['limit'] ) ? absint( $attributes['limit'] ) : 5;
-		$order         = isset( $attributes['order'] ) ? $attributes['order'] : 'date';
+		$atts = array(
+			'type'           => isset( $attributes['relationType'] ) ? $attributes['relationType'] : 'related_to',
+			'limit'          => isset( $attributes['limit'] ) ? absint( $attributes['limit'] ) : 5,
+			'order'          => isset( $attributes['order'] ) ? $attributes['order'] : 'date',
+			'post_id'        => $post->ID,
+			'layout'         => isset( $attributes['layout'] ) ? $attributes['layout'] : 'list',
+			'show_thumbnail' => ! empty( $attributes['showThumbnail'] ) ? 1 : 0,
+			'excerpt_length' => isset( $attributes['excerptLength'] ) ? max( 0, (int) $attributes['excerptLength'] ) : 0,
+			'class'          => isset( $attributes['wrapperClass'] ) ? $attributes['wrapperClass'] : '',
+			'title'          => __( 'Related Content', 'native-content-relationships' ),
+		);
 
-		$related = wp_get_related( $post->ID, $relation_type, array( 'limit' => $limit ) );
-
-		if ( empty( $related ) ) {
-			return '';
-		}
-
-		// Get post objects
-		$posts = array();
-		foreach ( $related as $rel ) {
-			$related_post = get_post( $rel['id'] );
-			if ( $related_post && $related_post->post_status === 'publish' ) {
-				$posts[] = $related_post;
-			}
-		}
-
-		// Sort by order
-		if ( $order === 'title' ) {
-			usort(
-				$posts,
-				function ( $a, $b ) {
-					return strcmp( $a->post_title, $b->post_title );
-				}
-			);
-		}
-
-		if ( empty( $posts ) ) {
-			return '';
-		}
-
-		$html  = '<div class="naticore-related-posts-block">';
-		$html .= '<h3>' . __( 'Related Content', 'native-content-relationships' ) . '</h3>';
-		$html .= '<ul>';
-
-		foreach ( $posts as $related_post ) {
-			$html .= sprintf(
-				'<li><a href="%s">%s</a></li>',
-				esc_url( get_permalink( $related_post->ID ) ),
-				esc_html( get_the_title( $related_post->ID ) )
-			);
-		}
-
-		$html .= '</ul></div>';
-
-		return $html;
+		$shortcodes = NATICORE_Shortcodes::get_instance();
+		return $shortcodes->render_related_posts( $atts );
 	}
 
 	/**

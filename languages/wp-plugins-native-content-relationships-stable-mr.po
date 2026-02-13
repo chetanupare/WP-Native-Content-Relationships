@@ -37,7 +37,7 @@ msgstr ""
 #. Author of the plugin
 #: native-content-relationships.php
 msgid "Chetan Upare"
-msgstr "चेतन उपारे"
+msgstr "चेतन उपरे"
 
 #. Author URI of the plugin
 #: native-content-relationships.php

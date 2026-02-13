@@ -1,0 +1,66 @@
+/**
+ * Minimal frontend styles for Native Content Relationships shortcodes.
+ * Themes can override these classes.
+ */
+.naticore-related-posts,
+.naticore-related-users,
+.naticore-related-terms {
+	margin: 1em 0;
+}
+
+.naticore-related-title {
+	margin: 0 0 0.5em;
+	font-size: 1.1em;
+}
+
+.naticore-related-items {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.naticore-related-list .naticore-related-items li {
+	margin: 0.25em 0;
+}
+
+.naticore-related-grid .naticore-related-items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+}
+
+.naticore-related-grid .naticore-related-items li {
+	margin: 0;
+}
+
+/* Thumbnail and excerpt layout */
+.naticore-related-item-inner {
+	display: flex;
+	gap: 0.75rem;
+	align-items: flex-start;
+}
+
+.naticore-related-item-thumb {
+	flex-shrink: 0;
+}
+
+.naticore-related-item-thumb img {
+	display: block;
+	width: 60px;
+	height: 60px;
+	object-fit: cover;
+	border-radius: 2px;
+}
+
+.naticore-related-item-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.naticore-related-item-excerpt {
+	display: block;
+	margin-top: 0.25em;
+	font-size: 0.9em;
+	line-height: 1.4;
+	color: #555;
+}

@@ -55,6 +55,29 @@ class NATICORE_Database {
 
 			update_option( 'ncr_schema_version', NCR_SCHEMA_VERSION );
 		}
+
+		// Optional: relation_order column (used only when "Manual order" is enabled in settings).
+		self::maybe_add_relation_order_column();
+	}
+
+	/**
+	 * Add relation_order column if missing (optional feature, gated by enable_manual_order setting).
+	 */
+	public static function maybe_add_relation_order_column() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'content_relations';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema check
+		$table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) === $table_name;
+		if ( ! $table_exists ) {
+			return;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema check
+		$columns = $wpdb->get_col( "DESCRIBE `{$table_name}`" );
+		if ( in_array( 'relation_order', $columns, true ) ) {
+			return;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from prefix
+		$wpdb->query( "ALTER TABLE `{$table_name}` ADD COLUMN relation_order int(11) unsigned NOT NULL DEFAULT 0 AFTER to_type" );
 	}
 
 	/**
@@ -101,6 +124,7 @@ class NATICORE_Database {
 			type varchar(50) NOT NULL DEFAULT 'related_to',
 			direction varchar(20) NOT NULL DEFAULT 'bidirectional',
 			to_type enum('post','user','term') NOT NULL DEFAULT 'post',
+			relation_order int(11) unsigned NOT NULL DEFAULT 0,
 			to_user_id bigint(20) unsigned NULL,
 			to_term_id bigint(20) unsigned NULL,
 			created_at datetime DEFAULT CURRENT_TIMESTAMP,

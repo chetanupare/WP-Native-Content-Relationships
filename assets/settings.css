@@ -64,6 +64,63 @@
 	font-weight: 600;
 }
 
+/* Get started / onboarding */
+.naticore-get-started {
+	max-width: 640px;
+}
+.naticore-get-started-intro {
+	font-size: 15px;
+	margin-bottom: 20px;
+	color: #1d2327;
+}
+.naticore-get-started-checklist {
+	list-style: none;
+	margin: 0 0 24px 0;
+	padding: 0;
+}
+.naticore-checklist-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 20px;
+	padding: 14px 16px;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+.naticore-checklist-item.naticore-done {
+	border-color: #00a32a;
+	background: #f0f6f1;
+}
+.naticore-checklist-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	min-width: 28px;
+	border-radius: 50%;
+	background: #f0f0f1;
+	color: #2c3338;
+	font-weight: 600;
+	font-size: 14px;
+}
+.naticore-checklist-item.naticore-done .naticore-checklist-icon {
+	background: #00a32a;
+	color: #fff;
+}
+.naticore-checklist-item div {
+	flex: 1;
+}
+.naticore-checklist-item .description {
+	margin: 6px 0 0 0;
+	font-size: 13px;
+	color: #50575e;
+}
+.naticore-get-started-dismiss {
+	margin-top: 16px;
+}
+
 /* Cards */
 .naticore-card {
 	background: #fff;

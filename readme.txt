@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.24
+Stable tag: 1.0.25
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -112,6 +112,42 @@ This plugin is designed to be **core-friendly, developer-focused, and future-pro
 * **Always available:** Yes (core WordPress feature)
 * **Tested up to:** WordPress 6.5 
 
+= Shortcodes =
+
+Use these in posts, pages, or widgets. They use the current post ID when not specified.
+
+*Related posts (default: type=related_to, limit=5):*
+[naticore_related_posts type="related_to" limit="5" order="date" layout="list" title="Related Content" class="my-class"]
+
+*Related users (default: type=authored_by):*
+[naticore_related_users type="authored_by" limit="10" order="name" layout="list" title="Authors"]
+
+*Related terms (default: type=categorized_as):*
+[naticore_related_terms type="categorized_as" limit="5" order="name" layout="grid" title="Categories"]
+
+**Attributes (all shortcodes):**
+* type – Relationship type slug (e.g. related_to, parent_of, authored_by, categorized_as)
+* limit – Number of items (1–50), default 5
+* order – Sort: date, title (posts) or name (users/terms)
+* post_id – Post ID; omit to use current post
+* layout – list or grid
+* title – Heading text above the list (optional)
+* class – Extra CSS class(es) for the wrapper
+* show_thumbnail – 1 to show post thumbnail (posts shortcode only), default 0
+* excerpt_length – Number of words for excerpt (0 = hide), default 0
+
+= Widget =
+
+**Related Content (NCR)** is available under Appearance → Widgets. Add it to any sidebar or widget area.
+
+* **Title** – Optional widget title (leave blank to use the shortcode’s default “Related Content” heading)
+* **Relationship type** – e.g. Related To, Parent Of, Depends On
+* **Number of items** – 1–50
+* **Order by** – Date or Title
+* **Post ID (optional)** – Leave 0 to use the current post; set a post ID to show relations for a specific post
+
+Output matches the shortcode (same markup and styles when the shortcode CSS is enqueued).
+
 == Installation ==
 
 1. Upload the plugin to `/wp-content/plugins/native-content-relationships/`
@@ -174,15 +210,25 @@ Endpoints available under:
 • Fetch related content  
 • Delete relationships  
 
+**Embed relations in core REST responses (headless):**  
+Add `?naticore_relations=1` to any core resource request to include a `naticore_relations` array in the response. Works with:
+• `GET /wp-json/wp/v2/posts/<id>?naticore_relations=1`
+• `GET /wp-json/wp/v2/users/<id>?naticore_relations=1`
+• `GET /wp-json/wp/v2/categories/<id>?naticore_relations=1` (and other taxonomies)
+Each relation item includes `to_id`, `to_type`, `type`, and optional `title`/`display_name`/`name`. Opt-in only so default requests stay fast.
+
 = Hooks & Filters =
 
 Actions:
 • `naticore_relation_added`
 • `naticore_relation_removed`
+• `naticore_after_duplicate_post` – fired after copying relations from one post to another (args: from_post_id, to_post_id, result array)
 
 Filters:
 • `naticore_relation_is_allowed`
 • `naticore_get_related_args`
+
+**Duplicate post:** Use helper `naticore_copy_relations( $from_post_id, $to_post_id, $relation_types = null )` to copy relationships when duplicating a post. Returns array with keys `copied`, `skipped`, `errors`. Out-of-the-box integration: Yoast Duplicate Post, Post Duplicator (metaphorcreations), Copy & Delete Posts (Inisev).
 
 = Elementor Integration =
 
@@ -272,6 +318,10 @@ Benchmarks confirm stable performance with 1,000,000+ relationship rows under In
 [View Full Performance Report](https://github.com/chetanupare/WP-Native-Content-Relationships/blob/main/docs/PERFORMANCE.md)
 
 == Changelog ==
+
+= 1.0.25 =
+* Fix: Resolved WordPress.org SVN stable tag recognition issue.
+* Deployment: Updated stable tag to ensure proper plugin directory deployment.
 
 = 1.0.24 =
 * Translations: Added Spanish (es_ES), German (de_DE), French (fr_FR), and Portuguese (pt_BR) support.

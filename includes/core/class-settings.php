@@ -81,6 +81,8 @@ class NATICORE_Settings {
 	 */
 	private function get_page_slug() {
 		switch ( $this->current_tab ) {
+			case 'get_started':
+				return 'naticore-settings-get-started';
 			case 'relationship_types':
 				return 'naticore-settings-relationship-types';
 			case 'woocommerce':
@@ -102,6 +104,7 @@ class NATICORE_Settings {
 	 */
 	private function get_tabs() {
 		$tabs = array(
+			'get_started'        => __( 'Get started', 'native-content-relationships' ),
 			'general'            => __( 'General', 'native-content-relationships' ),
 			'relationship_types' => __( 'Relationship Types', 'native-content-relationships' ),
 			'woocommerce'        => __( 'WooCommerce', 'native-content-relationships' ),
@@ -175,8 +178,10 @@ class NATICORE_Settings {
 		// Allow other components to add settings sections
 		do_action( 'naticore_register_settings' );
 
-		// Register sections based on current tab
+		// Register sections based on current tab (get_started has no settings)
 		switch ( $this->current_tab ) {
+			case 'get_started':
+				break;
 			case 'general':
 				$this->register_general_settings();
 				break;
@@ -233,6 +238,14 @@ class NATICORE_Settings {
 			'default_direction',
 			'', // No title, will be rendered manually
 			array( $this, 'render_default_direction' ),
+			$page,
+			'naticore_behavior'
+		);
+
+		add_settings_field(
+			'enable_manual_order',
+			'',
+			array( $this, 'render_enable_manual_order' ),
 			$page,
 			'naticore_behavior'
 		);
@@ -413,6 +426,9 @@ class NATICORE_Settings {
 			<?php $this->render_tabs(); ?>
 			
 			<div class="naticore-tab-content">
+				<?php if ( $current_tab === 'get_started' ) : ?>
+					<?php $this->render_get_started_tab(); ?>
+				<?php else : ?>
 				<form method="post" action="options.php">
 					<?php
 					settings_fields( 'naticore_settings' );
@@ -432,7 +448,92 @@ class NATICORE_Settings {
 					}
 					?>
 				</form>
+				<?php endif; ?>
 			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render Get started / onboarding tab: checklist and quick links.
+	 */
+	private function render_get_started_tab() {
+		$settings_url     = admin_url( 'options-general.php?page=naticore-settings&tab=general' );
+		$types_url        = admin_url( 'options-general.php?page=naticore-settings&tab=relationship_types' );
+		$new_post_url     = admin_url( 'post-new.php' );
+		$docs_url         = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
+		$enabled_types    = $this->get_setting( 'enabled_post_types', array( 'post', 'page' ) );
+		$has_posts_pages  = ! empty( $enabled_types ) && in_array( 'post', $enabled_types, true ) && in_array( 'page', $enabled_types, true );
+		$onboarding_done  = get_transient( 'naticore_onboarding_done' );
+
+		if ( isset( $_GET['naticore_onboarding_done'] ) && current_user_can( 'manage_options' ) ) {
+			set_transient( 'naticore_onboarding_done', 1, 0 );
+			$onboarding_done = true;
+		}
+		?>
+		<div class="naticore-get-started">
+			<?php if ( ! $onboarding_done ) : ?>
+			<p class="naticore-get-started-intro">
+				<?php esc_html_e( 'Complete these steps to start using related content on your site.', 'native-content-relationships' ); ?>
+			</p>
+			<?php endif; ?>
+
+			<ul class="naticore-get-started-checklist">
+				<li class="naticore-checklist-item <?php echo $has_posts_pages ? 'naticore-done' : ''; ?>">
+					<span class="naticore-checklist-icon" aria-hidden="true"><?php echo $has_posts_pages ? '✓' : '1'; ?></span>
+					<div>
+						<strong><?php esc_html_e( 'Enable for Posts &amp; Pages', 'native-content-relationships' ); ?></strong>
+						<p class="description">
+							<?php
+							printf(
+								/* translators: %s: link to General settings */
+								wp_kses_post( __( 'In <a href="%s">General</a> settings, ensure Posts and Pages are enabled so the Related Content meta box appears when editing.', 'native-content-relationships' ) ),
+								esc_url( $settings_url )
+							);
+							?>
+						</p>
+					</div>
+				</li>
+				<li class="naticore-checklist-item">
+					<span class="naticore-checklist-icon" aria-hidden="true">2</span>
+					<div>
+						<strong><?php esc_html_e( 'Add the Related Content block or shortcode once', 'native-content-relationships' ); ?></strong>
+						<p class="description">
+							<?php
+							printf(
+								/* translators: 1: link to create new post, 2: docs URL */
+								wp_kses_post( __( 'When editing a <a href="%1$s">post or page</a>, add the “Related Content” block or use shortcode <code>[naticore_related_posts]</code>. <a href="%2$s" target="_blank">See docs</a>.', 'native-content-relationships' ) ),
+								esc_url( $new_post_url ),
+								esc_url( $docs_url )
+							);
+							?>
+						</p>
+					</div>
+				</li>
+				<li class="naticore-checklist-item">
+					<span class="naticore-checklist-icon" aria-hidden="true">3</span>
+					<div>
+						<strong><?php esc_html_e( 'Choose relationship types', 'native-content-relationships' ); ?></strong>
+						<p class="description">
+							<?php
+							printf(
+								/* translators: %s: link to Relationship Types tab */
+								wp_kses_post( __( 'In <a href="%s">Relationship Types</a> you can enable or disable built-in types (e.g. related_to, parent_of) and add custom ones.', 'native-content-relationships' ) ),
+								esc_url( $types_url )
+							);
+							?>
+						</p>
+					</div>
+				</li>
+			</ul>
+
+			<?php if ( ! $onboarding_done ) : ?>
+			<p class="naticore-get-started-dismiss">
+				<a href="<?php echo esc_url( add_query_arg( 'naticore_onboarding_done', '1', admin_url( 'options-general.php?page=naticore-settings&tab=get_started' ) ) ); ?>" class="button button-secondary">
+					<?php esc_html_e( "I've completed the setup", 'native-content-relationships' ); ?>
+				</a>
+			</p>
+			<?php endif; ?>
 		</div>
 		<?php
 	}
@@ -689,6 +790,9 @@ class NATICORE_Settings {
 		// Default direction
 		$sanitized['default_direction'] = isset( $input['default_direction'] ) && $input['default_direction'] === 'bidirectional' ? 'bidirectional' : 'unidirectional';
 
+		// Manual order for related items (optional, off by default)
+		$sanitized['enable_manual_order'] = isset( $input['enable_manual_order'] ) ? 1 : 0;
+
 		// Cleanup on delete
 		$sanitized['cleanup_on_delete'] = isset( $input['cleanup_on_delete'] ) && $input['cleanup_on_delete'] === 'keep' ? 'keep' : 'remove';
 
@@ -808,6 +912,24 @@ class NATICORE_Settings {
 				</label>
 			</div>
 			<p class="description"><?php esc_html_e( 'Most stores use one-way for accessories and bidirectional for related products.', 'native-content-relationships' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render enable manual order field (optional, off by default)
+	 */
+	public function render_enable_manual_order() {
+		$settings = $this->get_settings();
+		$enabled  = isset( $settings['enable_manual_order'] ) ? (int) $settings['enable_manual_order'] : 0;
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Manual Order for Related Items', 'native-content-relationships' ); ?></h3>
+			<label class="naticore-checkbox-item">
+				<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[enable_manual_order]" value="1" <?php checked( $enabled, 1 ); ?>>
+				<span class="naticore-checkbox-label"><?php esc_html_e( 'Enable manual ordering of related content', 'native-content-relationships' ); ?></span>
+			</label>
+			<p class="description"><?php esc_html_e( 'When enabled, editors can drag to reorder related items in the post editor. Order is used in shortcodes, blocks, and REST when available. Off by default.', 'native-content-relationships' ); ?></p>
 		</div>
 		<?php
 	}

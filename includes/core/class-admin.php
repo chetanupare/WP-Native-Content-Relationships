@@ -39,6 +39,7 @@ class NATICORE_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_naticore_search_content', array( $this, 'ajax_search_content' ) );
 		add_action( 'wp_ajax_naticore_search_products', array( $this, 'ajax_search_products' ) );
+		add_action( 'wp_ajax_naticore_suggest_related', array( $this, 'ajax_suggest_related' ) );
 		add_action( 'wp_ajax_naticore_add_relation', array( $this, 'ajax_add_relation' ) );
 		add_action( 'wp_ajax_naticore_remove_relation', array( $this, 'ajax_remove_relation' ) );
 
@@ -77,6 +78,9 @@ class NATICORE_Admin {
 	public function render_meta_box( $post ) {
 		wp_nonce_field( 'naticore_save_relationships', 'naticore_nonce' );
 
+		$settings             = NATICORE_Settings::get_instance();
+		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
+
 		// Get existing relationships
 		$relationships = NATICORE_API::get_all_relations( $post->ID );
 
@@ -93,15 +97,19 @@ class NATICORE_Admin {
 		$relation_types = NATICORE_Relation_Types::get_types();
 
 		?>
-		<div id="naticore-relationships">
+		<div id="naticore-relationships" data-manual-order="<?php echo $manual_order_enabled ? '1' : '0'; ?>">
 			<div class="naticore-relation-types">
 				<?php
 				foreach ( $relation_types as $type => $type_info ) :
 					$type_label = isset( $type_info['label'] ) ? $type_info['label'] : ucwords( str_replace( '_', ' ', $type ) );
+					$list_class  = 'naticore-relations-list';
+					if ( $manual_order_enabled ) {
+						$list_class .= ' naticore-sortable';
+					}
 					?>
 					<div class="naticore-relation-type" data-type="<?php echo esc_attr( $type ); ?>">
 						<h4><?php echo esc_html( $type_label ); ?></h4>
-						<div class="naticore-relations-list" data-relation-type="<?php echo esc_attr( $type ); ?>">
+						<div class="<?php echo esc_attr( $list_class ); ?>" data-relation-type="<?php echo esc_attr( $type ); ?>">
 							<?php if ( isset( $grouped[ $type ] ) ) : ?>
 								<?php
 								foreach ( $grouped[ $type ] as $rel ) :
@@ -112,8 +120,12 @@ class NATICORE_Admin {
 
 									$rel_type_info    = NATICORE_Relation_Types::get_type( $type );
 									$is_bidirectional = $rel_type_info && $rel_type_info['bidirectional'];
+									$item_attrs       = 'class="naticore-relation-item" data-related-id="' . esc_attr( $rel->to_id ) . '"';
+									if ( $manual_order_enabled && ! empty( $rel->id ) ) {
+										$item_attrs .= ' data-relation-id="' . esc_attr( $rel->id ) . '"';
+									}
 									?>
-									<div class="naticore-relation-item" data-related-id="<?php echo esc_attr( $rel->to_id ); ?>">
+									<div <?php echo $item_attrs; ?>>
 										<span class="naticore-relation-title">
 											<span class="naticore-direction-indicator" title="<?php echo esc_attr( $is_bidirectional ? __( 'Bidirectional', 'native-content-relationships' ) : __( 'One-way', 'native-content-relationships' ) ); ?>">
 												<?php echo esc_html( $is_bidirectional ? '↔' : '→' ); ?>
@@ -141,7 +153,16 @@ class NATICORE_Admin {
 								<?php endforeach; ?>
 							<?php endif; ?>
 						</div>
+						<?php if ( $manual_order_enabled ) : ?>
+							<input type="hidden" name="naticore_relation_order[<?php echo esc_attr( $type ); ?>]" class="naticore-order-input" value="" />
+						<?php endif; ?>
 						<div class="naticore-add-relation">
+							<p class="naticore-suggest-actions">
+								<button type="button" class="button button-secondary naticore-suggest-btn" data-relation-type="<?php echo esc_attr( $type ); ?>">
+									<?php esc_html_e( 'Suggest related', 'native-content-relationships' ); ?>
+								</button>
+							</p>
+							<div class="naticore-suggest-results" style="display: none;" role="listbox" aria-label="<?php esc_attr_e( 'Suggested related content', 'native-content-relationships' ); ?>"></div>
 							<label for="naticore-search-<?php echo esc_attr( $type ); ?>" class="screen-reader-text">
 								<?php
 								/* translators: %s: Relationship type label */
@@ -179,10 +200,18 @@ class NATICORE_Admin {
 			return;
 		}
 
+		$settings             = NATICORE_Settings::get_instance();
+		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
+
+		$deps = array( 'jquery', 'jquery-ui-autocomplete' );
+		if ( $manual_order_enabled ) {
+			$deps[] = 'jquery-ui-sortable';
+		}
+
 		wp_enqueue_script(
 			'naticore-admin',
 			NATICORE_PLUGIN_URL . 'assets/js/admin.js',
-			array( 'jquery', 'jquery-ui-autocomplete' ),
+			$deps,
 			NATICORE_VERSION,
 			true
 		);
@@ -198,11 +227,14 @@ class NATICORE_Admin {
 			'naticore-admin',
 			'naticoreData',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'naticore_ajax' ),
-				'strings' => array(
-					'searching' => __( 'Searching...', 'native-content-relationships' ),
-					'noResults' => __( 'No results found.', 'native-content-relationships' ),
+				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
+				'nonce'             => wp_create_nonce( 'naticore_ajax' ),
+				'manualOrderEnabled' => $manual_order_enabled,
+				'strings'           => array(
+					'searching'     => __( 'Searching...', 'native-content-relationships' ),
+					'noResults'     => __( 'No results found.', 'native-content-relationships' ),
+					'suggesting'    => __( 'Suggesting...', 'native-content-relationships' ),
+					'noSuggestions' => __( 'No suggestions (same category/tag or type).', 'native-content-relationships' ),
 				),
 			)
 		);
@@ -319,6 +351,80 @@ class NATICORE_Admin {
 	}
 
 	/**
+	 * AJAX: Suggest related posts by same category, tag, or post type.
+	 * Kept cheap: limit 10, no heavy queries.
+	 */
+	public function ajax_suggest_related() {
+		check_ajax_referer( 'naticore_ajax', 'nonce' );
+
+		$current_post_id = isset( $_POST['current_post_id'] ) ? absint( $_POST['current_post_id'] ) : 0;
+		if ( ! $current_post_id || ! get_post( $current_post_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid post.', 'native-content-relationships' ) ) );
+		}
+
+		$post = get_post( $current_post_id );
+		$exclude = array( $current_post_id );
+
+		// Already related post IDs (exclude so we don't suggest them again)
+		$relations = NATICORE_API::get_all_relations( $current_post_id );
+		foreach ( $relations as $rel ) {
+			if ( ! empty( $rel->to_id ) ) {
+				$exclude[] = (int) $rel->to_id;
+			}
+		}
+		$exclude = array_unique( array_filter( $exclude ) );
+
+		$tax_query = array();
+		$terms_cat = get_the_terms( $current_post_id, 'category' );
+		$terms_tag = get_the_terms( $current_post_id, 'post_tag' );
+		if ( $terms_cat && ! is_wp_error( $terms_cat ) ) {
+			$tax_query[] = array(
+				'taxonomy' => 'category',
+				'field'    => 'term_id',
+				'terms'    => wp_list_pluck( $terms_cat, 'term_id' ),
+			);
+		}
+		if ( $terms_tag && ! is_wp_error( $terms_tag ) ) {
+			$tax_query[] = array(
+				'taxonomy' => 'post_tag',
+				'field'    => 'term_id',
+				'terms'    => wp_list_pluck( $terms_tag, 'term_id' ),
+			);
+		}
+		if ( count( $tax_query ) > 1 ) {
+			$tax_query['relation'] = 'OR';
+		}
+
+		$args = array(
+			'post_type'      => $post->post_type,
+			'post_status'    => 'publish',
+			'posts_per_page' => 10,
+			'post__not_in'   => $exclude,
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+		);
+		if ( ! empty( $tax_query ) ) {
+			$args['tax_query'] = $tax_query;
+		}
+
+		$query = new WP_Query( $args );
+		$results = array();
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$results[] = array(
+					'id'    => get_the_ID(),
+					'title' => get_the_title(),
+					'type'  => get_post_type(),
+				);
+			}
+			wp_reset_postdata();
+		}
+
+		wp_send_json_success( $results );
+	}
+
+	/**
 	 * Save relationships
 	 */
 	public function save_relationships( $post_id, $post ) {
@@ -337,8 +443,42 @@ class NATICORE_Admin {
 			return;
 		}
 
-		// Relationships are managed via AJAX, so we don't need to save here
-		// This is kept for future use if needed
+		$settings             = NATICORE_Settings::get_instance();
+		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
+		if ( ! $manual_order_enabled ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce checked above
+		$order_data = isset( $_POST['naticore_relation_order'] ) && is_array( $_POST['naticore_relation_order'] ) ? wp_unslash( $_POST['naticore_relation_order'] ) : array();
+		if ( empty( $order_data ) ) {
+			return;
+		}
+
+		global $wpdb;
+		$table = $wpdb->prefix . 'content_relations';
+
+		foreach ( $order_data as $type => $order_string ) {
+			$type   = sanitize_key( $type );
+			$ids    = array_map( 'absint', array_filter( explode( ',', $order_string ) ) );
+			$post_id_int = absint( $post_id );
+
+			foreach ( $ids as $position => $relation_id ) {
+				if ( ! $relation_id ) {
+					continue;
+				}
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Update order for this relation
+				$wpdb->query(
+					$wpdb->prepare(
+						"UPDATE `{$table}` SET relation_order = %d WHERE id = %d AND from_id = %d AND type = %s",
+						$position,
+						$relation_id,
+						$post_id_int,
+						$type
+					)
+				);
+			}
+		}
 	}
 
 	/**
@@ -403,16 +543,18 @@ class NATICORE_Admin {
 		// Delete transient so it only shows once
 		delete_transient( 'naticore_activation_notice' );
 
-		$settings_url = admin_url( 'options-general.php?page=naticore-settings' );
-		$docs_url     = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
+		$settings_url   = admin_url( 'options-general.php?page=naticore-settings' );
+		$get_started_url = admin_url( 'options-general.php?page=naticore-settings&tab=get_started' );
+		$docs_url       = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
 		?>
 		<div class="notice notice-info is-dismissible">
 			<p>
 				<strong><?php esc_html_e( 'Native Content Relationships is active!', 'native-content-relationships' ); ?></strong>
 				<?php
 				printf(
-					/* translators: 1: Settings URL, 2: Documentation URL */
-					wp_kses_post( __( 'Please <a href="%1$s">visit the settings page</a> to configure the plugin or <a href="%2$s" target="_blank">read the documentation</a> to get started.', 'native-content-relationships' ) ),
+					/* translators: 1: Get started URL, 2: Settings URL, 3: Documentation URL */
+					wp_kses_post( __( ' <a href="%1$s">Get started</a> with the quick setup checklist, <a href="%2$s">visit settings</a>, or <a href="%3$s" target="_blank">read the documentation</a>.', 'native-content-relationships' ) ),
+					esc_url( $get_started_url ),
 					esc_url( $settings_url ),
 					esc_url( $docs_url )
 				);

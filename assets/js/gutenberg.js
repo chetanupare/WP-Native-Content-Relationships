@@ -13,6 +13,8 @@
 	var PanelBody         = components.PanelBody;
 	var SelectControl     = components.SelectControl;
 	var RangeControl      = components.RangeControl;
+	var ToggleControl     = components.ToggleControl;
+	var TextControl       = components.TextControl;
 
 	var relationTypes = (typeof naticoreBlockData !== 'undefined' && naticoreBlockData.relationTypes) ? naticoreBlockData.relationTypes : [
 		{ label: 'Related To', value: 'related_to' },
@@ -39,6 +41,22 @@
 				order: {
 					type: 'string',
 					default: 'date'
+				},
+				layout: {
+					type: 'string',
+					default: 'list'
+				},
+				showThumbnail: {
+					type: 'boolean',
+					default: false
+				},
+				excerptLength: {
+					type: 'number',
+					default: 0
+				},
+				wrapperClass: {
+					type: 'string',
+					default: ''
 				}
 			},
 			edit: function (props) {
@@ -83,11 +101,57 @@
 									label: 'Order',
 									value: attributes.order,
 									options: [
-									{ label: 'Date', value: 'date' },
-									{ label: 'Title', value: 'title' }
+										{ label: 'Date', value: 'date' },
+										{ label: 'Title', value: 'title' }
 									],
 									onChange: function (value) {
 										setAttributes( { order: value } );
+									}
+								}
+							),
+							el(
+								SelectControl,
+								{
+									label: 'Layout',
+									value: attributes.layout || 'list',
+									options: [
+										{ label: 'List', value: 'list' },
+										{ label: 'Grid', value: 'grid' }
+									],
+									onChange: function (value) {
+										setAttributes( { layout: value } );
+									}
+								}
+							),
+							el(
+								ToggleControl,
+								{
+									label: 'Show thumbnail',
+									checked: attributes.showThumbnail || false,
+									onChange: function (value) {
+										setAttributes( { showThumbnail: value } );
+									}
+								}
+							),
+							el(
+								RangeControl,
+								{
+									label: 'Excerpt length (0 = hide)',
+									value: attributes.excerptLength || 0,
+									min: 0,
+									max: 30,
+									onChange: function (value) {
+										setAttributes( { excerptLength: value } );
+									}
+								}
+							),
+							el(
+								TextControl,
+								{
+									label: 'Wrapper CSS class',
+									value: attributes.wrapperClass || '',
+									onChange: function (value) {
+										setAttributes( { wrapperClass: value } );
 									}
 								}
 							)

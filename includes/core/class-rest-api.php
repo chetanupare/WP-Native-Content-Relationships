@@ -32,6 +32,7 @@ class NATICORE_REST_API {
 		$settings = NATICORE_Settings::get_instance();
 		if ( $settings->get_setting( 'enable_rest_api', 1 ) ) {
 			add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+			add_action( 'rest_api_init', array( $this, 'register_embed_fields' ), 20 );
 		}
 	}
 
@@ -606,5 +607,105 @@ class NATICORE_REST_API {
 	public function get_relationship_types( $request ) {
 		$types = NATICORE_Relation_Types::get_types();
 		return rest_ensure_response( $types );
+	}
+
+	/**
+	 * Register REST embed support: add naticore_relations to core resources when requested.
+	 * Opt-in via query param: ?naticore_relations=1
+	 */
+	public function register_embed_fields() {
+		$post_types = get_post_types( array( 'show_in_rest' => true ), 'names' );
+		foreach ( $post_types as $post_type ) {
+			add_filter( 'rest_prepare_' . $post_type, array( $this, 'embed_relations_for_post' ), 10, 3 );
+		}
+
+		add_filter( 'rest_prepare_user', array( $this, 'embed_relations_for_user' ), 10, 3 );
+
+		$taxonomies = get_taxonomies( array( 'show_in_rest' => true ), 'names' );
+		foreach ( $taxonomies as $taxonomy ) {
+			add_filter( 'rest_prepare_' . $taxonomy, array( $this, 'embed_relations_for_term' ), 10, 3 );
+		}
+	}
+
+	/**
+	 * Add naticore_relations to post/post-type response when naticore_relations=1.
+	 *
+	 * @param WP_REST_Response $response Response object.
+	 * @param WP_Post          $post     Post object.
+	 * @param WP_REST_Request  $request  Request object.
+	 * @return WP_REST_Response
+	 */
+	public function embed_relations_for_post( $response, $post, $request ) {
+		if ( ! $request->get_param( 'naticore_relations' ) ) {
+			return $response;
+		}
+		$related = NATICORE_API::get_related( $post->ID, null, array( 'limit' => 100 ), 'all' );
+		$response->data['naticore_relations'] = $this->format_relations_for_embed( $related );
+		return $response;
+	}
+
+	/**
+	 * Add naticore_relations to user response when naticore_relations=1.
+	 *
+	 * @param WP_REST_Response $response Response object.
+	 * @param WP_User          $user     User object.
+	 * @param WP_REST_Request  $request  Request object.
+	 * @return WP_REST_Response
+	 */
+	public function embed_relations_for_user( $response, $user, $request ) {
+		if ( ! $request->get_param( 'naticore_relations' ) ) {
+			return $response;
+		}
+		$related = NATICORE_API::get_related( $user->ID, null, array( 'limit' => 100 ), 'all' );
+		$response->data['naticore_relations'] = $this->format_relations_for_embed( $related );
+		return $response;
+	}
+
+	/**
+	 * Add naticore_relations to term response when naticore_relations=1.
+	 *
+	 * @param WP_REST_Response $response Response object.
+	 * @param WP_Term          $term     Term object.
+	 * @param WP_REST_Request  $request  Request object.
+	 * @return WP_REST_Response
+	 */
+	public function embed_relations_for_term( $response, $term, $request ) {
+		if ( ! $request->get_param( 'naticore_relations' ) ) {
+			return $response;
+		}
+		$related = NATICORE_API::get_related( $term->term_id, null, array( 'limit' => 100 ), 'all' );
+		$response->data['naticore_relations'] = $this->format_relations_for_embed( $related );
+		return $response;
+	}
+
+	/**
+	 * Format get_related() output for REST embed (compact, stable shape).
+	 *
+	 * @param array $related Array of relation items from NATICORE_API::get_related().
+	 * @return array
+	 */
+	private function format_relations_for_embed( $related ) {
+		if ( ! is_array( $related ) ) {
+			return array();
+		}
+		$out = array();
+		foreach ( $related as $item ) {
+			$entry = array(
+				'to_id'   => isset( $item['id'] ) ? (int) $item['id'] : 0,
+				'to_type' => isset( $item['to_type'] ) ? $item['to_type'] : 'post',
+				'type'    => isset( $item['type'] ) ? $item['type'] : '',
+			);
+			if ( ! empty( $item['post_title'] ) ) {
+				$entry['title'] = $item['post_title'];
+			}
+			if ( ! empty( $item['display_name'] ) ) {
+				$entry['display_name'] = $item['display_name'];
+			}
+			if ( ! empty( $item['term_name'] ) ) {
+				$entry['name'] = $item['term_name'];
+			}
+			$out[] = $entry;
+		}
+		return $out;
 	}
 }

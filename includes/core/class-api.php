@@ -755,14 +755,18 @@ class NATICORE_API {
 		$has_limit = isset( $args['limit'] );
 		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
 
-		// Create cache key
+		$settings            = NATICORE_Settings::get_instance();
+		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
+
+		// Create cache key (include manual_order so cache respects setting)
 		$cache_key = sprintf(
-			'naticore_get_related_%d_%s_%s_%d_%s',
+			'naticore_get_related_%d_%s_%s_%d_%s_%d',
 			$post_id,
 			(string) $type,
 			$to_type,
 			$limit,
-			isset( $args['orderby'] ) ? sanitize_key( (string) $args['orderby'] ) : 'default'
+			isset( $args['orderby'] ) ? sanitize_key( (string) $args['orderby'] ) : 'default',
+			$manual_order_enabled
 		);
 
 		// Check cache first
@@ -789,6 +793,8 @@ class NATICORE_API {
 
 		$where_clause = implode( ' AND ', $where );
 
+		$order_clause = $manual_order_enabled ? 'ORDER BY relation_order ASC, created_at DESC' : 'ORDER BY created_at DESC';
+
 		if ( $has_limit ) {
 			/**
 			 * Custom table query with manual caching.
@@ -796,7 +802,7 @@ class NATICORE_API {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table with dynamic where clause
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_clause} ORDER BY created_at DESC LIMIT %d",
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_clause} {$order_clause} LIMIT %d",
 					array_merge( $params, array( $limit ) )
 				)
 			);
@@ -807,7 +813,7 @@ class NATICORE_API {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table with dynamic where clause
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_clause} ORDER BY created_at DESC",
+					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_clause} {$order_clause}",
 					$params
 				)
 			);
@@ -859,18 +865,31 @@ class NATICORE_API {
 	/**
 	 * Get all relationships for a content item
 	 *
+	 * When "Manual order" is enabled in settings, includes id and relation_order and orders by relation_order.
+	 *
 	 * @param int $post_id The ID of the content
-	 * @return array Array of relationships
+	 * @return array Array of relationships (objects with to_id, type, direction, created_at; id and relation_order when manual order is on)
 	 */
 	public static function get_all_relations( $post_id ) {
 		global $wpdb;
 
 		$post_id = absint( $post_id );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+		$settings           = NATICORE_Settings::get_instance();
+		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
+
+		$select = 'to_id, type, direction, created_at';
+		$order  = 'ORDER BY type, created_at DESC';
+
+		if ( $manual_order_enabled ) {
+			$select = 'id, to_id, type, direction, created_at, relation_order';
+			$order  = 'ORDER BY type, relation_order ASC, created_at DESC';
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, order/select built from setting
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT to_id, type, direction, created_at FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d ORDER BY type, created_at DESC",
+				"SELECT {$select} FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d {$order}",
 				$post_id
 			)
 		);
@@ -1191,6 +1210,59 @@ if ( ! function_exists( 'wp_get_term_related_posts' ) ) {
 
 		return $related_posts;
 	}
+
+	/**
+	 * Copy all relationships from one post to another (e.g. after duplicating a post).
+	 *
+	 * @since 1.0.25
+	 * @param int        $from_post_id   Source post ID.
+	 * @param int        $to_post_id     Destination post ID.
+	 * @param array|null $relation_types Optional. Only copy these relation type slugs. Null = copy all.
+	 * @return array{ copied: int, skipped: int, errors: array } Counts and any WP_Error messages.
+	 */
+	public static function copy_relations( $from_post_id, $to_post_id, $relation_types = null ) {
+		global $wpdb;
+
+		$from_post_id = absint( $from_post_id );
+		$to_post_id   = absint( $to_post_id );
+		if ( ! $from_post_id || ! $to_post_id || $from_post_id === $to_post_id ) {
+			return array( 'copied' => 0, 'skipped' => 0, 'errors' => array() );
+		}
+
+		$where  = 'from_id = %d';
+		$params = array( $from_post_id );
+		if ( is_array( $relation_types ) && ! empty( $relation_types ) ) {
+			$relation_types = array_map( 'sanitize_key', $relation_types );
+			$placeholders   = implode( ',', array_fill( 0, count( $relation_types ), '%s' ) );
+			$where         .= " AND type IN ($placeholders)";
+			$params        = array_merge( $params, $relation_types );
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table read
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where}", $params ) );
+
+		$copied = 0;
+		$skipped = 0;
+		$errors = array();
+
+		foreach ( (array) $rows as $row ) {
+			$to_type = isset( $row->to_type ) ? $row->to_type : 'post';
+			if ( ! in_array( $to_type, array( 'post', 'user', 'term' ), true ) ) {
+				$to_type = 'post';
+			}
+			$result = self::add_relation( $to_post_id, (int) $row->to_id, $row->type, null, $to_type );
+			if ( is_wp_error( $result ) ) {
+				$errors[] = $result->get_error_message();
+				$skipped++;
+			} else {
+				$copied++;
+			}
+		}
+
+		do_action( 'naticore_after_duplicate_post', $from_post_id, $to_post_id, array( 'copied' => $copied, 'skipped' => $skipped ) );
+
+		return array( 'copied' => $copied, 'skipped' => $skipped, 'errors' => $errors );
+	}
 }
 
 /**
@@ -1225,5 +1297,20 @@ if ( ! function_exists( 'ncr_get_relations' ) ) {
 	 */
 	function ncr_get_relations( $from_id, $args = array() ) {
 		return NATICORE_API::get_instance()->get_relations( $from_id, $args );
+	}
+}
+
+if ( ! function_exists( 'naticore_copy_relations' ) ) {
+	/**
+	 * Copy relationships from one post to another (e.g. after duplicating a post).
+	 *
+	 * @since 1.0.25
+	 * @param int        $from_post_id   Source post ID.
+	 * @param int        $to_post_id     Destination post ID.
+	 * @param array|null $relation_types Optional. Only copy these relation type slugs. Null = copy all.
+	 * @return array{ copied: int, skipped: int, errors: array }
+	 */
+	function naticore_copy_relations( $from_post_id, $to_post_id, $relation_types = null ) {
+		return NATICORE_API::copy_relations( $from_post_id, $to_post_id, $relation_types );
 	}
 }
