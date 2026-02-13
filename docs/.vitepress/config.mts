@@ -18,12 +18,11 @@ export default defineConfig({
     themeConfig: {
       logo: '/WP-Native-Content-Relationships/wordpress-logo-svgrepo-com.svg',
       nav: [
-        { text: 'Guide', link: '/guide/getting-started' },
+        { text: 'Guide', link: '/guide/introduction' },
+        { text: 'API', link: '/guide/developer-docs' },
         { text: 'Architecture', link: '/technical/architecture' },
-        { text: 'Performance', link: '/technical/performance' },
-        { text: 'Features', link: '/product/features' },
         {
-          text: 'Links',
+          text: 'Resources',
           items: [
             { text: 'WordPress.org', link: 'https://wordpress.org/plugins/native-content-relationships/' },
             { text: 'GitHub', link: 'https://github.com/chetanupare/WP-Native-Content-Relationships' },
@@ -32,10 +31,16 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          text: 'Introduction',
+          text: 'Getting Started',
           items: [
-            { text: 'Home', link: '/' },
-            { text: 'Getting started', link: '/guide/getting-started' },
+            { text: 'Introduction', link: '/guide/introduction' },
+            { text: 'Quick Start', link: '/guide/getting-started' },
+          ],
+        },
+        {
+          text: 'Guide',
+          items: [
+            { text: 'Developer documentation', link: '/guide/developer-docs' },
           ],
         },
         {
@@ -59,10 +64,15 @@ export default defineConfig({
           ],
         },
       ],
+      outline: { level: [2, 3], label: 'On this page' },
+      editLink: {
+        pattern: 'https://github.com/chetanupare/WP-Native-Content-Relationships/edit/main/docs/:path',
+        text: 'Edit this page on GitHub',
+      },
+      lastUpdated: { text: 'Updated at', formatOptions: { dateStyle: 'short' } },
       socialLinks: [
         { icon: 'github', link: 'https://github.com/chetanupare/WP-Native-Content-Relationships' },
       ],
-      outline: { level: [2, 3] },
       search: {
         provider: 'local',
       },

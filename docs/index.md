@@ -1,42 +1,48 @@
 ---
 title: Native Content Relationships
+layout: home
+hero:
+  name: Native Content Relationships
+  text: A relationship layer for WordPress
+  tagline: Model and query relationships between posts, users, and terms — without meta or taxonomy hacks.
+  image:
+    src: /WP-Native-Content-Relationships/wordpress-logo-svgrepo-com.svg
+    alt: NCR
+  actions:
+    - text: Get started
+      link: /guide/introduction
+      theme: brand
+    - text: Developer docs
+      link: /guide/developer-docs
+      theme: alt
+features:
+  - title: Structured storage
+    details: Dedicated indexed table (wp_content_relations). No post meta or taxonomy abuse; built to scale.
+  - title: One API, many surfaces
+    details: PHP API, WP_Query, REST, shortcodes, Gutenberg blocks, Elementor. Same relationships everywhere.
+  - title: Schema stable
+    details: Backward compatibility guaranteed from 1.x. Safe for themes, plugins, and agencies.
+  - title: Ecosystem-ready
+    details: WooCommerce, WPML/Polylang, Gutenberg, Elementor. Register custom relation types and constraints.
 ---
-
-# Native Content Relationships
-
-A **native, scalable relationship layer** for WordPress. Model real relationships between posts, users, and terms — without post meta or taxonomy hacks.
 
 ::: tip Stability promise
 **Schema stable from 1.x onward. Backward compatibility guaranteed.**
 :::
 
-## Why use it?
+## What is it?
 
-- **Structured data** — Dedicated indexed table (`wp_content_relations`), not meta or taxonomies
-- **Queryable** — WP_Query integration, REST API, shortcodes, blocks
-- **Scalable** — Sub-2ms lookups at 1M+ rows; chunked integrity engine
-- **Ecosystem-ready** — WooCommerce, Elementor, Gutenberg, WPML/Polylang
+**Native Content Relationships** adds a first-class way to link content in WordPress: post ↔ post, post ↔ user, post ↔ term. You define relation types (e.g. `related_to`, `parent_of`, `favorite_posts`), create and remove links via a small API, and query them with WP_Query, REST, or the built-in shortcodes and blocks.
 
-## Quick links
+## Pick your path
 
-| Link | Description |
+| Path | Description |
 |------|-------------|
-| [Getting started](./guide/getting-started) | Install, configure, first relationship |
-| [Architecture](./technical/architecture) | Core components, registry, DB, integrity |
-| [Performance](./technical/performance) | Benchmarks, latency, scaling |
-| [Feature overview](./product/features) | Shortcodes, REST, widgets, roadmap |
+| [**Introduction**](/guide/introduction) | What NCR is, key concepts, and how the docs are organized. |
+| [**Quick Start**](/guide/getting-started) | Install, add your first relationship in the UI, use a shortcode or block. |
+| [**Developer documentation**](/guide/developer-docs) | Full API reference, hooks, REST, WP-CLI, custom types, integrations. |
+| [**Architecture**](/technical/architecture) | How the plugin is built — registry, database, integrity engine. |
 
-## Supported relationship types
+---
 
-| From ↔ To | Use cases |
-|-----------|-----------|
-| Post ↔ Post | Related products, courses → lessons, related articles |
-| Post ↔ User | Favorites, bookmarks, multiple authors |
-| Post ↔ Term | Featured categories, curated collections |
-| User ↔ Post | Same as Post ↔ User (bidirectional) |
-| Term ↔ Post | Same as Post ↔ Term (bidirectional) |
-
-## Get the plugin
-
-- [WordPress.org](https://wordpress.org/plugins/native-content-relationships/)
-- [GitHub](https://github.com/chetanupare/WP-Native-Content-Relationships)
+[WordPress.org](https://wordpress.org/plugins/native-content-relationships/) · [GitHub](https://github.com/chetanupare/WP-Native-Content-Relationships)

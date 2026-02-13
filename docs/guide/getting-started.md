@@ -1,8 +1,10 @@
 ---
-title: Getting started
+title: Quick Start
 ---
 
-# Getting started
+# Quick Start
+
+Get the plugin running and add your first relationship in a few minutes.
 
 ## Install
 

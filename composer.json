@@ -11,8 +11,8 @@
         }
     },
     "scripts": {
-        "lint": "phpcs --standard=WordPress --extensions=php includes/ native-content-relationships.php",
-        "fix": "phpcbf --standard=WordPress --extensions=php includes/ native-content-relationships.php",
+        "lint": "phpcs -p --standard=./phpcs.xml includes/ native-content-relationships.php",
+        "fix": "phpcbf --standard=./phpcs.xml includes/ native-content-relationships.php",
         "analyze": "phpstan analyze includes/ native-content-relationships.php --level=5",
         "test": [
             "@lint",
