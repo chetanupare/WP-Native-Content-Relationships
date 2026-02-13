@@ -1,0 +1,19 @@
+# Native Content Relationships — AI index
+
+Project: Native Content Relationships (NCR)
+Type: WordPress plugin
+Description: First-class relationship layer for WordPress. Link posts, users, and terms via a dedicated table and API. Use for related posts, favorites, parent-child, WooCommerce related products, and custom relation types. Schema stable from 1.x.
+
+Full AI/LLM index (structured reference for assistants and search):
+https://chetanupare.github.io/WP-Native-Content-Relationships/llm
+
+LLM-friendly file list (llms.txt spec): https://chetanupare.github.io/WP-Native-Content-Relationships/llms.txt
+Structured metadata (JSON): https://chetanupare.github.io/WP-Native-Content-Relationships/ai.json
+REST API spec (OpenAPI 3): https://chetanupare.github.io/WP-Native-Content-Relationships/openapi.json
+
+Documentation: https://chetanupare.github.io/WP-Native-Content-Relationships/
+Sitemap: https://chetanupare.github.io/WP-Native-Content-Relationships/sitemap.xml
+Repository: https://github.com/chetanupare/WP-Native-Content-Relationships
+WordPress.org: https://wordpress.org/plugins/native-content-relationships/
+
+Key API: ncr_add_relation, ncr_get_related, ncr_remove_relation, ncr_register_relation_type. WP_Query content_relation. Hooks: ncr_relation_added, ncr_relation_removed, ncr_get_related_args, ncr_max_relationships.

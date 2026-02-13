@@ -1,4 +1,4 @@
-name: CI
+name: Lint
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  php-tests:
+  lint:
     runs-on: ubuntu-latest
     
     steps:

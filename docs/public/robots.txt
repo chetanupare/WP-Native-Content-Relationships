@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chetanupare.github.io/WP-Native-Content-Relationships/sitemap.xml
+
+# AI / LLM: ai.txt, ai.json, llms.txt (llmstxt.org) at same path; full index: .../llm
+# ai.txt  ai.json  llms.txt  llm

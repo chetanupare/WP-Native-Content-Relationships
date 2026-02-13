@@ -1,0 +1,9 @@
+# security.txt for Native Content Relationships (documentation site)
+# https://chetanupare.github.io/WP-Native-Content-Relationships/
+
+Contact: mailto:security@chetanupare.com
+Contact: https://github.com/chetanupare/WP-Native-Content-Relationships/security/advisories/new
+Expires: 2026-12-31T23:59:59.000Z
+Canonical: https://chetanupare.github.io/WP-Native-Content-Relationships/.well-known/security.txt
+Policy: https://github.com/chetanupare/WP-Native-Content-Relationships/blob/main/SECURITY.md
+Preferred-Languages: en

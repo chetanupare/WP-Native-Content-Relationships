@@ -1,0 +1,281 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Native Content Relationships REST API",
+    "description": "REST API for the Native Content Relationships (NCR) WordPress plugin. Manage relationships between posts, users, and terms. Requires the plugin to be active and REST API enabled in Settings.",
+    "version": "1.0",
+    "contact": {
+      "url": "https://github.com/chetanupare/WP-Native-Content-Relationships"
+    },
+    "license": {
+      "name": "GPL-2.0-or-later",
+      "url": "https://spdx.org/licenses/GPL-2.0-or-later.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://your-wordpress-site.com/wp-json",
+      "description": "Your WordPress site (replace with actual site URL)"
+    }
+  ],
+  "tags": [
+    { "name": "Relationships", "description": "Create, read, delete relationships" },
+    { "name": "Types", "description": "Registered relationship types" },
+    { "name": "Embed", "description": "Embed relations in core WordPress REST resources" }
+  ],
+  "paths": {
+    "/naticore/v1/post/{id}": {
+      "get": {
+        "tags": ["Relationships"],
+        "summary": "Get relationships for a post",
+        "operationId": "getRelationships",
+        "parameters": [
+          { "$ref": "#/components/parameters/PostId" },
+          { "name": "relation_type", "in": "query", "description": "Filter by relation type slug", "schema": { "type": "string" } },
+          { "name": "to_type", "in": "query", "description": "Target object type", "schema": { "type": "string", "enum": ["post", "user", "term", "all"], "default": "post" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "orderby", "in": "query", "schema": { "type": "string", "enum": ["created_at", "title", "type"], "default": "created_at" } },
+          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["ASC", "DESC"], "default": "DESC" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of relationships",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "relationships": { "type": "array", "items": { "$ref": "#/components/schemas/RelationItem" } },
+                    "total": { "type": "integer" },
+                    "page": { "type": "integer" },
+                    "per_page": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "403": { "description": "Insufficient permissions" }
+        },
+        "security": [{ "wordpress": [] }]
+      }
+    },
+    "/naticore/v1/types": {
+      "get": {
+        "tags": ["Types"],
+        "summary": "Get registered relationship types",
+        "operationId": "getTypes",
+        "responses": {
+          "200": {
+            "description": "List of relation types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string" },
+                      "label": { "type": "string" },
+                      "from": { "type": "string" },
+                      "to": { "type": "string" },
+                      "bidirectional": { "type": "boolean" },
+                      "max_connections": { "type": "integer", "nullable": true }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": { "description": "Insufficient permissions" }
+        },
+        "security": [{ "wordpress": [] }]
+      }
+    },
+    "/naticore/v1/relationships": {
+      "post": {
+        "tags": ["Relationships"],
+        "summary": "Create a relationship",
+        "operationId": "addRelationship",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["from_id", "to_id"],
+                "properties": {
+                  "from_id": { "type": "integer", "description": "Source object ID" },
+                  "to_id": { "type": "integer", "description": "Target object ID" },
+                  "type": { "type": "string", "default": "related_to", "description": "Relation type slug" },
+                  "to_type": { "type": "string", "enum": ["post", "user", "term"], "default": "post" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Relationship created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "relation_id": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request" },
+          "403": { "description": "Insufficient permissions or read-only mode" }
+        },
+        "security": [{ "wordpress": [] }]
+      },
+      "delete": {
+        "tags": ["Relationships"],
+        "summary": "Remove a relationship",
+        "operationId": "removeRelationship",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["from_id", "to_id"],
+                "properties": {
+                  "from_id": { "type": "integer" },
+                  "to_id": { "type": "integer" },
+                  "type": { "type": "string", "nullable": true },
+                  "to_type": { "type": "string", "enum": ["post", "user", "term"], "default": "post" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Relationship removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "success": { "type": "boolean" } }
+                }
+              }
+            }
+          },
+          "403": { "description": "Insufficient permissions or read-only mode" }
+        },
+        "security": [{ "wordpress": [] }]
+      }
+    },
+    "/naticore/v1/relationships/bulk": {
+      "post": {
+        "tags": ["Relationships"],
+        "summary": "Bulk create or delete relationships",
+        "operationId": "bulkRelationships",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["operation", "relationships"],
+                "properties": {
+                  "operation": { "type": "string", "enum": ["create", "delete", "import"] },
+                  "relationships": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "from_id": { "type": "integer" },
+                        "to_id": { "type": "integer" },
+                        "type": { "type": "string" },
+                        "to_type": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Bulk operation result" },
+          "400": { "description": "Invalid request" },
+          "403": { "description": "Insufficient permissions" }
+        },
+        "security": [{ "wordpress": [] }]
+      }
+    },
+    "/naticore/v1/relationships/exists": {
+      "get": {
+        "tags": ["Relationships"],
+        "summary": "Check if a relationship exists",
+        "operationId": "relationshipExists",
+        "parameters": [
+          { "name": "from_id", "in": "query", "required": true, "schema": { "type": "integer" } },
+          { "name": "to_id", "in": "query", "required": true, "schema": { "type": "integer" } },
+          { "name": "type", "in": "query", "schema": { "type": "string", "default": "related_to" } },
+          { "name": "to_type", "in": "query", "schema": { "type": "string", "enum": ["post", "user", "term"], "default": "post" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Existence check result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "exists": { "type": "boolean" } }
+                }
+              }
+            }
+          },
+          "403": { "description": "Insufficient permissions" }
+        },
+        "security": [{ "wordpress": [] }]
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "PostId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Post ID",
+        "schema": { "type": "integer" }
+      }
+    },
+    "schemas": {
+      "RelationItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "from_id": { "type": "integer" },
+          "to_id": { "type": "integer" },
+          "type": { "type": "string" },
+          "to_type": { "type": "string" },
+          "title": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      }
+    },
+    "securitySchemes": {
+      "wordpress": {
+        "type": "http",
+        "description": "WordPress REST API authentication (Application Passwords, cookie, or nonce). See WordPress REST API Handbook."
+      }
+    }
+  },
+  "x-embed": {
+    "description": "Embed relations in core WordPress REST resources by appending ?naticore_relations=1",
+    "example": "GET /wp/v2/posts/123?naticore_relations=1",
+    "responseField": "naticore_relations",
+    "items": { "to_id": "integer", "to_type": "string", "type": "string", "title": "string (optional)" }
+  }
+}

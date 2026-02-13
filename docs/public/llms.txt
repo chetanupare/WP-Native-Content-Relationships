@@ -1,0 +1,36 @@
+# Native Content Relationships
+
+> Native Content Relationships (NCR) is a WordPress plugin that adds a first-class relationship layer: link posts, users, and taxonomy terms via a dedicated indexed table and a small PHP API. Use for related posts, favorites, parent-child, WooCommerce related products, and custom relation types. Schema and public API are stable from 1.x; backward compatibility is guaranteed.
+
+Important notes:
+
+- Object types: `post` (any post type), `user`, `term`. Relation types (e.g. `related_to`, `parent_of`) define from/to and optional max_connections.
+- Primary API: `ncr_add_relation()`, `ncr_get_related()`, `ncr_remove_relation()`, `ncr_register_relation_type()`. Prefer these over legacy `wp_*` wrappers.
+- WP_Query: use query var `content_relation` with `post_id`, `type`, `direction` to query posts by relationship.
+- Hooks: `ncr_relation_added`, `ncr_relation_removed`, `ncr_get_related_args`, `ncr_max_relationships`, `ncr_skip_relationship_query`.
+
+## Documentation
+
+- [Introduction](https://chetanupare.github.io/WP-Native-Content-Relationships/): Overview, what is NCR, pick your path
+- [AI & LLM Index](https://chetanupare.github.io/WP-Native-Content-Relationships/llm): Full structured reference for AI assistants — API summary, hooks, WP-CLI, integrations, migration, FAQ
+- [Installation](https://chetanupare.github.io/WP-Native-Content-Relationships/getting-started/installation): Install from WordPress.org or GitHub, requirements
+- [Quick Start](https://chetanupare.github.io/WP-Native-Content-Relationships/getting-started/quick-start): First relationship in the UI, shortcodes, blocks
+- [Basic Relationships](https://chetanupare.github.io/WP-Native-Content-Relationships/getting-started/basic-relationships): Create, query, remove relations in code
+- [PHP API](https://chetanupare.github.io/WP-Native-Content-Relationships/api/php-api): ncr_add_relation, ncr_get_related, ncr_remove_relation, legacy wrappers
+- [WP_Query](https://chetanupare.github.io/WP-Native-Content-Relationships/api/wp-query): content_relation query var, ncr_skip_relationship_query
+- [Hooks & Filters](https://chetanupare.github.io/WP-Native-Content-Relationships/api/hooks-filters): Actions and filters for relations and queries
+- [Custom Relation Types](https://chetanupare.github.io/WP-Native-Content-Relationships/extending/custom-types): ncr_register_relation_type() and arguments
+- [Migration from ACF](https://chetanupare.github.io/WP-Native-Content-Relationships/migration/from-acf): Migrate ACF relationship fields to NCR
+- [Migration from Meta](https://chetanupare.github.io/WP-Native-Content-Relationships/migration/from-meta): Migrate post meta relationships to NCR
+- [Migration from Posts 2 Posts](https://chetanupare.github.io/WP-Native-Content-Relationships/migration/from-posts-2-posts): Migrate P2P to NCR
+
+## Optional
+
+- [REST API](https://chetanupare.github.io/WP-Native-Content-Relationships/api/rest-api): Embed and plugin namespace
+- [WP-CLI](https://chetanupare.github.io/WP-Native-Content-Relationships/api/wp-cli): content-relations commands
+- [Core concepts](https://chetanupare.github.io/WP-Native-Content-Relationships/core-concepts/architecture): Architecture, relationship types, direction, database schema
+- [Integrations](https://chetanupare.github.io/WP-Native-Content-Relationships/integrations/woocommerce): WooCommerce, Elementor, Gutenberg, multilingual
+- [Performance](https://chetanupare.github.io/WP-Native-Content-Relationships/performance/benchmarks): Benchmarks, indexing, scaling
+- [Roadmap & Contributing](https://chetanupare.github.io/WP-Native-Content-Relationships/roadmap): Roadmap, contributing
+- [Repository](https://github.com/chetanupare/WP-Native-Content-Relationships): Source code and readme
+- [WordPress.org plugin](https://wordpress.org/plugins/native-content-relationships/): Plugin page

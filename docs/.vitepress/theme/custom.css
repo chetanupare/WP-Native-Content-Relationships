@@ -1,0 +1,82 @@
+/* Vue.js docs–style theme for Native Content Relationships */
+
+:root {
+  --vp-c-brand-1: #42b883;
+  --vp-c-brand-2: #33a06f;
+  --vp-c-brand-3: #42b883;
+  --vp-button-brand-bg: #42b883;
+  --vp-button-brand-hover-bg: #33a06f;
+  --vp-button-brand-active-bg: #2d8f5f;
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #42b883 30%, #33a06f);
+  --vp-home-hero-name-background: linear-gradient(120deg, #42b883 30%, #33a06f);
+}
+
+.dark {
+  --vp-c-brand-1: #42d392;
+  --vp-c-brand-2: #33a06f;
+  --vp-c-brand-3: #42d392;
+}
+
+/* Vue-style “Pick your path” cards */
+.path-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.path-card {
+  display: block;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  transition: border-color 0.25s, box-shadow 0.25s;
+  text-decoration: none;
+  color: var(--vp-c-text-1);
+}
+
+.path-card:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 4px 12px rgba(66, 184, 131, 0.15);
+}
+
+.path-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+}
+
+.path-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
+}
+
+/* TOC / outline label like Vue */
+.vp-doc .VPDocOutlineDropdown .outline-title {
+  font-weight: 500;
+}
+
+/* Nav bar: match Vue spacing and weight */
+.VPNavBar .link {
+  font-weight: 500;
+}
+
+.VPNavBar .link:hover,
+.VPNavBar .link.active {
+  color: var(--vp-c-brand-1);
+}
+
+/* Sidebar active link */
+.VPSidebarItem.is-link.active .link {
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+.VPSidebarItem.is-link .link:hover {
+  color: var(--vp-c-brand-1);
+}
