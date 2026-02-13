@@ -1,6 +1,24 @@
 <?php
 /**
  * Extend WP_Query to support relationship queries
+ *
+ * WP_Query arguments (plugin-specific; registered via query_vars so WP does not strip them):
+ *
+ * - content_relation (array, recommended): {
+ *     post_id or from_id: int|int[],
+ *     type: string (relation type slug),
+ *     direction: 'incoming'|'outgoing'
+ *   }
+ * - wpcr (array, legacy): { from|post_id, type, direction }
+ * - related_to (int|int[], legacy): source post ID(s) for outgoing relations
+ * - relation_type (string, legacy): type when used with related_to
+ *
+ * If WordPress core ever adds a native relationship API, use the filter
+ * `ncr_skip_relationship_query` to return true and this plugin will not add
+ * its JOIN/WHERE, allowing clean migration to core.
+ *
+ * @see apply_filters( 'ncr_skip_relationship_query', $skip, $query )
+ * @see apply_filters( 'ncr_wp_query_relation_args', $args, $query )
  */
 
 // Exit if accessed directly
@@ -16,16 +34,6 @@ class NATICORE_Query {
 	private static $instance = null;
 
 	/**
-	 * Get instance
-	 */
-	public static function get_instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
 	 * Query debug data
 	 */
 	private $debug_data = array();
@@ -34,6 +42,7 @@ class NATICORE_Query {
 	 * Constructor
 	 */
 	private function __construct() {
+		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
 		add_filter( 'posts_join', array( $this, 'posts_join' ), 10, 2 );
 		add_filter( 'posts_where', array( $this, 'posts_where' ), 10, 2 );
 		add_filter( 'posts_distinct', array( $this, 'posts_distinct' ), 10, 2 );
@@ -47,10 +56,31 @@ class NATICORE_Query {
 	}
 
 	/**
+	 * Register custom query vars so WordPress does not strip them.
+	 *
+	 * Uses plugin-prefixed / specific names to avoid conflicting with future core query vars.
+	 *
+	 * @param array $vars Existing query vars.
+	 * @return array
+	 */
+	public function register_query_vars( $vars ) {
+		$vars[] = 'content_relation';
+		$vars[] = 'wpcr';
+		$vars[] = 'related_to';
+		$vars[] = 'relation_type';
+		return $vars;
+	}
+
+	/**
 	 * Add JOIN clause for relationship queries
 	 */
 	public function posts_join( $join, $query ) {
 		global $wpdb;
+
+		// Allow another implementation (e.g. future core API) to handle relationship queries.
+		if ( apply_filters( 'ncr_skip_relationship_query', false, $query ) ) {
+			return $join;
+		}
 
 		// Support all query formats
 		$has_relation = isset( $query->query_vars['related_to'] )
@@ -72,6 +102,11 @@ class NATICORE_Query {
 	 */
 	public function posts_where( $where, $query ) {
 		global $wpdb;
+
+		// Allow another implementation (e.g. future core API) to handle relationship queries.
+		if ( apply_filters( 'ncr_skip_relationship_query', false, $query ) ) {
+			return $where;
+		}
 
 		// Support new cleaner syntax: 'wpcr' => array(...)
 		if ( isset( $query->query_vars['wpcr'] ) && is_array( $query->query_vars['wpcr'] ) ) {
@@ -167,6 +202,9 @@ class NATICORE_Query {
 	 * Add DISTINCT to prevent duplicates
 	 */
 	public function posts_distinct( $distinct, $query ) {
+		if ( apply_filters( 'ncr_skip_relationship_query', false, $query ) ) {
+			return $distinct;
+		}
 		if ( isset( $query->query_vars['related_to'] )
 			|| isset( $query->query_vars['content_relation'] )
 			|| isset( $query->query_vars['wpcr'] ) ) {

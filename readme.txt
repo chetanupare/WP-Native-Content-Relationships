@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.27
+Stable tag: 1.0.28
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -318,6 +318,9 @@ Benchmarks confirm stable performance with 1,000,000+ relationship rows under In
 [View Full Performance Report](https://github.com/chetanupare/WP-Native-Content-Relationships/blob/main/docs/PERFORMANCE.md)
 
 == Changelog ==
+
+= 1.0.28 =
+* WP_Query: Registered query vars, documented relation args, added ncr_skip_relationship_query filter for core migration path.
 
 = 1.0.27 =
 * Code quality: PHPCS compliance (WordPress coding standards); 0 errors.
