@@ -4,7 +4,7 @@ Tags: relationships, content, posts, users, terms
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.25
+Stable tag: 1.0.26
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -318,6 +318,9 @@ Benchmarks confirm stable performance with 1,000,000+ relationship rows under In
 [View Full Performance Report](https://github.com/chetanupare/WP-Native-Content-Relationships/blob/main/docs/PERFORMANCE.md)
 
 == Changelog ==
+
+= 1.0.26 =
+* New: Playground Live Preview blueprint (assets/blueprints/blueprint.json) for Try in Playground on WordPress.org.
 
 = 1.0.25 =
 * Fix: Resolved WordPress.org SVN stable tag recognition issue.
