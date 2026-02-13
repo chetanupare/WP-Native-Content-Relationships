@@ -1,0 +1,35 @@
+# Dependencies
+vendor/
+node_modules/
+
+# WordPress specific
+*.log
+wp-config.php
+wp-content/advanced-cache.php
+wp-content/object-cache.php
+
+# Development
+.DS_Store
+Thumbs.db
+*.sublime-*
+.vscode/
+.idea/
+
+# Build artifacts
+*.min.js
+*.min.css
+/build/
+/dist/
+
+# Testing
+.phpunit.result.cache
+/coverage/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Environment files
+.env
+.env.*
