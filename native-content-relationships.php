@@ -3,7 +3,7 @@
  * Plugin Name: Native Content Relationships
  * Plugin URI: https://wordpress.org/plugins/native-content-relationships
  * Description: A native content relationship system for WordPress. Relate posts, pages, custom post types, users, and terms with semantic relationship types.
- * Version:           1.0.26
+ * Version:           1.0.27
  * Author: Chetan Upare
  * Author URI: https://github.com/chetanupare
  * License: GPL v2 or later
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'NATICORE_VERSION', '1.0.26' );
+define( 'NATICORE_VERSION', '1.0.27' );
 define( 'NATICORE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NATICORE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'NATICORE_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

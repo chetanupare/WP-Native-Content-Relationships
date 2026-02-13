@@ -18,6 +18,7 @@
 		<exclude name="WordPress.WP.AlternativeFunctions.json_encode_json_encode" />
 		<exclude name="WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents" />
 		<exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound" />
+		<exclude name="Universal.Files.SeparateFunctionsFromOO.Mixed" />
 		<exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace" />
 		<exclude name="Universal.Operators.DisallowShortTernary.Found" />
 		<exclude name="Squiz.PHP.CommentedOutCode.Found" />
@@ -28,9 +29,9 @@
 
 	<exclude-pattern>vendor/*</exclude-pattern>
 	<exclude-pattern>includes/class-settings-old.php</exclude-pattern>
-	<exclude-pattern>includes/class-acf.php</exclude-pattern>
-	<exclude-pattern>includes/class-editors.php</exclude-pattern>
-	<exclude-pattern>includes/class-wpml.php</exclude-pattern>
+	<exclude-pattern>includes/tools/class-settings-old.php</exclude-pattern>
+	<exclude-pattern>tests/*</exclude-pattern>
+	<exclude-pattern>benchmarks/*</exclude-pattern>
 	<exclude-pattern>developer-guide.php</exclude-pattern>
 	<exclude-pattern>phpstan-stubs.php</exclude-pattern>
 </ruleset>

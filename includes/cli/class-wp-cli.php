@@ -201,10 +201,10 @@ class NATICORE_WP_CLI {
 		$fix        = isset( $assoc_args['fix'] );
 		$verbose    = isset( $assoc_args['verbose'] );
 		$batch_size = isset( $assoc_args['batch-size'] ) ? absint( $assoc_args['batch-size'] ) : 1000;
-		
+
 		$integrity = NATICORE_Integrity::get_instance();
-		
-		$callback = function( $type, $ids ) use ( $verbose ) {
+
+		$callback = function ( $type, $ids ) use ( $verbose ) {
 			if ( $verbose ) {
 				foreach ( $ids as $id ) {
 					WP_CLI::line( sprintf( '[%s] Found issue with ID: %d', strtoupper( $type ), $id ) );
@@ -317,7 +317,7 @@ class NATICORE_WP_CLI {
 			);
 		}
 
-		if ( $format === 'json' ) {
+		if ( 'json' === $format ) {
 			WP_CLI::line( json_encode( $schema, JSON_PRETTY_PRINT ) );
 		} else {
 			WP_CLI::error( 'Only JSON format is currently supported.' );

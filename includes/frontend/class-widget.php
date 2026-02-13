@@ -103,7 +103,7 @@ class NATICORE_Related_Content_Widget extends WP_Widget {
 			)
 		);
 
-		$types = NATICORE_Relation_Types::get_types();
+		$types      = NATICORE_Relation_Types::get_types();
 		$post_types = array();
 		foreach ( $types as $slug => $type_info ) {
 			if ( empty( $type_info['supports_terms'] ) && empty( $type_info['supports_users'] ) ) {
@@ -154,7 +154,7 @@ class NATICORE_Related_Content_Widget extends WP_Widget {
 	 * @return array
 	 */
 	public function update( $new_instance, $old_instance ) {
-		$order = isset( $new_instance['order'] ) ? $new_instance['order'] : 'date';
+		$order    = isset( $new_instance['order'] ) ? $new_instance['order'] : 'date';
 		$instance = array(
 			'title'         => sanitize_text_field( isset( $new_instance['title'] ) ? $new_instance['title'] : '' ),
 			'relation_type' => sanitize_key( isset( $new_instance['relation_type'] ) ? $new_instance['relation_type'] : 'related_to' ),

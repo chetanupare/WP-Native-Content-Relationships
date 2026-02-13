@@ -40,16 +40,16 @@ class NATICORE_Database {
 
 		if ( version_compare( $current_schema, NCR_SCHEMA_VERSION, '<' ) ) {
 			self::create_table();
-			
+
 			// Fallback: dbDelta is notoriously finicky with indexes on existing tables.
 			// Force add the index if it still doesn't exist.
 			global $wpdb;
 			$table = self::get_table_name();
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Schema audit
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema audit; table name from get_table_name().
 			$index_exists = $wpdb->get_var( $wpdb->prepare( "SHOW INDEX FROM $table WHERE Key_name = %s", 'type_lookup' ) );
-			
+
 			if ( ! $index_exists ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Performance optimization
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from get_table_name(); performance optimization.
 				$wpdb->query( "ALTER TABLE $table ADD INDEX type_lookup (type, from_id, to_id)" );
 			}
 

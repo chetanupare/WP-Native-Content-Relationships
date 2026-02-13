@@ -263,7 +263,7 @@ class NATICORE_Overview_Table extends WP_List_Table {
 	 * Column: Direction
 	 */
 	protected function column_direction( $item ) {
-		if ( $item->direction === 'bidirectional' ) {
+		if ( 'bidirectional' === $item->direction ) {
 			return '↔ ' . __( 'Bidirectional', 'native-content-relationships' );
 		}
 		return '→ ' . __( 'One-way', 'native-content-relationships' );
@@ -413,9 +413,9 @@ class NATICORE_Overview {
 			<?php else : ?>
 				<form method="get">
 					<input type="hidden" name="page" value="naticore-overview" />
-					<?php 
+					<?php
 					$table->search_box( __( 'Search Relationships', 'native-content-relationships' ), 'naticore-search' );
-					$table->display(); 
+					$table->display();
 					?>
 				</form>
 			<?php endif; ?>

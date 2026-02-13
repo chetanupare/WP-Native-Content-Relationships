@@ -86,7 +86,7 @@ class NATICORE_Orphaned {
 	public function show_orphaned_notice() {
 		$count = get_option( 'naticore_orphaned_count', 0 );
 
-		if ( $count === 0 ) {
+		if ( 0 === $count ) {
 			return;
 		}
 

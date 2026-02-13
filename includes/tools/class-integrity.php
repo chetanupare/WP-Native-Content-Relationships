@@ -112,17 +112,21 @@ class NATICORE_Integrity {
 
 		// 1. SQL-Native Duplicate Detection (Avoids massive $seen array in PHP)
 		// Identifying groups with count > 1
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from get_table_name().
 		$duplicate_sets = $wpdb->get_results( "SELECT from_id, to_id, type, COUNT(*) as cnt FROM `$table` GROUP BY from_id, to_id, type HAVING cnt > 1" );
-		
+
 		foreach ( $duplicate_sets as $set ) {
 			// Select all but the oldest ID for this set
-			$ids_to_remove = $wpdb->get_col( $wpdb->prepare(
-				"SELECT id FROM `$table` WHERE from_id = %d AND to_id = %d AND type = %s ORDER BY id ASC LIMIT %d, 999999",
-				$set->from_id,
-				$set->to_id,
-				$set->type,
-				1 // Skip the first one
-			) );
+			$ids_to_remove = $wpdb->get_col(
+				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from get_table_name().
+					"SELECT id FROM `$table` WHERE from_id = %d AND to_id = %d AND type = %s ORDER BY id ASC LIMIT %d, 999999",
+					$set->from_id,
+					$set->to_id,
+					$set->type,
+					1 // Skip the first one
+				)
+			);
 
 			if ( ! empty( $ids_to_remove ) ) {
 				$stats['duplicates'] += count( $ids_to_remove );
@@ -131,23 +135,26 @@ class NATICORE_Integrity {
 				}
 				if ( $fix ) {
 					$ids_string = implode( ',', array_map( 'absint', $ids_to_remove ) );
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and IDs from trusted source.
 					$wpdb->query( "DELETE FROM `$table` WHERE id IN ($ids_string)" );
 				}
 			}
 		}
 
 		// 2. Chunked Iterative Checks (Orphans, Constraints, Direction)
-		$last_id = 0;
+		$last_id           = 0;
 		$connection_counts = array(); // Semi-stateless: we only track constraints per batch/session
 
 		while ( true ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$relations = $wpdb->get_results( $wpdb->prepare(
-				"SELECT * FROM `$table` WHERE id > %d ORDER BY id ASC LIMIT %d",
-				$last_id,
-				$batch_size
-			) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name from get_table_name().
+			$relations = $wpdb->get_results(
+				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from get_table_name().
+					"SELECT * FROM `$table` WHERE id > %d ORDER BY id ASC LIMIT %d",
+					$last_id,
+					$batch_size
+				)
+			);
 
 			if ( empty( $relations ) ) {
 				break;
@@ -167,21 +174,21 @@ class NATICORE_Integrity {
 
 				// A. Check for unregistered types
 				if ( function_exists( 'ncr_has_unregistered_type' ) && ncr_has_unregistered_type( $rel ) ) {
-					$batch_to_delete[] = $rel->id;
+					$batch_to_delete[]              = $rel->id;
 					$batch_issues['unregistered'][] = $rel->id;
 					continue;
 				}
 
 				// B. Check for orphaned relationships
 				if ( function_exists( 'ncr_is_orphaned_relation' ) && ncr_is_orphaned_relation( $rel ) ) {
-					$batch_to_delete[] = $rel->id;
+					$batch_to_delete[]          = $rel->id;
 					$batch_issues['orphaned'][] = $rel->id;
 					continue;
 				}
 
 				// C. Check for directional inconsistencies
 				if ( function_exists( 'ncr_has_directional_inconsistency' ) && ncr_has_directional_inconsistency( $rel ) ) {
-					$batch_to_delete[] = $rel->id;
+					$batch_to_delete[]           = $rel->id;
 					$batch_issues['direction'][] = $rel->id;
 					continue;
 				}
@@ -196,10 +203,10 @@ class NATICORE_Integrity {
 						// But for simplicity in chunked runs, we just accumulate.
 						$connection_counts[ $constraint_key ] = 0;
 					}
-					$connection_counts[ $constraint_key ]++;
+					++$connection_counts[ $constraint_key ];
 
 					if ( $connection_counts[ $constraint_key ] > $type_info['max_connections'] ) {
-						$batch_to_delete[] = $rel->id;
+						$batch_to_delete[]             = $rel->id;
 						$batch_issues['constraints'][] = $rel->id;
 						continue;
 					}
@@ -214,7 +221,7 @@ class NATICORE_Integrity {
 						if ( $from_post && $to_post && $type_info && ! empty( $type_info['allowed_post_types'] ) ) {
 							$allowed = $type_info['allowed_post_types'];
 							if ( ! in_array( $from_post->post_type, $allowed, true ) || ! in_array( $to_post->post_type, $allowed, true ) ) {
-								$batch_to_delete[] = $rel->id;
+								$batch_to_delete[]         = $rel->id;
 								$batch_issues['invalid'][] = $rel->id;
 								continue;
 							}
@@ -236,7 +243,7 @@ class NATICORE_Integrity {
 			// Execute batch delete
 			if ( $fix && ! empty( $batch_to_delete ) ) {
 				$ids_string = implode( ',', array_map( 'absint', $batch_to_delete ) );
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and IDs from trusted source.
 				$wpdb->query( "DELETE FROM `$table` WHERE id IN ($ids_string)" );
 			}
 
@@ -246,7 +253,7 @@ class NATICORE_Integrity {
 			if ( count( $relations ) < $batch_size ) {
 				break;
 			}
-			
+
 			// Optional: Clear object cache between chunks to free memory
 			if ( function_exists( 'wp_cache_flush_runtime' ) ) {
 				wp_cache_flush_runtime();
@@ -255,12 +262,12 @@ class NATICORE_Integrity {
 
 		// Sum up all issues for legacy compatibility with notices
 		$legacy_issues = array(
-			'duplicates'  => $stats['duplicates'],
-			'orphaned'    => $stats['orphaned'],
+			'duplicates'   => $stats['duplicates'],
+			'orphaned'     => $stats['orphaned'],
 			'unregistered' => $stats['unregistered'],
-			'constraints' => $stats['constraints'],
-			'direction'   => $stats['direction'],
-			'invalid'     => $stats['invalid'],
+			'constraints'  => $stats['constraints'],
+			'direction'    => $stats['direction'],
+			'invalid'      => $stats['invalid'],
 		);
 
 		return array(
@@ -276,7 +283,7 @@ class NATICORE_Integrity {
 	public static function show_integrity_notice() {
 		$notice = get_transient( 'naticore_integrity_notice' );
 
-		if ( ! $notice || $notice['cleaned'] === 0 ) {
+		if ( ! $notice || 0 === $notice['cleaned'] ) {
 			return;
 		}
 

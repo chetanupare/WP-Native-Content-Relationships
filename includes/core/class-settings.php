@@ -426,20 +426,20 @@ class NATICORE_Settings {
 			<?php $this->render_tabs(); ?>
 			
 			<div class="naticore-tab-content">
-				<?php if ( $current_tab === 'get_started' ) : ?>
+				<?php if ( 'get_started' === $current_tab ) : ?>
 					<?php $this->render_get_started_tab(); ?>
 				<?php else : ?>
 				<form method="post" action="options.php">
 					<?php
 					settings_fields( 'naticore_settings' );
 					do_settings_sections( $this->get_page_slug() );
-					
+
 					// Don't show global submit button on developer tab (unless debug) or on import/export tab (which has its own buttons).
 					$show_submit = true;
-					if ( $current_tab === 'developer' && ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+					if ( 'developer' === $current_tab && ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
 						$show_submit = false;
 					}
-					if ( $current_tab === 'import_export' ) {
+					if ( 'import_export' === $current_tab ) {
 						$show_submit = false;
 					}
 
@@ -458,13 +458,13 @@ class NATICORE_Settings {
 	 * Render Get started / onboarding tab: checklist and quick links.
 	 */
 	private function render_get_started_tab() {
-		$settings_url     = admin_url( 'options-general.php?page=naticore-settings&tab=general' );
-		$types_url        = admin_url( 'options-general.php?page=naticore-settings&tab=relationship_types' );
-		$new_post_url     = admin_url( 'post-new.php' );
-		$docs_url         = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
-		$enabled_types    = $this->get_setting( 'enabled_post_types', array( 'post', 'page' ) );
-		$has_posts_pages  = ! empty( $enabled_types ) && in_array( 'post', $enabled_types, true ) && in_array( 'page', $enabled_types, true );
-		$onboarding_done  = get_transient( 'naticore_onboarding_done' );
+		$settings_url    = admin_url( 'options-general.php?page=naticore-settings&tab=general' );
+		$types_url       = admin_url( 'options-general.php?page=naticore-settings&tab=relationship_types' );
+		$new_post_url    = admin_url( 'post-new.php' );
+		$docs_url        = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
+		$enabled_types   = $this->get_setting( 'enabled_post_types', array( 'post', 'page' ) );
+		$has_posts_pages = ! empty( $enabled_types ) && in_array( 'post', $enabled_types, true ) && in_array( 'page', $enabled_types, true );
+		$onboarding_done = get_transient( 'naticore_onboarding_done' );
 
 		if ( isset( $_GET['naticore_onboarding_done'] ) && current_user_can( 'manage_options' ) ) {
 			set_transient( 'naticore_onboarding_done', 1, 0 );
@@ -566,12 +566,12 @@ class NATICORE_Settings {
 	}
 
 	public function render_relationship_types_manage_ui() {
-		$settings = $this->get_settings();
+		$settings    = $this->get_settings();
 		$type_config = isset( $settings['relationship_types_config'] ) ? $settings['relationship_types_config'] : array();
-		
+
 		// Built-in types.
 		// We get them from the class property since they might be filtered out in get_types().
-		$reflection = new ReflectionClass( 'NATICORE_Relation_Types' );
+		$reflection         = new ReflectionClass( 'NATICORE_Relation_Types' );
 		$default_types_prop = $reflection->getProperty( 'default_types' );
 		$default_types_prop->setAccessible( true );
 		$built_in_defaults = $default_types_prop->getValue();
@@ -594,7 +594,8 @@ class NATICORE_Settings {
 						</tr>
 					</thead>
 					<tbody>
-						<?php foreach ( $built_in_defaults as $slug => $args ) : 
+						<?php
+						foreach ( $built_in_defaults as $slug => $args ) :
 							$is_enabled = ! isset( $type_config['built_in'][ $slug ]['enabled'] ) || $type_config['built_in'][ $slug ]['enabled'];
 							?>
 							<tr>
@@ -788,13 +789,13 @@ class NATICORE_Settings {
 		}
 
 		// Default direction
-		$sanitized['default_direction'] = isset( $input['default_direction'] ) && $input['default_direction'] === 'bidirectional' ? 'bidirectional' : 'unidirectional';
+		$sanitized['default_direction'] = isset( $input['default_direction'] ) && 'bidirectional' === $input['default_direction'] ? 'bidirectional' : 'unidirectional';
 
 		// Manual order for related items (optional, off by default)
 		$sanitized['enable_manual_order'] = isset( $input['enable_manual_order'] ) ? 1 : 0;
 
 		// Cleanup on delete
-		$sanitized['cleanup_on_delete'] = isset( $input['cleanup_on_delete'] ) && $input['cleanup_on_delete'] === 'keep' ? 'keep' : 'remove';
+		$sanitized['cleanup_on_delete'] = isset( $input['cleanup_on_delete'] ) && 'keep' === $input['cleanup_on_delete'] ? 'keep' : 'remove';
 
 		// Max relationships
 		$sanitized['ncr_max_relationships'] = isset( $input['ncr_max_relationships'] ) ? absint( $input['ncr_max_relationships'] ) : 0;
@@ -895,7 +896,7 @@ class NATICORE_Settings {
 			<h3><?php esc_html_e( 'Default Relationship Direction', 'native-content-relationships' ); ?></h3>
 			
 			<div class="naticore-radio-cards">
-				<label class="naticore-radio-card <?php echo $default === 'unidirectional' ? 'selected' : ''; ?>">
+				<label class="naticore-radio-card <?php echo 'unidirectional' === $default ? 'selected' : ''; ?>">
 					<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[default_direction]" value="unidirectional" <?php checked( $default, 'unidirectional' ); ?>>
 					<div class="naticore-radio-card-content">
 						<h4><?php esc_html_e( 'One-way (Recommended)', 'native-content-relationships' ); ?></h4>
@@ -903,7 +904,7 @@ class NATICORE_Settings {
 					</div>
 				</label>
 				
-				<label class="naticore-radio-card <?php echo $default === 'bidirectional' ? 'selected' : ''; ?>">
+				<label class="naticore-radio-card <?php echo 'bidirectional' === $default ? 'selected' : ''; ?>">
 					<input type="radio" name="<?php echo esc_attr( $this->option_name ); ?>[default_direction]" value="bidirectional" <?php checked( $default, 'bidirectional' ); ?>>
 					<div class="naticore-radio-card-content">
 						<h4><?php esc_html_e( 'Bidirectional', 'native-content-relationships' ); ?></h4>

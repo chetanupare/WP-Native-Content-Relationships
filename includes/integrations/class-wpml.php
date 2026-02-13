@@ -112,7 +112,7 @@ class NATICORE_WPML {
 	 * Get translation ID (WPML)
 	 */
 	private function get_translation_id( $post_id, $lang_code ) {
-		if ( $this->plugin_type === 'wpml' && function_exists( 'wpml_object_id_filter' ) ) {
+		if ( 'wpml' === $this->plugin_type && function_exists( 'wpml_object_id_filter' ) ) {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook
 			return apply_filters( 'wpml_object_id', $post_id, get_post_type( $post_id ), false, $lang_code );
 		}
@@ -123,7 +123,7 @@ class NATICORE_WPML {
 	 * Get translation ID (Polylang)
 	 */
 	private function get_translation_id_polylang( $post_id, $lang_code ) {
-		if ( $this->plugin_type === 'polylang' && function_exists( 'pll_get_post' ) ) {
+		if ( 'polylang' === $this->plugin_type && function_exists( 'pll_get_post' ) ) {
 			return pll_get_post( $post_id, $lang_code );
 		}
 		return false;
@@ -135,23 +135,23 @@ class NATICORE_WPML {
 	private function get_all_translations( $post_id ) {
 		$translations = array( $post_id );
 
-		if ( $this->plugin_type === 'wpml' ) {
+		if ( 'wpml' === $this->plugin_type ) {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook
 			$trid = apply_filters( 'wpml_element_trid', null, $post_id );
 			if ( $trid ) {
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML hook
 				$all_translations = apply_filters( 'wpml_get_element_translations', array(), $trid );
 				foreach ( $all_translations as $lang => $translation ) {
-					if ( $translation->element_id != $post_id ) {
+					if ( (int) $translation->element_id !== (int) $post_id ) {
 						$translations[] = $translation->element_id;
 					}
 				}
 			}
-		} elseif ( $this->plugin_type === 'polylang' ) {
+		} elseif ( 'polylang' === $this->plugin_type ) {
 			$all_langs = pll_languages_list();
 			foreach ( $all_langs as $lang ) {
 				$trans_id = pll_get_post( $post_id, $lang );
-				if ( $trans_id && $trans_id != $post_id ) {
+				if ( $trans_id && (int) $trans_id !== (int) $post_id ) {
 					$translations[] = $trans_id;
 				}
 			}
@@ -170,7 +170,7 @@ class NATICORE_WPML {
 		// Create relationships between all translation pairs
 		foreach ( $from_translations as $from_trans_id ) {
 			foreach ( $to_translations as $to_trans_id ) {
-				if ( $from_trans_id == $from_id && $to_trans_id == $to_id ) {
+				if ( (int) $from_trans_id === (int) $from_id && (int) $to_trans_id === (int) $to_id ) {
 					continue; // Skip original
 				}
 
@@ -192,7 +192,7 @@ class NATICORE_WPML {
 		// Remove relationships between all translation pairs
 		foreach ( $from_translations as $from_trans_id ) {
 			foreach ( $to_translations as $to_trans_id ) {
-				if ( $from_trans_id == $from_id && $to_trans_id == $to_id ) {
+				if ( (int) $from_trans_id === (int) $from_id && (int) $to_trans_id === (int) $to_id ) {
 					continue; // Skip original (already removed)
 				}
 
@@ -209,7 +209,7 @@ class NATICORE_WPML {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only tab parameter
 			$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
 			?>
-			<a href="?page=naticore-settings&tab=multilingual" class="nav-tab <?php echo esc_attr( $active_tab === 'multilingual' ? 'nav-tab-active' : '' ); ?>">
+			<a href="?page=naticore-settings&tab=multilingual" class="nav-tab <?php echo esc_attr( 'multilingual' === $active_tab ? 'nav-tab-active' : '' ); ?>">
 				<?php esc_html_e( 'Multilingual', 'native-content-relationships' ); ?>
 			</a>
 			<?php
@@ -223,7 +223,7 @@ class NATICORE_WPML {
 		$settings    = NATICORE_Settings::get_instance();
 		$option_name = 'naticore_settings';
 		$mirror      = $settings->get_setting( 'multilingual_mirror', 0 );
-		$plugin_name = $this->plugin_type === 'wpml' ? 'WPML' : 'Polylang';
+		$plugin_name = 'wpml' === $this->plugin_type ? 'WPML' : 'Polylang';
 
 		?>
 		<h2><?php esc_html_e( 'Multilingual Settings', 'native-content-relationships' ); ?></h2>

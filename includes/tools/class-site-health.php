@@ -74,7 +74,7 @@ class NATICORE_Site_Health {
 		$audit = $integrity->run_integrity_check( false, 100 );
 
 		if ( $audit['cleaned'] > 0 ) {
-			$result['status'] = 'recommended';
+			$result['status']      = 'recommended';
 			$result['description'] = sprintf(
 				'<p>%s</p>',
 				sprintf(

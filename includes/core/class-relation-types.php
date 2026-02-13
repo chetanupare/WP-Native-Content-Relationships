@@ -135,14 +135,14 @@ class NATICORE_Relation_Types {
 	 */
 	public static function init() {
 		// Load settings to check for disabled/custom types.
-		$settings = get_option( 'naticore_settings', array() );
+		$settings    = get_option( 'naticore_settings', array() );
 		$type_config = isset( $settings['relationship_types_config'] ) ? $settings['relationship_types_config'] : array();
-		
+
 		// Register default types.
 		foreach ( self::$default_types as $slug => $args ) {
 			// Check if type is disabled in settings.
 			$is_disabled = isset( $type_config['built_in'][ $slug ]['enabled'] ) && ! $type_config['built_in'][ $slug ]['enabled'];
-			
+
 			if ( ! $is_disabled ) {
 				self::register( $slug, $args );
 			}
@@ -204,6 +204,7 @@ class NATICORE_Relation_Types {
 		// Object type mapping and validation.
 		$valid_objects = array( 'post', 'user', 'term' );
 		if ( ! in_array( $args['from'], $valid_objects, true ) || ! in_array( $args['to'], $valid_objects, true ) ) {
+			/* translators: %s: comma-separated list of allowed object types */
 			return new WP_Error( 'ncr_invalid_object_type', sprintf( __( 'Invalid object types. Allowed: %s', 'native-content-relationships' ), implode( ', ', $valid_objects ) ) );
 		}
 
@@ -337,8 +338,8 @@ class NATICORE_Relation_Types {
 
 		foreach ( $types as $slug => $config ) {
 			if ( $config['supports_users'] &&
-				$config['from_type'] === 'user' &&
-				$config['to_type'] === 'post' ) {
+				'user' === $config['from_type'] &&
+				'post' === $config['to_type'] ) {
 				$user_types[ $slug ] = $config['label'];
 			}
 		}
@@ -357,8 +358,8 @@ class NATICORE_Relation_Types {
 
 		foreach ( $types as $slug => $config ) {
 			if ( $config['supports_users'] &&
-				$config['from_type'] === 'user' &&
-				$config['to_type'] === 'post' ) {
+				'user' === $config['from_type'] &&
+				'post' === $config['to_type'] ) {
 				// For post-to-user, we use the same types but reverse the direction
 				$post_types[ $slug ] = $config['label'];
 			}
@@ -378,8 +379,8 @@ class NATICORE_Relation_Types {
 
 		foreach ( $types as $slug => $config ) {
 			if ( $config['supports_terms'] &&
-				$config['from_type'] === 'post' &&
-				$config['to_type'] === 'term' ) {
+				'post' === $config['from_type'] &&
+				'term' === $config['to_type'] ) {
 				$term_types[ $slug ] = $config['label'];
 			}
 		}
@@ -398,8 +399,8 @@ class NATICORE_Relation_Types {
 
 		foreach ( $types as $slug => $config ) {
 			if ( $config['supports_terms'] &&
-				$config['from_type'] === 'post' &&
-				$config['to_type'] === 'term' ) {
+				'post' === $config['from_type'] &&
+				'term' === $config['to_type'] ) {
 				// For term-to-post, we use the same types but reverse the direction
 				$term_types[ $slug ] = $config['label'];
 			}
@@ -441,23 +442,7 @@ if ( ! function_exists( 'register_content_relation_type' ) ) {
 	}
 }
 
-if ( ! function_exists( 'ncr_register_relation_type' ) ) {
-	/**
-	 * Formally register a relationship type with schema validation.
-	 *
-	 * @since 1.0.15
-	 * @param array $args {
-	 *     @type string $name            Unique slug for the relationship type.
-	 *     @type string $label           Display label.
-	 *     @type string $from            Object type (post, user, term).
-	 *     @type string $to              Object type (post, user, term).
-	 *     @type bool   $bidirectional   Whether the relationship is two-way.
-	 *     @type int    $max_connections Maximum number of relationships of this type allowed from source.
-	 * }
-	 * @return bool|WP_Error
-	/* End of NATICORE_Relation_Types class */
-}
-
+// phpcs:ignore WordPress.Files.FileName -- Legacy wrapper functions in same file as class.
 if ( ! function_exists( 'ncr_register_relation_type' ) ) {
 	/**
 	 * Register a new relationship type.

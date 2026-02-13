@@ -87,7 +87,7 @@ class NATICORE_Import_Export {
 	 * Handle export
 	 */
 	public function handle_export() {
-		if ( ! isset( $_POST['action'] ) || $_POST['action'] !== 'naticore_export' ) {
+		if ( ! isset( $_POST['action'] ) || 'naticore_export' !== $_POST['action'] ) {
 			return;
 		}
 
@@ -102,7 +102,7 @@ class NATICORE_Import_Export {
 		// Environment-aware: Gate export in production
 		if ( function_exists( 'wp_get_environment_type' ) ) {
 			$env_type = wp_get_environment_type();
-			if ( $env_type === 'production' ) {
+			if ( 'production' === $env_type ) {
 				// Still allow, but log it
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Environment warning
@@ -140,7 +140,7 @@ class NATICORE_Import_Export {
 	 * Handle import
 	 */
 	public function handle_import() {
-		if ( ! isset( $_POST['action'] ) || $_POST['action'] !== 'naticore_import' ) {
+		if ( ! isset( $_POST['action'] ) || 'naticore_import' !== $_POST['action'] ) {
 			return;
 		}
 
@@ -155,7 +155,7 @@ class NATICORE_Import_Export {
 		// Environment-aware: Warn in production
 		if ( function_exists( 'wp_get_environment_type' ) ) {
 			$env_type = wp_get_environment_type();
-			if ( $env_type === 'production' ) {
+			if ( 'production' === $env_type ) {
 				// Still allow, but log warning
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Environment warning
@@ -164,7 +164,7 @@ class NATICORE_Import_Export {
 			}
 		}
 
-		if ( ! isset( $_FILES['import_file'] ) || ! isset( $_FILES['import_file']['error'] ) || $_FILES['import_file']['error'] !== UPLOAD_ERR_OK ) {
+		if ( ! isset( $_FILES['import_file'] ) || ! isset( $_FILES['import_file']['error'] ) || UPLOAD_ERR_OK !== $_FILES['import_file']['error'] ) {
 			add_action(
 				'admin_notices',
 				function () {

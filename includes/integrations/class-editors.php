@@ -80,31 +80,31 @@ class NATICORE_Editors {
 				'editor_script'   => 'naticore-gutenberg',
 				'render_callback' => array( $this, 'render_related_posts_block' ),
 				'attributes'      => array(
-					'relationType'   => array(
+					'relationType'  => array(
 						'type'    => 'string',
 						'default' => 'related_to',
 					),
-					'limit'          => array(
+					'limit'         => array(
 						'type'    => 'number',
 						'default' => 5,
 					),
-					'order'          => array(
+					'order'         => array(
 						'type'    => 'string',
 						'default' => 'date',
 					),
-					'layout'         => array(
+					'layout'        => array(
 						'type'    => 'string',
 						'default' => 'list',
 					),
-					'showThumbnail'  => array(
+					'showThumbnail' => array(
 						'type'    => 'boolean',
 						'default' => false,
 					),
-					'excerptLength'  => array(
+					'excerptLength' => array(
 						'type'    => 'number',
 						'default' => 0,
 					),
-					'wrapperClass'   => array(
+					'wrapperClass'  => array(
 						'type'    => 'string',
 						'default' => '',
 					),

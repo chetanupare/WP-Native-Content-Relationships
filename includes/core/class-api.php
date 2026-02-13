@@ -243,7 +243,8 @@ class NATICORE_API {
 				)
 			);
 			if ( $type_count >= $type_info['max_connections'] ) {
-				return new WP_Error( 'ncr_max_connections_exceeded', sprintf( __( 'Relationship limit reached for type "%s": max %d allowed.', 'native-content-relationships' ), $type_info['label'], $type_info['max_connections'] ) );
+				/* translators: 1: relationship type label, 2: max connections allowed */
+				return new WP_Error( 'ncr_max_connections_exceeded', sprintf( __( 'Relationship limit reached for type "%1$s": max %2$d allowed.', 'native-content-relationships' ), $type_info['label'], $type_info['max_connections'] ) );
 			}
 		}
 
@@ -636,7 +637,6 @@ class NATICORE_API {
 			wp_cache_delete( "naticore_exists_{$from_id}_{$to_id}_{$type}_post", 'naticore_relationships' );
 		}
 
-
 		// Clear admin cache.
 		wp_cache_delete( 'naticore_admin_total_count', 'naticore_relationships' );
 	}
@@ -755,7 +755,7 @@ class NATICORE_API {
 		$has_limit = isset( $args['limit'] );
 		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
 
-		$settings            = NATICORE_Settings::get_instance();
+		$settings             = NATICORE_Settings::get_instance();
 		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
 
 		// Create cache key (include manual_order so cache respects setting)
@@ -799,9 +799,10 @@ class NATICORE_API {
 			/**
 			 * Custom table query with manual caching.
 			 */
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table with dynamic where clause
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- Custom table with dynamic where/order clause.
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Dynamic where/order clause.
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_clause} {$order_clause} LIMIT %d",
 					array_merge( $params, array( $limit ) )
 				)
@@ -810,9 +811,9 @@ class NATICORE_API {
 			/**
 			 * Custom table query with manual caching.
 			 */
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table with dynamic where clause
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Dynamic where/order clause.
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_clause} {$order_clause}",
 					$params
 				)
@@ -875,7 +876,7 @@ class NATICORE_API {
 
 		$post_id = absint( $post_id );
 
-		$settings           = NATICORE_Settings::get_instance();
+		$settings             = NATICORE_Settings::get_instance();
 		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
 
 		$select = 'to_id, type, direction, created_at';
@@ -886,9 +887,9 @@ class NATICORE_API {
 			$order  = 'ORDER BY type, relation_order ASC, created_at DESC';
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, order/select built from setting
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Select/order built from setting.
 				"SELECT {$select} FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d {$order}",
 				$post_id
 			)
@@ -1010,7 +1011,11 @@ class NATICORE_API {
 		$from_post_id = absint( $from_post_id );
 		$to_post_id   = absint( $to_post_id );
 		if ( ! $from_post_id || ! $to_post_id || $from_post_id === $to_post_id ) {
-			return array( 'copied' => 0, 'skipped' => 0, 'errors' => array() );
+			return array(
+				'copied'  => 0,
+				'skipped' => 0,
+				'errors'  => array(),
+			);
 		}
 
 		$where  = 'from_id = %d';
@@ -1019,15 +1024,15 @@ class NATICORE_API {
 			$relation_types = array_map( 'sanitize_key', $relation_types );
 			$placeholders   = implode( ',', array_fill( 0, count( $relation_types ), '%s' ) );
 			$where         .= " AND type IN ($placeholders)";
-			$params        = array_merge( $params, $relation_types );
+			$params         = array_merge( $params, $relation_types );
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table read
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table read; $where built from sanitize_key.
 		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where}", $params ) );
 
-		$copied = 0;
+		$copied  = 0;
 		$skipped = 0;
-		$errors = array();
+		$errors  = array();
 
 		foreach ( (array) $rows as $row ) {
 			$to_type = isset( $row->to_type ) ? $row->to_type : 'post';
@@ -1037,18 +1042,31 @@ class NATICORE_API {
 			$result = self::add_relation( $to_post_id, (int) $row->to_id, $row->type, null, $to_type );
 			if ( is_wp_error( $result ) ) {
 				$errors[] = $result->get_error_message();
-				$skipped++;
+				++$skipped;
 			} else {
-				$copied++;
+				++$copied;
 			}
 		}
 
-		do_action( 'naticore_after_duplicate_post', $from_post_id, $to_post_id, array( 'copied' => $copied, 'skipped' => $skipped ) );
+		do_action(
+			'naticore_after_duplicate_post',
+			$from_post_id,
+			$to_post_id,
+			array(
+				'copied'  => $copied,
+				'skipped' => $skipped,
+			)
+		);
 
-		return array( 'copied' => $copied, 'skipped' => $skipped, 'errors' => $errors );
+		return array(
+			'copied'  => $copied,
+			'skipped' => $skipped,
+			'errors'  => $errors,
+		);
 	}
 }
 
+// phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound -- Legacy wrapper functions in same file as class.
 // Make functions available globally (backward compatibility)
 if ( ! function_exists( 'wp_add_relation' ) ) {
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name

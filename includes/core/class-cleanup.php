@@ -53,7 +53,7 @@ class NATICORE_Cleanup {
 		$settings     = NATICORE_Settings::get_instance();
 		$cleanup_mode = $settings->get_setting( 'cleanup_on_delete', 'remove' );
 
-		if ( $cleanup_mode === 'remove' ) {
+		if ( 'remove' === $cleanup_mode ) {
 			// Delete all relationships where this post is the source
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table cleanup
 			$wpdb->delete(

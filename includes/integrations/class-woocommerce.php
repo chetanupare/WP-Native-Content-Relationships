@@ -279,7 +279,7 @@ class NATICORE_WooCommerce {
 												<?php echo esc_html( get_the_title( $rel->to_id ) ); ?>
 											</a>
 											<?php
-											if ( $related_post->post_type === 'product' ) :
+											if ( 'product' === $related_post->post_type ) :
 												$product = wc_get_product( $rel->to_id );
 												if ( $product ) :
 													?>
@@ -315,7 +315,7 @@ endif;
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only tab parameter
 			$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
 			?>
-			<a href="?page=naticore-settings&tab=woocommerce" class="nav-tab <?php echo esc_attr( $active_tab === 'woocommerce' ? 'nav-tab-active' : '' ); ?>">
+			<a href="?page=naticore-settings&tab=woocommerce" class="nav-tab <?php echo esc_attr( 'woocommerce' === $active_tab ? 'nav-tab-active' : '' ); ?>">
 				<?php esc_html_e( 'WooCommerce', 'native-content-relationships' ); ?>
 			</a>
 			<?php

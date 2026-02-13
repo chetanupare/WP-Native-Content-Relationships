@@ -367,14 +367,15 @@ class NATICORE_REST_API {
 		}
 
 		// Validate Object Types match registry.
-		if ( $type_info['from'] !== 'post' && $type_info['from'] !== 'user' && $type_info['from'] !== 'term' ) {
-			// This shouldn't happen with the new registry but just in case.
+		if ( 'post' !== $type_info['from'] && 'user' !== $type_info['from'] && 'term' !== $type_info['from'] ) {
+			return new WP_Error( 'ncr_invalid_from_type', __( 'Invalid source type from registry.', 'native-content-relationships' ), array( 'status' => 500 ) );
 		}
 
 		// Validate to_type matches registry if applicable.
-		if ( $to_type !== $type_info['to'] ) {
+		if ( $type_info['to'] !== $to_type ) {
 			return new WP_Error(
 				'ncr_invalid_to_type',
+				/* translators: %s: expected relationship target type */
 				sprintf( __( 'Invalid target type for this relationship. Expected: %s', 'native-content-relationships' ), $type_info['to'] ),
 				array( 'status' => 400 )
 			);
@@ -560,11 +561,11 @@ class NATICORE_REST_API {
 	public function permissions_check( $request ) {
 		$method = $request->get_method();
 		$route  = $request->get_route();
- 
+
 		// Check if read-only mode is enabled.
 		$settings = NATICORE_Settings::get_instance();
 		$readonly = $settings->get_setting( 'readonly_mode', false );
- 
+
 		// If read-only mode is enabled, only allow GET requests.
 		if ( $readonly && 'GET' !== $method ) {
 			return new WP_Error(
@@ -573,7 +574,7 @@ class NATICORE_REST_API {
 				array( 'status' => 403 )
 			);
 		}
- 
+
 		// Check basic permissions.
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error(
@@ -582,7 +583,7 @@ class NATICORE_REST_API {
 				array( 'status' => 403 )
 			);
 		}
- 
+
 		// Additional checks for specific operations.
 		if ( strpos( $route, '/bulk' ) !== false ) {
 			// Bulk operations require higher permissions.
@@ -594,7 +595,7 @@ class NATICORE_REST_API {
 				);
 			}
 		}
- 
+
 		return true;
 	}
 
@@ -639,7 +640,7 @@ class NATICORE_REST_API {
 		if ( ! $request->get_param( 'naticore_relations' ) ) {
 			return $response;
 		}
-		$related = NATICORE_API::get_related( $post->ID, null, array( 'limit' => 100 ), 'all' );
+		$related                              = NATICORE_API::get_related( $post->ID, null, array( 'limit' => 100 ), 'all' );
 		$response->data['naticore_relations'] = $this->format_relations_for_embed( $related );
 		return $response;
 	}
@@ -656,7 +657,7 @@ class NATICORE_REST_API {
 		if ( ! $request->get_param( 'naticore_relations' ) ) {
 			return $response;
 		}
-		$related = NATICORE_API::get_related( $user->ID, null, array( 'limit' => 100 ), 'all' );
+		$related                              = NATICORE_API::get_related( $user->ID, null, array( 'limit' => 100 ), 'all' );
 		$response->data['naticore_relations'] = $this->format_relations_for_embed( $related );
 		return $response;
 	}
@@ -673,7 +674,7 @@ class NATICORE_REST_API {
 		if ( ! $request->get_param( 'naticore_relations' ) ) {
 			return $response;
 		}
-		$related = NATICORE_API::get_related( $term->term_id, null, array( 'limit' => 100 ), 'all' );
+		$related                              = NATICORE_API::get_related( $term->term_id, null, array( 'limit' => 100 ), 'all' );
 		$response->data['naticore_relations'] = $this->format_relations_for_embed( $related );
 		return $response;
 	}

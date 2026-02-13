@@ -102,7 +102,7 @@ class NATICORE_Admin {
 				<?php
 				foreach ( $relation_types as $type => $type_info ) :
 					$type_label = isset( $type_info['label'] ) ? $type_info['label'] : ucwords( str_replace( '_', ' ', $type ) );
-					$list_class  = 'naticore-relations-list';
+					$list_class = 'naticore-relations-list';
 					if ( $manual_order_enabled ) {
 						$list_class .= ' naticore-sortable';
 					}
@@ -125,7 +125,7 @@ class NATICORE_Admin {
 										$item_attrs .= ' data-relation-id="' . esc_attr( $rel->id ) . '"';
 									}
 									?>
-									<div <?php echo $item_attrs; ?>>
+									<div <?php echo $item_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr() above. ?>>
 										<span class="naticore-relation-title">
 											<span class="naticore-direction-indicator" title="<?php echo esc_attr( $is_bidirectional ? __( 'Bidirectional', 'native-content-relationships' ) : __( 'One-way', 'native-content-relationships' ) ); ?>">
 												<?php echo esc_html( $is_bidirectional ? '↔' : '→' ); ?>
@@ -227,10 +227,10 @@ class NATICORE_Admin {
 			'naticore-admin',
 			'naticoreData',
 			array(
-				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
-				'nonce'             => wp_create_nonce( 'naticore_ajax' ),
+				'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
+				'nonce'              => wp_create_nonce( 'naticore_ajax' ),
 				'manualOrderEnabled' => $manual_order_enabled,
-				'strings'           => array(
+				'strings'            => array(
 					'searching'     => __( 'Searching...', 'native-content-relationships' ),
 					'noResults'     => __( 'No results found.', 'native-content-relationships' ),
 					'suggesting'    => __( 'Suggesting...', 'native-content-relationships' ),
@@ -362,7 +362,7 @@ class NATICORE_Admin {
 			wp_send_json_error( array( 'message' => __( 'Invalid post.', 'native-content-relationships' ) ) );
 		}
 
-		$post = get_post( $current_post_id );
+		$post    = get_post( $current_post_id );
 		$exclude = array( $current_post_id );
 
 		// Already related post IDs (exclude so we don't suggest them again)
@@ -407,7 +407,7 @@ class NATICORE_Admin {
 			$args['tax_query'] = $tax_query;
 		}
 
-		$query = new WP_Query( $args );
+		$query   = new WP_Query( $args );
 		$results = array();
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
@@ -449,7 +449,7 @@ class NATICORE_Admin {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce checked above
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce checked above; values sanitized in loop (sanitize_key, absint).
 		$order_data = isset( $_POST['naticore_relation_order'] ) && is_array( $_POST['naticore_relation_order'] ) ? wp_unslash( $_POST['naticore_relation_order'] ) : array();
 		if ( empty( $order_data ) ) {
 			return;
@@ -459,18 +459,18 @@ class NATICORE_Admin {
 		$table = $wpdb->prefix . 'content_relations';
 
 		foreach ( $order_data as $type => $order_string ) {
-			$type   = sanitize_key( $type );
-			$ids    = array_map( 'absint', array_filter( explode( ',', $order_string ) ) );
+			$type        = sanitize_key( $type );
+			$ids         = array_map( 'absint', array_filter( explode( ',', $order_string ) ) );
 			$post_id_int = absint( $post_id );
 
 			foreach ( $ids as $position => $relation_id ) {
 				if ( ! $relation_id ) {
 					continue;
 				}
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Update order for this relation
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from prefix; update order for this relation.
 				$wpdb->query(
 					$wpdb->prepare(
-						"UPDATE `{$table}` SET relation_order = %d WHERE id = %d AND from_id = %d AND type = %s",
+						"UPDATE `{$table}` SET relation_order = %d WHERE id = %d AND from_id = %d AND type = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from prefix.
 						$position,
 						$relation_id,
 						$post_id_int,
@@ -543,9 +543,9 @@ class NATICORE_Admin {
 		// Delete transient so it only shows once
 		delete_transient( 'naticore_activation_notice' );
 
-		$settings_url   = admin_url( 'options-general.php?page=naticore-settings' );
+		$settings_url    = admin_url( 'options-general.php?page=naticore-settings' );
 		$get_started_url = admin_url( 'options-general.php?page=naticore-settings&tab=get_started' );
-		$docs_url       = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
+		$docs_url        = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
 		?>
 		<div class="notice notice-info is-dismissible">
 			<p>

@@ -42,9 +42,9 @@ class NATICORE_Duplicate_Post {
 	/**
 	 * Copy relations for Yoast Duplicate Post.
 	 *
-	 * @param int      $new_post_id New post ID.
-	 * @param WP_Post  $post        Original post.
-	 * @param string   $status      Destination status (e.g. 'draft').
+	 * @param int     $new_post_id New post ID.
+	 * @param WP_Post $post        Original post.
+	 * @param string  $status      Destination status (e.g. 'draft').
 	 */
 	public static function copy_relations_yoast( $new_post_id, $post, $status ) {
 		if ( ! $new_post_id || ! $post || ! isset( $post->ID ) ) {
@@ -76,7 +76,7 @@ class NATICORE_Duplicate_Post {
 	 * @param mixed  $meta_value Original post ID.
 	 */
 	public static function copy_relations_on_cdp_origin( $meta_id, $object_id, $meta_key, $meta_value ) {
-		if ( $meta_key !== '_cdp_origin' || ! $object_id || ! $meta_value ) {
+		if ( '_cdp_origin' !== $meta_key || ! $object_id || ! $meta_value ) {
 			return;
 		}
 		$origin_id = is_array( $meta_value ) ? (int) reset( $meta_value ) : (int) $meta_value;

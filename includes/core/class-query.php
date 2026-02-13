@@ -98,7 +98,7 @@ class NATICORE_Query {
 				}
 
 				// Direction filter
-				if ( isset( $wpcr['direction'] ) && $wpcr['direction'] === 'incoming' ) {
+				if ( isset( $wpcr['direction'] ) && 'incoming' === $wpcr['direction'] ) {
 					// For incoming, swap the join
 					// $wpdb->posts is safe - it's a WordPress core table name
 					$where = str_replace( "`{$wpdb->posts}`.ID = naticore_rel.to_id", "`{$wpdb->posts}`.ID = naticore_rel.from_id", $where );
@@ -131,7 +131,7 @@ class NATICORE_Query {
 				}
 
 				// Direction filter
-				if ( isset( $relation['direction'] ) && $relation['direction'] === 'incoming' ) {
+				if ( isset( $relation['direction'] ) && 'incoming' === $relation['direction'] ) {
 					// For incoming, swap the join
 					$where = str_replace( "`{$wpdb->posts}`.ID = naticore_rel.to_id", "`{$wpdb->posts}`.ID = naticore_rel.from_id", $where );
 					$where = str_replace( 'naticore_rel.from_id', 'naticore_rel.to_id', $where );
@@ -206,9 +206,9 @@ class NATICORE_Query {
 
 		// Determine index used
 		$index_used = 'from_id';
-		if ( isset( $query->query_vars['wpcr']['direction'] ) && $query->query_vars['wpcr']['direction'] === 'incoming' ) {
+		if ( isset( $query->query_vars['wpcr']['direction'] ) && 'incoming' === $query->query_vars['wpcr']['direction'] ) {
 			$index_used = 'to_id';
-		} elseif ( isset( $query->query_vars['content_relation']['direction'] ) && $query->query_vars['content_relation']['direction'] === 'incoming' ) {
+		} elseif ( isset( $query->query_vars['content_relation']['direction'] ) && 'incoming' === $query->query_vars['content_relation']['direction'] ) {
 			$index_used = 'to_id';
 		}
 		if ( $relation_type ) {

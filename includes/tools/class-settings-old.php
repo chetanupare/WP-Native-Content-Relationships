@@ -330,7 +330,7 @@ class NATICORE_Settings {
 			'enabled_post_types'       => array( 'post', 'page' ),
 			'default_direction'        => 'unidirectional',
 			'cleanup_on_delete'        => 'remove',
-			'ncr_max_relationships'        => 0,
+			'ncr_max_relationships'    => 0,
 			'prevent_circular'         => 1,
 			'debug_logging'            => 0,
 			'query_debug'              => 0,

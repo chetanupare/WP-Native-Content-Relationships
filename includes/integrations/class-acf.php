@@ -55,7 +55,7 @@ class NATICORE_ACF {
 
 		// Optional read-only sync (if enabled)
 		$settings = NATICORE_Settings::get_instance();
-		if ( $settings->get_setting( 'acf_sync_mode', 'off' ) === 'read_only' ) {
+		if ( 'read_only' === $settings->get_setting( 'acf_sync_mode', 'off' ) ) {
 			add_action( 'acf/update_value/type=relationship', array( $this, 'sync_acf_to_native' ), 10, 3 );
 		}
 	}
@@ -75,7 +75,7 @@ class NATICORE_ACF {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only tab parameter
 			$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
 			?>
-			<a href="?page=naticore-settings&tab=acf" class="nav-tab <?php echo esc_attr( $active_tab === 'acf' ? 'nav-tab-active' : '' ); ?>">
+			<a href="?page=naticore-settings&tab=acf" class="nav-tab <?php echo esc_attr( 'acf' === $active_tab ? 'nav-tab-active' : '' ); ?>">
 				<?php esc_html_e( 'ACF', 'native-content-relationships' ); ?>
 			</a>
 			<?php
@@ -192,7 +192,7 @@ class NATICORE_ACF {
 			$fields = acf_get_fields( $group['ID'] );
 			if ( $fields ) {
 				foreach ( $fields as $field ) {
-					if ( $field['type'] === 'relationship' ) {
+					if ( 'relationship' === $field['type'] ) {
 						$relationship_fields[] = array(
 							'label'     => $field['label'],
 							'name'      => $field['name'],
@@ -253,7 +253,7 @@ class NATICORE_ACF {
 
 			foreach ( $fields as $field_name => $value ) {
 				$field = get_field_object( $field_name, $post->ID );
-				if ( ! $field || $field['type'] !== 'relationship' ) {
+				if ( ! $field || 'relationship' !== $field['type'] ) {
 					continue;
 				}
 

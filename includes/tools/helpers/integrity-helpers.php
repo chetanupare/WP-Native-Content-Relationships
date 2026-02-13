@@ -67,18 +67,20 @@ function ncr_has_unregistered_type( $rel ) {
  */
 function ncr_get_exceeded_connections( $from_id, $type, $to_type, $limit ) {
 	global $wpdb;
-	
+
 	if ( $limit <= 0 ) {
 		return array();
 	}
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$ids = $wpdb->get_col( $wpdb->prepare(
-		"SELECT id FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s AND to_type = %s ORDER BY created_at ASC",
-		$from_id,
-		$type,
-		$to_type
-	) );
+	$ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT id FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s AND to_type = %s ORDER BY created_at ASC",
+			$from_id,
+			$type,
+			$to_type
+		)
+	);
 
 	if ( count( $ids ) > $limit ) {
 		// Return the most recent IDs that exceed the limit

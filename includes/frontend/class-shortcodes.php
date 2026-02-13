@@ -168,9 +168,12 @@ class NATICORE_Shortcodes {
 		}
 
 		if ( 'title' === $args['order'] ) {
-			usort( $posts, function ( $a, $b ) {
-				return strcmp( $a->post_title, $b->post_title );
-			} );
+			usort(
+				$posts,
+				function ( $a, $b ) {
+					return strcmp( $a->post_title, $b->post_title );
+				}
+			);
 		}
 
 		return $this->render_posts_output( $posts, $args );
@@ -265,9 +268,12 @@ class NATICORE_Shortcodes {
 		}
 
 		if ( 'name' === $args['order'] ) {
-			usort( $users, function ( $a, $b ) {
-				return strcmp( $a->display_name, $b->display_name );
-			} );
+			usort(
+				$users,
+				function ( $a, $b ) {
+					return strcmp( $a->display_name, $b->display_name );
+				}
+			);
 		}
 
 		return $this->render_users_output( $users, $args );
@@ -295,7 +301,7 @@ class NATICORE_Shortcodes {
 
 		foreach ( $users as $user ) {
 			$author_url = get_author_posts_url( $user->ID );
-			$html .= sprintf(
+			$html      .= sprintf(
 				'<li><a href="%s">%s</a></li>',
 				esc_url( $author_url ),
 				esc_html( $user->display_name )
@@ -349,9 +355,12 @@ class NATICORE_Shortcodes {
 		}
 
 		if ( 'name' === $args['order'] ) {
-			usort( $terms, function ( $a, $b ) {
-				return strcmp( $a->name, $b->name );
-			} );
+			usort(
+				$terms,
+				function ( $a, $b ) {
+					return strcmp( $a->name, $b->name );
+				}
+			);
 		}
 
 		return $this->render_terms_output( $terms, $args );

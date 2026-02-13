@@ -67,9 +67,9 @@ class NATICORE_SEO {
 		add_filter( 'the_content', array( $this, 'add_internal_links' ), 20 );
 
 		// Add schema references
-		if ( $this->plugin_type === 'yoast' ) {
+		if ( 'yoast' === $this->plugin_type ) {
 			add_filter( 'wpseo_schema_graph_pieces', array( $this, 'add_yoast_schema' ), 10, 2 );
-		} elseif ( $this->plugin_type === 'rankmath' ) {
+		} elseif ( 'rankmath' === $this->plugin_type ) {
 			add_filter( 'rank_math/schema/validated', array( $this, 'add_rankmath_schema' ), 10, 2 );
 		}
 
@@ -92,7 +92,7 @@ class NATICORE_SEO {
 
 		foreach ( $related as $rel ) {
 			$post = get_post( $rel['id'] );
-			if ( $post && $post->post_status === 'publish' ) {
+			if ( $post && 'publish' === $post->post_status ) {
 				$links[] = array(
 					'url'  => get_permalink( $rel['id'] ),
 					'text' => get_the_title( $rel['id'] ),
@@ -175,7 +175,7 @@ class NATICORE_SEO {
 		$related_articles = array();
 		foreach ( $related as $rel ) {
 			$related_post = get_post( $rel['id'] );
-			if ( $related_post && $related_post->post_status === 'publish' ) {
+			if ( $related_post && 'publish' === $related_post->post_status ) {
 				$related_articles[] = array(
 					'@type' => 'Article',
 					'url'   => get_permalink( $rel['id'] ),
