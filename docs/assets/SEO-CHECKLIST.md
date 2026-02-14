@@ -18,7 +18,7 @@ The VitePress config and theme already include the following. Use this list to v
 - **Breadcrumbs** — BreadcrumbList structured data is injected in `transformHead` so every page has breadcrumb JSON-LD (Home → section → page).
 - **FAQ schema** — The FAQ page (`/guide/faq`) gets FAQPage JSON-LD with main Q&As so it’s eligible for FAQ rich results in search.
 - **Internal linking** — “See also” blocks on key docs (e.g. [PHP API](/api/php-api), [Quick Start](/guide/quick-start), [Introduction](/guide/introduction)) link to other relevant pages.
-- **Sitemap** — Generated at `/sitemap.xml`; linked in head and in `robots.txt`.
+- **Sitemap** — Auto-generated at `/sitemap.xml` from all built pages (home, **blog** index and posts, guide, API, integrations, migration, etc.). Linked in head and in `robots.txt`. Entries are ordered (index → blog → guide → api → rest).
 - **Manifest** — `manifest.webmanifest` with name, short_name, description, icons, theme_color.
 
 ## Optional improvements

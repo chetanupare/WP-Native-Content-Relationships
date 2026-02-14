@@ -1,48 +1,61 @@
-/* Landing page (conversion-focused home) — loaded only on index */
+/* Landing page (home) — modern revamp, loaded only on index */
 
 .landing-content .hero-snippet {
-  margin: 1.5rem 0 2rem;
+  margin: 2rem 0 2.5rem;
   padding: 0;
 }
 
 .landing-content .hero-snippet .vp-code {
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--vp-c-divider);
 }
 
-.landing-content .hero-snippet + hr {
-  margin-top: 2rem;
+.dark .landing-content .hero-snippet .vp-code {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.landing-content .hero-snippet div[class*='language-'] {
+  overflow: hidden;
+}
+
+.landing-content .hero-snippet + hr,
+.landing-content .custom-block + hr {
+  margin-top: 2.5rem;
 }
 
 .landing-content h2 {
-  font-size: 1.35rem;
-  margin-top: 2.5rem;
+  font-size: 1.4rem;
+  margin-top: 2.75rem;
   margin-bottom: 1rem;
-  padding-bottom: 0.35rem;
+  padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--vp-c-divider);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .landing-content h2:first-of-type {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
 }
 
 .landing-content hr + h2 {
-  margin-top: 2.5rem;
+  margin-top: 2.75rem;
 }
 
 .landing-content ul {
   margin: 0.75rem 0 1.25rem;
-  padding-left: 1.25rem;
+  padding-left: 1.35rem;
 }
 
 .landing-content table {
-  margin: 1rem 0 1.5rem;
-  font-size: 0.9rem;
+  margin: 1.25rem 0 1.75rem;
+  font-size: 0.92rem;
 }
 
 .landing-content table th,
 .landing-content table td {
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.85rem;
 }
 
 .landing-content p + ul {
@@ -54,7 +67,12 @@
 }
 
 .landing-content hr {
-  margin: 2rem 0;
+  margin: 2.25rem 0;
   border: none;
   border-top: 1px solid var(--vp-c-divider);
+}
+
+/* Section breathing room */
+.landing-content .path-cards + hr {
+  margin-top: 2rem;
 }

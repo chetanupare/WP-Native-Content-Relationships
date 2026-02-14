@@ -16,12 +16,25 @@ export default defineConfig({
       hostname: SITE_URL,
       lastmod: true,
       transformItems: (items) =>
-        items.map((it) => {
-          const fullUrl = it.url.startsWith('http')
-            ? it.url
-            : SITE_URL + (it.url.startsWith('/') ? it.url : '/' + it.url);
-          return { ...it, url: fullUrl };
-        }),
+        items
+          .map((it) => {
+            const fullUrl = it.url.startsWith('http')
+              ? it.url
+              : SITE_URL + (it.url.startsWith('/') ? it.url : '/' + it.url);
+            return { ...it, url: fullUrl };
+          })
+          .sort((a, b) => {
+            // Prefer: index, blog, guide, api, then rest (alphabetically)
+            const order = (url) => {
+              if (url.endsWith('/') || url.endsWith('/index.html')) return 0;
+              if (url.includes('/blog')) return 1;
+              if (url.includes('/guide/')) return 2;
+              if (url.includes('/api/')) return 3;
+              return 4;
+            };
+            const o = order(a.url) - order(b.url);
+            return o !== 0 ? o : (a.url < b.url ? -1 : 1);
+          }),
     },
     head: [
       ['link', { rel: 'sitemap', type: 'application/xml', href: SITE_URL + '/sitemap.xml' }],
@@ -87,7 +100,14 @@ export default defineConfig({
           publisher: { '@id': SITE_URL + '/#organization' },
           potentialAction: {
             '@type': 'ReadAction',
-            target: [SITE_URL + '/', SITE_URL + '/guide/installation.html', SITE_URL + '/api/php-api.html'],
+            target: [
+              SITE_URL + '/',
+              SITE_URL + '/blog/',
+              SITE_URL + '/guide/quick-start.html',
+              SITE_URL + '/guide/installation.html',
+              SITE_URL + '/api/php-api.html',
+              SITE_URL + '/performance/benchmarks.html',
+            ],
           },
         }),
       ],
@@ -183,6 +203,7 @@ export default defineConfig({
       const rawPage = context.page.replace(/\/$/, '').replace(/\.md$/, '') || ''
       const segments = rawPage === 'index' || rawPage === '' ? [] : rawPage.split('/').filter(Boolean)
       const sectionLanding: Record<string, string> = {
+        blog: 'blog/index.html',
         guide: 'guide/introduction.html',
         api: 'api/php-api.html',
         architecture: 'architecture/overview.html',

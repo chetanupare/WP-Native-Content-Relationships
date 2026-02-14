@@ -1,9 +1,9 @@
-/* Modern docs theme — Native Content Relationships */
+/* Modern docs theme — Native Content Relationships (revamped) */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --vp-font-family-base: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --vp-font-family-base: 'Outfit', ui-sans-serif, system-ui, sans-serif;
   --vp-font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
   --vp-c-brand-1: #0d9488;
   --vp-c-brand-2: #0f766e;
@@ -17,9 +17,10 @@
   --vp-custom-block-tip-bg: rgba(13, 148, 136, 0.08);
   --vp-custom-block-warning-border: #eab308;
   --vp-custom-block-danger-border: #dc2626;
-  --doc-corner-radius: 12px;
+  --doc-corner-radius: 14px;
   --doc-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-  --doc-shadow-hover: 0 8px 32px rgba(13, 148, 136, 0.12);
+  --doc-shadow-hover: 0 12px 40px rgba(13, 148, 136, 0.15);
+  --doc-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .dark {
@@ -27,8 +28,9 @@
   --vp-c-brand-2: #14b8a6;
   --vp-c-brand-3: #5eead4;
   --vp-custom-block-tip-bg: rgba(45, 212, 191, 0.1);
-  --doc-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-  --doc-shadow-hover: 0 8px 32px rgba(45, 212, 191, 0.15);
+  --doc-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  --doc-shadow-hover: 0 12px 40px rgba(45, 212, 191, 0.12);
+  --doc-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Layout & typography */
@@ -39,7 +41,7 @@
 
 .vp-doc h1 {
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   margin-top: 0;
 }
 
@@ -48,6 +50,7 @@
   padding-top: 1.5em;
   margin-top: 2em;
   border-top: 1px solid var(--vp-c-divider);
+  letter-spacing: -0.02em;
 }
 
 .vp-doc h2:first-of-type {
@@ -59,16 +62,17 @@
 .vp-doc h3 {
   font-weight: 600;
   margin-top: 1.5em;
+  letter-spacing: -0.01em;
 }
 
 .vp-doc p {
-  line-height: 1.7;
+  line-height: 1.72;
 }
 
 .vp-doc table {
   border-radius: var(--doc-corner-radius);
   overflow: hidden;
-  box-shadow: var(--doc-shadow);
+  box-shadow: var(--doc-shadow-card);
 }
 
 .vp-doc th,
@@ -83,11 +87,11 @@
 /* Code */
 .vp-doc div[class*='language-'] {
   border-radius: var(--doc-corner-radius);
-  box-shadow: var(--doc-shadow);
+  box-shadow: var(--doc-shadow-card);
 }
 
 .vp-doc :not(pre) > code {
-  padding: 0.2em 0.4em;
+  padding: 0.22em 0.5em;
   border-radius: 6px;
   font-size: 0.9em;
   background: var(--vp-c-bg-soft);
@@ -102,7 +106,7 @@
 /* Custom blocks (tip, warning, danger) */
 .vp-doc .custom-block {
   border-radius: var(--doc-corner-radius);
-  padding: 1rem 1.25rem;
+  padding: 1.1rem 1.35rem;
   margin: 1.5rem 0;
   border-left: 4px solid;
 }
@@ -120,36 +124,40 @@
   border-left-color: var(--vp-custom-block-danger-border);
 }
 
-/* Path / feature cards — modern */
+/* Path / feature cards — modern revamp */
 .path-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.25rem;
   margin: 2.5rem 0;
 }
 
 .path-card {
   display: block;
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 1.5rem 1.25rem;
   border-radius: var(--doc-corner-radius);
   background: var(--vp-c-bg-soft);
   border: 1px solid var(--vp-c-divider);
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  border-left: 4px solid var(--vp-c-brand-1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   text-decoration: none;
   color: var(--vp-c-text-1);
+  box-shadow: var(--doc-shadow-card);
 }
 
 .path-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--doc-shadow-hover);
-  border-color: var(--vp-c-brand-1);
+  border-left-color: var(--vp-c-brand-2);
+  border-color: rgba(13, 148, 136, 0.25);
 }
 
 .path-card h4 {
   margin: 0 0 0.5rem;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   font-weight: 600;
   color: var(--vp-c-brand-1);
+  letter-spacing: -0.01em;
 }
 
 .path-card p {
@@ -159,7 +167,17 @@
   color: var(--vp-c-text-2);
 }
 
-/* Hero (home) */
+/* Hero (home) — larger, bolder */
+.VPHome .VPHero {
+  padding: 3rem 1.5rem 2.5rem;
+  background: linear-gradient(180deg, var(--vp-c-bg-soft) 0%, transparent 100%);
+  border-radius: 0 0 var(--doc-corner-radius) var(--doc-corner-radius);
+}
+
+.dark .VPHome .VPHero {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+}
+
 .VPHero .name {
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -170,14 +188,73 @@
 }
 
 .VPHero .text {
-  font-size: 1.15rem;
-  line-height: 1.6;
-  color: var(--vp-c-text-2);
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--vp-c-text-1);
+  margin-top: 0.5rem;
 }
 
 .VPHero .tagline {
-  font-size: 1rem;
-  opacity: 0.9;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
+  margin-top: 0.75rem;
+  max-width: 36em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.VPHero .actions {
+  margin-top: 1.75rem;
+  gap: 0.75rem;
+}
+
+.VPHero .vp-button {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.6em 1.25em;
+  font-size: 0.95rem;
+}
+
+/* Default theme feature strip (VPFeature) */
+.VPHome .VPFeatures {
+  padding: 2rem 1.5rem 2.5rem;
+}
+
+.VPHome .VPFeature {
+  border-radius: var(--doc-corner-radius);
+  padding: 1.5rem;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: var(--doc-shadow-card);
+}
+
+.VPHome .VPFeature:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--doc-shadow-hover);
+  border-color: rgba(13, 148, 136, 0.2);
+}
+
+.VPHome .VPFeature .icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.VPHome .VPFeature .title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--vp-c-brand-1);
+  letter-spacing: -0.01em;
+}
+
+.VPHome .VPFeature .details {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--vp-c-text-2);
+  margin-top: 0.35rem;
 }
 
 /* Nav & sidebar */
@@ -218,7 +295,7 @@
 
 /* Footer */
 .VPFooter {
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 1.5rem;
   margin-top: 3rem;
   border-top: 1px solid var(--vp-c-divider);
 }
@@ -230,7 +307,7 @@
 
 /* Buttons */
 .vp-doc .vp-button {
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 600;
 }
 

@@ -18,7 +18,23 @@ hero:
       text: WordPress.org
       link: https://wordpress.org/plugins/native-content-relationships/
       external: true
-features: []
+features:
+  - icon: 🧩
+    title: One API, many surfaces
+    details: ncr_add_relation, ncr_get_related, WP_Query content_relation. PHP, REST, shortcodes, Gutenberg, Elementor.
+    link: /api/php-api
+  - icon: ⚡
+    title: Performance at scale
+    details: Indexed relationship table. Sub-2ms lookups at 1M rows. Benchmarks and scaling guide.
+    link: /performance/benchmarks
+  - icon: 🔄
+    title: Migrate from meta & ACF
+    details: Escape technical debt. Migration guides for post meta, ACF relationship fields, and P2P.
+    link: /migration/from-acf
+  - icon: 🔌
+    title: Integrations
+    details: WooCommerce, Elementor, Gutenberg, WPML, headless REST. Same relationships everywhere.
+    link: /integrations/gutenberg
 ---
 
 <div class="landing-content">
@@ -29,6 +45,46 @@ features: []
 ncr_add_relation( 123, 'post', 456, 'post', 'related_to' );
 $related = ncr_get_related( 123, 'post', 'related_to', [ 'limit' => 10 ] );
 ```
+
+</div>
+
+::: tip Stability promise
+**Schema stable from 1.x onward.** Backward compatibility guaranteed.
+:::
+
+## Pick your path
+
+<div class="path-cards">
+
+<a class="path-card" href="/guide/quick-start">
+  <h4>Quick Start</h4>
+  <p>Install, add your first relationship in the UI, and show it with a shortcode or block.</p>
+</a>
+
+<a class="path-card" href="/guide/introduction">
+  <h4>Introduction</h4>
+  <p>What is NCR, minimal example, and next steps to installation and API.</p>
+</a>
+
+<a class="path-card" href="/guide/relationships">
+  <h4>Relationships</h4>
+  <p>Create, query, and remove from code. PHP, WP_Query, shortcodes, theme example.</p>
+</a>
+
+<a class="path-card" href="/guide/use-cases">
+  <h4>Use Cases</h4>
+  <p>Products & accessories, courses & lessons, related articles, favorites, WooCommerce.</p>
+</a>
+
+<a class="path-card" href="/guide/faq">
+  <h4>FAQ</h4>
+  <p>WooCommerce, ACF migration, page builders, users & terms, data privacy, schema stability.</p>
+</a>
+
+<a class="path-card" href="/performance/benchmarks">
+  <h4>Benchmarks</h4>
+  <p>Latency at 100k and 1M rows, memory usage, and comparison with meta-based approaches.</p>
+</a>
 
 </div>
 

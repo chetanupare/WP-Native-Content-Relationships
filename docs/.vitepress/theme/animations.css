@@ -1,0 +1,146 @@
+/* Background & motion animations — relationship / connection theme */
+
+/* ---- Keyframes: background ---- */
+@keyframes gradientShift {
+  0%, 100% { opacity: 0.6; transform: scale(1) translate(0, 0); }
+  33%      { opacity: 0.8; transform: scale(1.05) translate(2%, -1%); }
+  66%      { opacity: 0.7; transform: scale(0.98) translate(-1%, 2%); }
+}
+
+@keyframes meshMove {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  25%      { transform: translate(8%, -12%) scale(1.05); opacity: 0.5; }
+  50%      { transform: translate(-5%, 5%) scale(0.95); opacity: 0.35; }
+  75%      { transform: translate(-10%, -8%) scale(1.02); opacity: 0.45; }
+}
+
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
+  33%      { transform: translate(-8%, 10%) scale(1.08); opacity: 0.45; }
+  66%      { transform: translate(12%, 5%) scale(0.92); opacity: 0.3; }
+}
+
+@keyframes orbFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+  50%      { transform: translate(-6%, -10%) scale(1.1); opacity: 0.4; }
+}
+
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.03; }
+  50%      { opacity: 0.06; }
+}
+
+/* ---- Keyframes: entrance (Framer-style) ---- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---- Hero: animated gradient background ---- */
+.VPHome .VPHero {
+  position: relative;
+  overflow: hidden;
+}
+
+.VPHome .VPHero::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: 
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(13, 148, 136, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(20, 184, 166, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 50% 80%, rgba(15, 118, 110, 0.06) 0%, transparent 50%);
+  background-size: 200% 200%, 200% 200%, 200% 200%;
+  animation: meshMove 18s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dark .VPHome .VPHero::before {
+  background: 
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(45, 212, 191, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(20, 184, 166, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 50% 80%, rgba(94, 234, 212, 0.04) 0%, transparent 50%);
+  background-size: 200% 200%, 200% 200%, 200% 200%;
+}
+
+/* ---- Hero: staggered entrance ---- */
+.VPHome .VPHero .text {
+  animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.VPHome .VPHero .tagline {
+  animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.VPHome .VPHero .actions {
+  animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+/* ---- Features: stagger ---- */
+.VPHome .VPFeatures .VPFeature:nth-child(1) { animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+.VPHome .VPFeatures .VPFeature:nth-child(2) { animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both; }
+.VPHome .VPFeatures .VPFeature:nth-child(3) { animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
+.VPHome .VPFeatures .VPFeature:nth-child(4) { animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both; }
+
+/* ---- Landing content: hero snippet + path cards stagger ---- */
+.landing-content .hero-snippet {
+  animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+.landing-content .custom-block.tip {
+  animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+
+.landing-content .path-cards .path-card:nth-child(1) { animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both; }
+.landing-content .path-cards .path-card:nth-child(2) { animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.52s both; }
+.landing-content .path-cards .path-card:nth-child(3) { animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.59s both; }
+.landing-content .path-cards .path-card:nth-child(4) { animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.66s both; }
+.landing-content .path-cards .path-card:nth-child(5) { animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.73s both; }
+.landing-content .path-cards .path-card:nth-child(6) { animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.8s both; }
+
+/* ---- Section headings: subtle fade when they enter (reduce motion optional) ---- */
+.landing-content h2 {
+  animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .VPHome .VPHero::before,
+  .VPHome .VPHero .text,
+  .VPHome .VPHero .tagline,
+  .VPHome .VPHero .actions,
+  .VPHome .VPFeatures .VPFeature,
+  .landing-content .hero-snippet,
+  .landing-content .custom-block.tip,
+  .landing-content .path-cards .path-card,
+  .landing-content h2 {
+    animation: none;
+  }
+}

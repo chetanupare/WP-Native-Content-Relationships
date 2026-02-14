@@ -30,6 +30,7 @@ The first time you use this, you may need to approve the **github-pages** enviro
 
 - **Sitemap URL (submit this in Google Search Console):**  
   `https://chetanupare.github.io/WP-Native-Content-Relationships/sitemap.xml`
+- The sitemap is **auto-generated** by VitePress on each build and includes **all pages**: home, **blog** (index + all posts), guide, API, integrations, migration, performance, tools, etc. Entries are sorted (index → blog → guide → api → rest).
 - **robots.txt** in the build already contains:  
   `Sitemap: https://chetanupare.github.io/WP-Native-Content-Relationships/sitemap.xml`
 - If Search Console says "Sitemap could not be read", confirm the URL above returns XML (not 404 or HTML). After a fresh deploy, wait a few minutes and try again.
