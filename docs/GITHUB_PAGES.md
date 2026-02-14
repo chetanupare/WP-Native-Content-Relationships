@@ -26,3 +26,11 @@ No environment approval or "GitHub Actions" source is needed. After the workflow
 - Wait 1–2 minutes after a successful run.
 
 **Manual deploy:** Actions → **GitHub Pages** → **Run workflow**.
+
+## Sitemap & Search Console
+
+- **Sitemap URL (submit this in Google Search Console):**  
+  `https://chetanupare.github.io/WP-Native-Content-Relationships/sitemap.xml`
+- **robots.txt** in the build already contains:  
+  `Sitemap: https://chetanupare.github.io/WP-Native-Content-Relationships/sitemap.xml`
+- If Search Console says "Sitemap could not be read", confirm the URL above returns XML (not 404 or HTML). After a fresh deploy, wait a few minutes and try again.

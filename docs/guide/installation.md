@@ -25,4 +25,9 @@ description: Install Native Content Relationships from WordPress.org or GitHub. 
 
 No build step is required; the plugin runs as standard WordPress PHP.
 
+## After activation
+
+- **Settings → Content Relationships** — Configure relation types, post types, and optional tools (import/export, auto-relations).
+- The relationship panel appears in the post editor, user profile, and term edit screens (depending on configuration).
+
 Next: [Quick Start](/guide/quick-start)

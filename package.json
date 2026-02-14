@@ -7,7 +7,7 @@
   },
   "scripts": {
     "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "docs:build": "vitepress build docs && node scripts/format-sitemap.mjs",
     "docs:preview": "vitepress preview docs",
     "docs:deploy": "npm run docs:build && gh-pages -d docs/.vitepress/dist -r https://github.com/chetanupare/WP-Native-Content-Relationships.git"
   },

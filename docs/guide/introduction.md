@@ -27,4 +27,8 @@ $related = ncr_get_related( 123, 'post', 'related_to', [ 'limit' => 10 ] );
 - [Installation](/guide/installation) — Install the plugin
 - [Quick Start](/guide/quick-start) — First relationship in minutes
 - [Relationships](/guide/relationships) — Create, query, remove from code
+- [Use Cases](/guide/use-cases) — Products, courses, related articles, favorites
+- [Widget](/guide/widget) — Sidebar widget for related posts
+- [FAQ](/guide/faq) — Common questions
 - [PHP API](/api/php-api) — Full API reference
+- [Admin & Tools](/tools/admin-tools) — Overview, integrity, import/export

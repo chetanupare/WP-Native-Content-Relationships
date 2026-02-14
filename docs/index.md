@@ -55,6 +55,16 @@ features:
   <p>Create, query, and remove from code. PHP, WP_Query, shortcodes, theme example.</p>
 </a>
 
+<a class="path-card" href="/guide/use-cases">
+  <h4>Use Cases</h4>
+  <p>Products & accessories, courses & lessons, related articles, favorites, WooCommerce, multilingual.</p>
+</a>
+
+<a class="path-card" href="/guide/faq">
+  <h4>FAQ</h4>
+  <p>WooCommerce, ACF migration, page builders, users & terms, data privacy, schema stability.</p>
+</a>
+
 </div>
 
 ---

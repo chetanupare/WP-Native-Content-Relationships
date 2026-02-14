@@ -10,24 +10,33 @@ const DESCRIPTION =
 export default defineConfig({
     title: 'Native Content Relationships',
     description: DESCRIPTION,
+    titleTemplate: '%s | Native Content Relationships',
     base: BASE,
     sitemap: {
-      hostname: SITE_URL + '/',
+      hostname: SITE_URL,
       lastmod: true,
       transformItems: (items) =>
-        items.map((it) => ({
-          ...it,
-          url: it.url.startsWith('http') ? it.url : SITE_URL + (it.url.startsWith('/') ? it.url : '/' + it.url),
-        })),
+        items.map((it) => {
+          const fullUrl = it.url.startsWith('http')
+            ? it.url
+            : SITE_URL + (it.url.startsWith('/') ? it.url : '/' + it.url);
+          return { ...it, url: fullUrl };
+        }),
     },
     head: [
+      ['link', { rel: 'sitemap', type: 'application/xml', href: SITE_URL + '/sitemap.xml' }],
+      // Favicon: SVG (primary), ICO fallback and apple-touch-icon for SEO and bookmarks
       ['link', { rel: 'icon', type: 'image/svg+xml', href: BASE + 'wordpress-logo-svgrepo-com.svg' }],
+      ['link', { rel: 'icon', type: 'image/x-icon', href: BASE + 'favicon.ico' }],
+      ['link', { rel: 'apple-touch-icon', href: BASE + 'apple-touch-icon.png' }],
       ['link', { rel: 'manifest', href: BASE + 'manifest.webmanifest' }],
       ['meta', { name: 'theme-color', content: '#0d9488' }],
+      ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1' }],
       ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
       ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
       ['meta', { name: 'author', content: 'Native Content Relationships' }],
       ['meta', { name: 'robots', content: 'index, follow' }],
+      ['meta', { name: 'format-detection', content: 'telephone=no' }],
       // Title & description (default; overridden per-page in transformHead)
       ['meta', { name: 'description', content: DESCRIPTION }],
       // Canonical: set only in transformHead (per-page) to avoid duplicate indexing; supports versioned docs via CANONICAL_BASE
@@ -38,6 +47,7 @@ export default defineConfig({
       ['meta', { property: 'og:description', content: DESCRIPTION }],
       ['meta', { property: 'og:image', content: SITE_URL + '/wordpress-logo-svgrepo-com.svg' }],
       ['meta', { property: 'og:image:alt', content: 'Native Content Relationships' }],
+      ['meta', { property: 'og:image:type', content: 'image/svg+xml' }],
       ['meta', { property: 'og:locale', content: 'en_US' }],
       ['meta', { property: 'og:site_name', content: 'Native Content Relationships' }],
       // Twitter Card (default)
@@ -138,6 +148,7 @@ export default defineConfig({
         ['meta', { property: 'og:description', content: description }],
         ['meta', { property: 'og:image', content: imageUrl }],
         ['meta', { property: 'og:image:alt', content: title }],
+        ['meta', { property: 'og:image:type', content: 'image/svg+xml' }],
         ['meta', { property: 'og:locale', content: 'en_US' }],
         ['meta', { property: 'og:site_name', content: 'Native Content Relationships' }],
         ['meta', { name: 'twitter:card', content: 'summary' }],
@@ -190,14 +201,65 @@ export default defineConfig({
             { text: 'Installation', link: '/guide/installation' },
             { text: 'Quick Start', link: '/guide/quick-start' },
             { text: 'Relationships', link: '/guide/relationships' },
+            { text: 'Use Cases', link: '/guide/use-cases' },
+            { text: 'Widget', link: '/guide/widget' },
+            { text: 'FAQ', link: '/guide/faq' },
+            { text: 'Troubleshooting', link: '/guide/troubleshooting' },
           ],
         },
         {
           text: 'API',
           items: [
             { text: 'PHP API', link: '/api/php-api' },
+            { text: 'Fluent API', link: '/api/fluent-api' },
             { text: 'WP_Query', link: '/api/wp-query' },
             { text: 'REST API', link: '/api/rest-api' },
+            { text: 'Shortcodes', link: '/api/shortcodes' },
+            { text: 'WP-CLI', link: '/api/wp-cli' },
+            { text: 'Hooks & Filters', link: '/api/hooks-filters' },
+          ],
+        },
+        {
+          text: 'Integrations',
+          items: [
+            { text: 'Gutenberg', link: '/integrations/gutenberg' },
+            { text: 'Elementor', link: '/integrations/elementor' },
+            { text: 'WooCommerce', link: '/integrations/woocommerce' },
+            { text: 'Multilingual', link: '/integrations/multilingual' },
+            { text: 'SEO (Yoast & Rank Math)', link: '/integrations/seo' },
+            { text: 'Duplicate Post', link: '/integrations/duplicate-post' },
+          ],
+        },
+        {
+          text: 'Tools',
+          items: [
+            { text: 'Admin & Tools', link: '/tools/admin-tools' },
+          ],
+        },
+        {
+          text: 'Extending',
+          items: [
+            { text: 'Custom Types', link: '/extending/custom-types' },
+            { text: 'Extension Hooks', link: '/extending/extension-hooks' },
+            { text: 'Building Addons', link: '/extending/building-addons' },
+            { text: 'Capabilities', link: '/extending/capabilities' },
+          ],
+        },
+        {
+          text: 'Core concepts',
+          items: [
+            { text: 'Relationship types', link: '/core-concepts/relationship-types' },
+            { text: 'Direction', link: '/core-concepts/direction' },
+            { text: 'Database schema', link: '/core-concepts/database-schema' },
+            { text: 'Architecture', link: '/core-concepts/architecture' },
+          ],
+        },
+        {
+          text: 'Migration',
+          items: [
+            { text: 'From ACF', link: '/migration/from-acf' },
+            { text: 'From post meta', link: '/migration/from-meta' },
+            { text: 'From P2P', link: '/migration/from-posts-2-posts' },
           ],
         },
         {
@@ -212,6 +274,8 @@ export default defineConfig({
           text: 'Performance',
           items: [
             { text: 'Benchmarks', link: '/performance/benchmarks' },
+            { text: 'Scaling guide', link: '/performance/scaling-guide' },
+            { text: 'Indexing', link: '/performance/indexing' },
           ],
         },
       ],

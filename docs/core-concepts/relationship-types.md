@@ -1,12 +1,13 @@
 ---
 title: Relationship Types
+description: Built-in and custom relation types — post–post, user–post, post–term. Direction, constraints, ncr_register_relation_type.
 ---
 
 # Relationship Types
 
 Relationship types define the *kind* of link between two objects (e.g. "related to", "parent of").
 
-## Built-in types
+## Built-in types (post–post)
 
 | Type | Direction | Typical use |
 |------|-----------|-------------|
@@ -14,6 +15,20 @@ Relationship types define the *kind* of link between two objects (e.g. "related 
 | **parent_of** | Unidirectional | Parent–child (e.g. course → lessons) |
 | **references** | Unidirectional | Citations, references |
 | **depends_on** | Unidirectional | Dependencies |
+
+## Built-in types (user–post)
+
+| Type | Direction | Typical use |
+|------|-----------|-------------|
+| **favorite_posts** | User → post | User’s favorite posts |
+| **bookmarked_by** | User → post | User bookmarks (same storage, different label) |
+| **authored_by** | Post → user | Multiple authors / contributors |
+
+## Built-in types (post–term)
+
+| Type | Direction | Typical use |
+|------|-----------|-------------|
+| **categorized_as** | Post → term | Featured categories, curated collections |
 
 ## Object types
 

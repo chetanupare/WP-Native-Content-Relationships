@@ -1,5 +1,6 @@
 ---
 title: WP-CLI
+description: content-relations and wpcr commands — list, add, remove, count, check, sync, schema. Batch import and integrity.
 ---
 
 # WP-CLI
@@ -14,8 +15,10 @@ The plugin registers the `content-relations` command group. All examples assume 
 | `wp content-relations add FROM_ID TO_ID --type=TYPE` | Add one relation |
 | `wp content-relations remove FROM_ID TO_ID --type=TYPE` | Remove one relation |
 | `wp content-relations count --post=ID [--type=TYPE]` | Count relations |
-| `wp content-relations check [--fix] [--verbose]` | Integrity check (optionally fix) |
+| `wp content-relations check [--fix] [--verbose] [--batch-size=N]` | Integrity check (optionally fix invalid/orphaned rows) |
+| `wp content-relations sync [--dry-run] [--batch-size=N]` | Same as check; use `--dry-run` to preview, no fix |
 | `wp content-relations schema [--format=json]` | Export relation type schema |
+| `wpcr` | Short alias for `content-relations` (e.g. `wpcr list --post=123`) |
 
 Run `wp content-relations --help` and `wp content-relations <command> --help` for full options.
 
@@ -56,6 +59,14 @@ wp content-relations count --post=123 --type=related_to
 # Check DB integrity (orphaned rows, missing posts); fix with --fix
 wp content-relations check --verbose
 wp content-relations check --fix
+
+# Sync: same as check; --dry-run previews without fixing
+wp content-relations sync --dry-run
+wp content-relations sync --batch-size=500
+
+# Short alias
+wpcr list --post=123
+wpcr add 123 456 related_to
 ```
 
 ## Schema export
