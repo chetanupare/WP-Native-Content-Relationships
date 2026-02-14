@@ -257,3 +257,20 @@
 .feature-pill strong {
   color: var(--vp-c-brand-1);
 }
+
+/* Blog list (blog index) */
+.vp-doc .blog-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 1.5rem 0;
+}
+
+.vp-doc .blog-list li {
+  margin: 0.75rem 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.vp-doc .blog-list li:last-child {
+  border-bottom: none;
+}

@@ -1,0 +1,60 @@
+/* Landing page (conversion-focused home) — loaded only on index */
+
+.landing-content .hero-snippet {
+  margin: 1.5rem 0 2rem;
+  padding: 0;
+}
+
+.landing-content .hero-snippet .vp-code {
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.landing-content .hero-snippet + hr {
+  margin-top: 2rem;
+}
+
+.landing-content h2 {
+  font-size: 1.35rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.landing-content h2:first-of-type {
+  margin-top: 1.5rem;
+}
+
+.landing-content hr + h2 {
+  margin-top: 2.5rem;
+}
+
+.landing-content ul {
+  margin: 0.75rem 0 1.25rem;
+  padding-left: 1.25rem;
+}
+
+.landing-content table {
+  margin: 1rem 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.landing-content table th,
+.landing-content table td {
+  padding: 0.5rem 0.75rem;
+}
+
+.landing-content p + ul {
+  margin-top: 0.5rem;
+}
+
+.landing-content a {
+  font-weight: 500;
+}
+
+.landing-content hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid var(--vp-c-divider);
+}

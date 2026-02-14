@@ -219,6 +219,10 @@ export default defineConfig({
         ['script', { type: 'application/ld+json' }, JSON.stringify(webPage)],
         ['script', { type: 'application/ld+json' }, JSON.stringify(breadcrumb)],
       ]
+      // Landing page styles (conversion-focused home only)
+      if (rawPage === '' || rawPage === 'index') {
+        head.push(['link', { rel: 'stylesheet', href: BASE + 'landing.css' }])
+      }
       // FAQPage JSON-LD (FAQ page only) for FAQ rich results
       if (rawPage === 'guide/faq') {
         const faqMainEntity = [
@@ -241,8 +245,20 @@ export default defineConfig({
     },
     themeConfig: {
       logo: '/WP-Native-Content-Relationships/wordpress-logo-svgrepo-com.svg',
+      // Giscus (GitHub Discussions comments). Get repo-id and category-id from https://giscus.app after enabling Discussions and installing the Giscus app.
+      giscus: {
+        repo: 'chetanupare/WP-Native-Content-Relationships',
+        repoId: '', // from giscus.app
+        category: 'Announcements',
+        categoryId: '', // from giscus.app
+        mapping: 'pathname',
+        theme: 'preferred_color_scheme',
+        lang: 'en',
+      },
       nav: [
+        { text: 'Get Started', link: '/guide/quick-start' },
         { text: 'Guide', link: '/guide/introduction' },
+        { text: 'Blog', link: '/blog/' },
         { text: 'API', link: '/api/php-api' },
         { text: 'Architecture', link: '/architecture/overview' },
         { text: 'Performance', link: '/performance/benchmarks' },
@@ -255,6 +271,16 @@ export default defineConfig({
         },
       ],
       sidebar: [
+        {
+          text: 'Blog',
+          items: [
+            { text: 'Blog', link: '/blog/' },
+            { text: 'Scaling Relational Queries in WordPress', link: '/blog/scaling-relational-queries' },
+            { text: 'Modeling Complex Content in WordPress Properly', link: '/blog/modeling-complex-content-properly' },
+            { text: 'Stop Using Post Meta for Relationships at Scale', link: '/blog/stop-using-post-meta-for-relationships' },
+            { text: 'Welcome', link: '/blog/welcome' },
+          ],
+        },
         {
           text: 'Guide',
           items: [
