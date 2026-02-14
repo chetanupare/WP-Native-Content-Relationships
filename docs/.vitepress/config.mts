@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig, type HeadConfig } from 'vitepress'
 
 const SITE_URL = 'https://chetanupare.github.io/WP-Native-Content-Relationships'
 const BASE = '/WP-Native-Content-Relationships/'
@@ -12,6 +12,7 @@ export default defineConfig({
     description: DESCRIPTION,
     titleTemplate: '%s | Native Content Relationships',
     base: BASE,
+    cleanUrls: true,
     sitemap: {
       hostname: SITE_URL,
       lastmod: true,
@@ -26,7 +27,7 @@ export default defineConfig({
           .sort((a, b) => {
             // Prefer: index, blog, guide, api, then rest (alphabetically)
             const order = (url) => {
-              if (url.endsWith('/') || url.endsWith('/index.html')) return 0;
+              if (url.endsWith('/')) return 0;
               if (url.includes('/blog')) return 1;
               if (url.includes('/guide/')) return 2;
               if (url.includes('/api/')) return 3;
@@ -103,10 +104,10 @@ export default defineConfig({
             target: [
               SITE_URL + '/',
               SITE_URL + '/blog/',
-              SITE_URL + '/guide/quick-start.html',
-              SITE_URL + '/guide/installation.html',
-              SITE_URL + '/api/php-api.html',
-              SITE_URL + '/performance/benchmarks.html',
+              SITE_URL + '/guide/quick-start',
+              SITE_URL + '/guide/installation',
+              SITE_URL + '/api/php-api',
+              SITE_URL + '/performance/benchmarks',
             ],
           },
         }),
@@ -153,18 +154,26 @@ export default defineConfig({
       ],
     ],
     transformHead(context) {
-      // Canonical page URL: strip .md, use .html (cleanUrls false), index => /
-      let path = context.page.replace(/\/$/, '').replace(/\.md$/, '') || ''
-      if (path === 'index' || path === '') path = '/'
-      else path = (path.startsWith('/') ? path : '/' + path) + '.html'
-      // Use CANONICAL_BASE so versioned docs (e.g. /v1/, /v2/) can point canonicals to preferred version
-      const pageUrl = path === '/' ? CANONICAL_BASE + '/' : CANONICAL_BASE + path
-      const title = context.title || 'Native Content Relationships'
+      // Canonical page URL: clean URLs (cleanUrls: true) — no .html; index => /, blog index => /blog/
+      const rawPage = context.page.replace(/\/$/, '').replace(/\.md$/, '') || ''
+      let pageUrl: string
+      if (rawPage === 'index' || rawPage === '') {
+        pageUrl = CANONICAL_BASE + '/'
+      } else if (rawPage === 'blog' || rawPage === 'blog/index') {
+        pageUrl = CANONICAL_BASE + '/blog/'
+      } else {
+        const path = rawPage.startsWith('/') ? rawPage.slice(1) : rawPage
+        pageUrl = CANONICAL_BASE + '/' + path
+      }
+      // Ensure title is never empty or %s (fixes Google "broken %s title" on blog)
+      let title = context.title || 'Native Content Relationships'
+      if (typeof title !== 'string' || title.includes('%s') || !title.trim()) title = 'Native Content Relationships'
+      if ((rawPage === 'blog' || rawPage === 'blog/index') && title === 'Native Content Relationships') title = 'Blog'
       const description = context.pageData?.description || DESCRIPTION
       const lastUpdated = context.pageData?.lastUpdated
       const imageUrl = SITE_URL + '/wordpress-logo-svgrepo-com.svg'
       // Per-page meta: description, Open Graph, Twitter Card (override defaults)
-      const meta = [
+      const meta: HeadConfig[] = [
         ['meta', { name: 'description', content: description }],
         // Single canonical per page (prevents duplicate indexing; critical if docs are versioned)
         ['link', { rel: 'canonical', href: pageUrl }],
@@ -199,21 +208,20 @@ export default defineConfig({
           dateModified: new Date(lastUpdated).toISOString(),
         }),
       }
-      // BreadcrumbList JSON-LD (every page)
-      const rawPage = context.page.replace(/\/$/, '').replace(/\.md$/, '') || ''
+      // BreadcrumbList JSON-LD (every page) — clean URLs
       const segments = rawPage === 'index' || rawPage === '' ? [] : rawPage.split('/').filter(Boolean)
       const sectionLanding: Record<string, string> = {
-        blog: 'blog/index.html',
-        guide: 'guide/introduction.html',
-        api: 'api/php-api.html',
-        architecture: 'architecture/overview.html',
-        performance: 'performance/benchmarks.html',
-        integrations: 'integrations/gutenberg.html',
-        migration: 'migration/from-acf.html',
-        extending: 'extending/custom-types.html',
-        'core-concepts': 'core-concepts/relationship-types.html',
-        'getting-started': 'getting-started/quick-start.html',
-        tools: 'tools/admin-tools.html',
+        blog: 'blog/',
+        guide: 'guide/introduction',
+        api: 'api/php-api',
+        architecture: 'architecture/overview',
+        performance: 'performance/benchmarks',
+        integrations: 'integrations/gutenberg',
+        migration: 'migration/from-acf',
+        extending: 'extending/custom-types',
+        'core-concepts': 'core-concepts/relationship-types',
+        'getting-started': 'getting-started/quick-start',
+        tools: 'tools/admin-tools',
       }
       const segmentLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, ' ')
       const breadcrumbItems: { position: number; name: string; item: string }[] = [
@@ -222,7 +230,7 @@ export default defineConfig({
       segments.forEach((seg, i) => {
         const isLast = i === segments.length - 1
         const name = isLast ? title : segmentLabel(seg)
-        const url = isLast ? pageUrl : CANONICAL_BASE + '/' + (sectionLanding[seg] || seg + '.html')
+        const url = isLast ? pageUrl : CANONICAL_BASE + '/' + (sectionLanding[seg] || seg)
         breadcrumbItems.push({ position: i + 2, name, item: url })
       })
       const breadcrumb = {
@@ -235,11 +243,15 @@ export default defineConfig({
           item: it.item,
         })),
       }
-      const head: [string, Record<string, string> | string, string?][] = [
+      const head: HeadConfig[] = [
         ...meta,
         ['script', { type: 'application/ld+json' }, JSON.stringify(webPage)],
         ['script', { type: 'application/ld+json' }, JSON.stringify(breadcrumb)],
       ]
+      // Force correct document title for blog index (avoids %s showing in Google when titleTemplate gets no title)
+      if (rawPage === 'blog' || rawPage === 'blog/index') {
+        head.push(['title', {}, `${title} | Native Content Relationships`])
+      }
       // Landing page styles (conversion-focused home only)
       if (rawPage === '' || rawPage === 'index') {
         head.push(['link', { rel: 'stylesheet', href: BASE + 'landing.css' }])
