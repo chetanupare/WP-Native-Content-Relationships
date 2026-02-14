@@ -1,5 +1,6 @@
-# Deploy VitePress docs to GitHub Pages.
-# In repo Settings → Pages → Source = "Deploy from a branch" → Branch: gh-pages, Folder: / (root)
+# Deploy VitePress docs to GitHub Pages by pushing built site to gh-pages.
+# Settings → Pages: Source = "Deploy from a branch", Branch = gh-pages, Folder = / (root).
+# dist/ includes .nojekyll so GitHub serves static files and does not run Jekyll.
 name: GitHub Pages
 
 on:
@@ -32,14 +33,16 @@ jobs:
       - name: Build docs
         run: npm run docs:build
 
+      - name: Ensure .nojekyll (skip Jekyll on GitHub Pages)
+        run: touch docs/.vitepress/dist/.nojekyll
+
       - name: Verify build
         run: |
           test -f docs/.vitepress/dist/index.html || (echo "Missing index.html" && exit 1)
           test -f docs/.vitepress/dist/.nojekyll || (echo "Missing .nojekyll" && exit 1)
-          echo "Contents of dist:"
           ls -la docs/.vitepress/dist/
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
