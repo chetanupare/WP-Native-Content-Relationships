@@ -167,9 +167,13 @@
   color: var(--vp-c-text-2);
 }
 
-/* Hero (home) — larger, bolder */
+/* Hero (home) — first fold, clear of header */
 .VPHome .VPHero {
-  padding: 3rem 1.5rem 2.5rem;
+  padding: 5.5rem 1.5rem 3rem;
+  min-height: min(72vh, 560px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background: linear-gradient(180deg, var(--vp-c-bg-soft) 0%, transparent 100%);
   border-radius: 0 0 var(--doc-corner-radius) var(--doc-corner-radius);
 }

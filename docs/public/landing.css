@@ -1,4 +1,4 @@
-/* Landing page (home) — modern revamp, loaded only on index */
+/* Landing page (home) — sections modernized, first-fold hero */
 
 .landing-content .hero-snippet {
   margin: 2rem 0 2.5rem;
@@ -43,19 +43,319 @@
   margin-top: 2.75rem;
 }
 
-.landing-content ul {
-  margin: 0.75rem 0 1.25rem;
-  padding-left: 1.35rem;
+.landing-content hr {
+  margin: 2.25rem 0;
+  border: none;
+  border-top: 1px solid var(--vp-c-divider);
 }
 
-.landing-content table {
-  margin: 1.25rem 0 1.75rem;
+.landing-content .path-cards + hr {
+  margin-top: 2rem;
+}
+
+/* ---- Section card (shared) ---- */
+.landing-section {
+  margin: 2rem 0 2.5rem;
+}
+
+.landing-section .section-card {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.dark .landing-section .section-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.landing-section h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.landing-section h2:first-child {
+  margin-top: 0;
+}
+
+/* The problem — list as cards */
+.problem-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+.problem-list li {
+  padding: 0.85rem 1rem;
+  margin: 0.5rem 0;
+  background: var(--vp-c-bg);
+  border-radius: 10px;
+  border-left: 4px solid var(--vp-c-brand-1);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.problem-list li strong {
+  color: var(--vp-c-text-1);
+}
+
+.problem-cta {
+  margin-top: 1.25rem;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+}
+
+/* The solution — flow + bullet grid */
+.solution-flow {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  margin: 1rem 0;
+  background: var(--vp-c-bg);
+  border-radius: 10px;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.solution-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.solution-list li {
+  padding: 0.75rem 1rem;
+  background: var(--vp-c-bg);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border: 1px solid var(--vp-c-divider);
+}
+
+/* Real-world use cases — 3 columns */
+.use-case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin: 1rem 0 0;
+}
+
+.use-case-card {
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.use-case-card:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.08);
+}
+
+.use-case-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: var(--vp-c-brand-1);
+}
+
+.use-case-card ul {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+  line-height: 1.6;
+}
+
+.use-case-cta {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+/* Performance — table in card + CTA */
+.perf-table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+  border-radius: 10px;
+  border: 1px solid var(--vp-c-divider);
+}
+
+.landing-content .perf-table-wrap table {
+  margin: 0;
+}
+
+.perf-cta {
+  margin-top: 1rem;
+  display: inline-block;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+}
+
+/* Integrations — grid of links */
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 0;
+}
+
+.integration-card {
+  display: block;
+  padding: 1rem;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s, color 0.2s;
+}
+
+.integration-card:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+}
+
+/* Architecture — promise cards */
+.promise-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 0;
+}
+
+.promise-card {
+  padding: 1.25rem;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  border-top: 3px solid var(--vp-c-brand-1);
+}
+
+.promise-card strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--vp-c-brand-1);
+  font-size: 0.95rem;
+}
+
+.promise-card span {
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+  line-height: 1.5;
+}
+
+.arch-cta {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+/* Developer — API link grid */
+.developer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+}
+
+.developer-grid a {
+  display: block;
+  padding: 0.85rem 1rem;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--vp-c-text-1);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.developer-grid a:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.developer-cta {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+/* Migration — cards */
+.migration-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 0;
+}
+
+.migration-card {
+  display: block;
+  padding: 1.25rem;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--vp-c-text-1);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.migration-card:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.08);
+}
+
+.migration-card strong {
+  color: var(--vp-c-brand-1);
+  font-size: 1rem;
+}
+
+.migration-card p {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+  line-height: 1.5;
+}
+
+/* Community & roadmap */
+.community-card {
+  padding: 1.5rem;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.community-card p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.community-card a {
+  font-weight: 500;
+}
+
+.landing-content .section-card table {
   font-size: 0.92rem;
 }
 
-.landing-content table th,
-.landing-content table td {
+.landing-content .section-card table th,
+.landing-content .section-card table td {
   padding: 0.6rem 0.85rem;
+}
+
+.landing-content ul {
+  margin: 0.75rem 0 1.25rem;
+  padding-left: 1.35rem;
 }
 
 .landing-content p + ul {
@@ -64,15 +364,4 @@
 
 .landing-content a {
   font-weight: 500;
-}
-
-.landing-content hr {
-  margin: 2.25rem 0;
-  border: none;
-  border-top: 1px solid var(--vp-c-divider);
-}
-
-/* Section breathing room */
-.landing-content .path-cards + hr {
-  margin-top: 2rem;
 }
