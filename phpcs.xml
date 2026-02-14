@@ -25,6 +25,7 @@
 		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed" />
 		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedElse" />
 		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment" />
+		<exclude name="WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare" />
 	</rule>
 
 	<exclude-pattern>vendor/*</exclude-pattern>

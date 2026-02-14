@@ -77,7 +77,7 @@ export default defineConfig({
           publisher: { '@id': SITE_URL + '/#organization' },
           potentialAction: {
             '@type': 'ReadAction',
-            target: [SITE_URL + '/', SITE_URL + '/getting-started/installation', SITE_URL + '/api/php-api'],
+            target: [SITE_URL + '/', SITE_URL + '/guide/installation.html', SITE_URL + '/api/php-api.html'],
           },
         }),
       ],
