@@ -37,3 +37,13 @@ Use a shortcode in post content or a widget:
 Or use the **Related Content** block in the block editor.
 
 Next: [Relationships](/guide/relationships) for PHP and [PHP API](/api/php-api) for the full reference.
+
+---
+
+## See also
+
+- [Relationships](/guide/relationships) — Create and query from PHP
+- [Use cases](/guide/use-cases) — Products, courses, related articles, favorites
+- [Shortcodes](/api/shortcodes) — All shortcode attributes
+- [Widget](/guide/widget) — Related Content in the sidebar
+- [Troubleshooting](/guide/troubleshooting) — Empty results, permissions

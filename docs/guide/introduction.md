@@ -32,3 +32,12 @@ $related = ncr_get_related( 123, 'post', 'related_to', [ 'limit' => 10 ] );
 - [FAQ](/guide/faq) — Common questions
 - [PHP API](/api/php-api) — Full API reference
 - [Admin & Tools](/tools/admin-tools) — Overview, integrity, import/export
+
+---
+
+## See also
+
+- [Use cases](/guide/use-cases) — Products, courses, related articles, favorites
+- [FAQ](/guide/faq) — Common questions and answers
+- [Admin & Tools](/tools/admin-tools) — Integrity checks, import/export
+- [Core concepts](/core-concepts/relationship-types) — Relation types and object kinds

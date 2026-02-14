@@ -105,3 +105,13 @@ ncr_remove_relation( 123, 'post', null, 'post', 'related_to' );
 - `wp_get_related_users()`, `wp_get_related_terms()`, `wp_get_related_products()` (WooCommerce)
 
 Prefer `ncr_*` for new code.
+
+---
+
+## See also
+
+- [Relationships](/guide/relationships) — Create, query, remove from code with examples
+- [Fluent API](/api/fluent-api) — Chainable `naticore()` wrapper
+- [Shortcodes](/api/shortcodes) — `[naticore_related_posts]`, `[naticore_related_users]`, `[naticore_related_terms]`
+- [WP_Query](/api/wp-query) — Query by relationship in the loop
+- [Hooks & Filters](/api/hooks-filters) — `ncr_relation_added`, `naticore_relation_is_allowed`

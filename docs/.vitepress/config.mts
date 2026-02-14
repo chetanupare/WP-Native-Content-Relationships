@@ -125,6 +125,12 @@ export default defineConfig({
           author: { '@id': SITE_URL + '/#organization' },
         }),
       ],
+      // Microsoft Clarity (heatmaps & session recordings)
+      [
+        'script',
+        { type: 'text/javascript' },
+        '(function(c,l,a,r,i,t,y){ c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)}; t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i; y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y); })(window, document, "clarity", "script", "vh6uxufpef");',
+      ],
     ],
     transformHead(context) {
       // Canonical page URL: strip .md, use .html (cleanUrls false), index => /
@@ -173,10 +179,65 @@ export default defineConfig({
           dateModified: new Date(lastUpdated).toISOString(),
         }),
       }
-      return [
+      // BreadcrumbList JSON-LD (every page)
+      const rawPage = context.page.replace(/\/$/, '').replace(/\.md$/, '') || ''
+      const segments = rawPage === 'index' || rawPage === '' ? [] : rawPage.split('/').filter(Boolean)
+      const sectionLanding: Record<string, string> = {
+        guide: 'guide/introduction.html',
+        api: 'api/php-api.html',
+        architecture: 'architecture/overview.html',
+        performance: 'performance/benchmarks.html',
+        integrations: 'integrations/gutenberg.html',
+        migration: 'migration/from-acf.html',
+        extending: 'extending/custom-types.html',
+        'core-concepts': 'core-concepts/relationship-types.html',
+        'getting-started': 'getting-started/quick-start.html',
+        tools: 'tools/admin-tools.html',
+      }
+      const segmentLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, ' ')
+      const breadcrumbItems: { position: number; name: string; item: string }[] = [
+        { position: 1, name: 'Home', item: SITE_URL + '/' },
+      ]
+      segments.forEach((seg, i) => {
+        const isLast = i === segments.length - 1
+        const name = isLast ? title : segmentLabel(seg)
+        const url = isLast ? pageUrl : CANONICAL_BASE + '/' + (sectionLanding[seg] || seg + '.html')
+        breadcrumbItems.push({ position: i + 2, name, item: url })
+      })
+      const breadcrumb = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbItems.map((it) => ({
+          '@type': 'ListItem',
+          position: it.position,
+          name: it.name,
+          item: it.item,
+        })),
+      }
+      const head: [string, Record<string, string> | string, string?][] = [
         ...meta,
         ['script', { type: 'application/ld+json' }, JSON.stringify(webPage)],
+        ['script', { type: 'application/ld+json' }, JSON.stringify(breadcrumb)],
       ]
+      // FAQPage JSON-LD (FAQ page only) for FAQ rich results
+      if (rawPage === 'guide/faq') {
+        const faqMainEntity = [
+          { name: 'Does this replace WooCommerce linked products?', acceptedAnswer: { '@type': 'Answer', text: 'No. NCR is independent of WooCommerce. It can complement WooCommerce for linking products (e.g. accessories).' } },
+          { name: 'Can I migrate from ACF relationship fields?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. A one-time migration tool is included. See Migration from ACF in the docs.' } },
+          { name: 'Does this work with page builders?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. NCR is editor-agnostic: Gutenberg, Elementor, and shortcodes in any editor.' } },
+          { name: 'Does it support users and terms, not just posts?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Post–post, post–user, and post–term relationships are supported.' } },
+          { name: 'Does NCR send data externally?', acceptedAnswer: { '@type': 'Answer', text: 'No. All data is stored in your WordPress database.' } },
+          { name: 'Is the schema stable? Will upgrades break my site?', acceptedAnswer: { '@type': 'Answer', text: 'Schema stable from 1.x onward. Backward compatibility guaranteed in the 1.x line.' } },
+          { name: 'Can I use NCR in a headless setup?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Use the REST API and optional embed on core endpoints.' } },
+        ]
+        const faqPage = {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqMainEntity.map((q) => ({ '@type': 'Question', ...q })),
+        }
+        head.push(['script', { type: 'application/ld+json' }, JSON.stringify(faqPage)])
+      }
+      return head
     },
     themeConfig: {
       logo: '/WP-Native-Content-Relationships/wordpress-logo-svgrepo-com.svg',

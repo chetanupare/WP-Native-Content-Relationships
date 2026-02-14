@@ -14,7 +14,10 @@ The VitePress config and theme already include the following. Use this list to v
 - **Theme color** — `#0d9488` (meta theme-color + manifest).
 - **Viewport** — `width=device-width, initial-scale=1`.
 - **Author** — `Native Content Relationships`.
-- **JSON-LD** — Organization, WebSite, SoftwareApplication, SoftwareSourceCode (site-level); TechArticle per page with `dateModified` when `lastUpdated` is set.
+- **JSON-LD** — Organization, WebSite, SoftwareApplication, SoftwareSourceCode (site-level); TechArticle per page with `dateModified` when `lastUpdated` is set; **BreadcrumbList** on every page (in `transformHead`); **FAQPage** on the FAQ page for FAQ rich results.
+- **Breadcrumbs** — BreadcrumbList structured data is injected in `transformHead` so every page has breadcrumb JSON-LD (Home → section → page).
+- **FAQ schema** — The FAQ page (`/guide/faq`) gets FAQPage JSON-LD with main Q&As so it’s eligible for FAQ rich results in search.
+- **Internal linking** — “See also” blocks on key docs (e.g. [PHP API](/api/php-api), [Quick Start](/guide/quick-start), [Introduction](/guide/introduction)) link to other relevant pages.
 - **Sitemap** — Generated at `/sitemap.xml`; linked in head and in `robots.txt`.
 - **Manifest** — `manifest.webmanifest` with name, short_name, description, icons, theme_color.
 
@@ -22,7 +25,7 @@ The VitePress config and theme already include the following. Use this list to v
 
 1. **favicon.ico** — Add a 32×32 or 16×16 ICO to `docs/public/favicon.ico` for older browsers and some bookmarks.
 2. **apple-touch-icon.png** — Add a 180×180 PNG to `docs/public/apple-touch-icon.png` for iOS home screen.
-3. **OG image for social** — If social previews matter, add a 1200×630 PNG to `docs/public/og-image.png` and point `og:image` to it (some platforms render PNG/JPEG better than SVG).
+3. **OG image for social** — When you have a branded image, add a 1200×630 PNG to `docs/public/og-image.png` and set `og:image` in `transformHead` to `SITE_URL + '/og-image.png'` (some platforms render PNG/JPEG better than SVG).
 
 ## Per-page frontmatter
 
