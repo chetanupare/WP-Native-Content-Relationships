@@ -1,5 +1,7 @@
-# CodeQL: run only for JS/TS and exclude node_modules, docs, vendor to avoid parse errors.
-name: "CodeQL"
+# Simple CodeQL (no advanced config). Disable repo "Default setup" to avoid
+# "advanced configurations cannot be processed when the default setup is enabled".
+# Settings → Code security and analysis → Code scanning → turn OFF Default setup.
+name: CodeQL
 
 on:
   push:
@@ -7,33 +9,28 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '20 14 * * 1'
+    - cron: '0 0 * * 1'  # weekly
 
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
     permissions:
-      security-events: write
       actions: read
       contents: read
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'javascript-typescript' ]
+      security-events: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
-      with:
-        languages: ${{ matrix.language }}
-        config-file: ./.github/codeql/codeql-config.yml
+      - name: Initialize CodeQL (PHP only, default setup)
+        uses: github/codeql-action/init@v3
+        with:
+          languages: php
+          # No queries: or config: - keeps this "default", not "advanced"
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
-      with:
-        category: "/language:${{ matrix.language }}"
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:php'

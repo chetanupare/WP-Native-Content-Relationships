@@ -14,6 +14,7 @@
         "lint": "phpcs -p --standard=./phpcs.xml includes/ native-content-relationships.php",
         "fix": "phpcbf --standard=./phpcs.xml includes/ native-content-relationships.php",
         "analyze": "phpstan analyze includes/ native-content-relationships.php --level=5",
+        "lint:ci": "phpcs --standard=./phpcs.xml --report=checkstyle --runtime-set ignore_warnings_on_exit 1 includes/ native-content-relationships.php",
         "test": [
             "@lint",
             "@analyze"

@@ -22,3 +22,5 @@ updates:
       # Ignore major bumps for VitePress to reduce parse/build failures
       - dependency-name: "vitepress"
         update-types: [ "version-update:semver-major" ]
+      # Overrides in package.json can make Dependabot's update_files step fail; skip this dep
+      - dependency-name: "@babel/parser"
