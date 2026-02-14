@@ -1,6 +1,6 @@
 ---
-title: Copy-Paste Snippets
-description: Ready-to-run code for common tasks. Copy, paste, adjust IDs and type names.
+title: Snippets
+description: Copy-paste PHP, shortcodes, and CLI examples. Ready-to-run code for common tasks.
 ---
 
 # Copy-Paste Snippets

@@ -23,7 +23,9 @@ export default defineConfig({
     head: [
       ['link', { rel: 'icon', type: 'image/svg+xml', href: BASE + 'wordpress-logo-svgrepo-com.svg' }],
       ['link', { rel: 'manifest', href: BASE + 'manifest.webmanifest' }],
-      ['meta', { name: 'theme-color', content: '#42b883' }],
+      ['meta', { name: 'theme-color', content: '#0d9488' }],
+      ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+      ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
       ['meta', { name: 'author', content: 'Native Content Relationships' }],
       ['meta', { name: 'robots', content: 'index, follow' }],
       // Title & description (default; overridden per-page in transformHead)
@@ -168,34 +170,13 @@ export default defineConfig({
     themeConfig: {
       logo: '/WP-Native-Content-Relationships/wordpress-logo-svgrepo-com.svg',
       nav: [
+        { text: 'Guide', link: '/guide/introduction' },
+        { text: 'API', link: '/api/php-api' },
+        { text: 'Architecture', link: '/architecture/overview' },
+        { text: 'Performance', link: '/performance/benchmarks' },
         {
-          text: 'Docs',
+          text: 'Links',
           items: [
-            { text: 'Introduction', link: '/' },
-            { text: 'Quick Start', link: '/getting-started/quick-start' },
-            { text: 'Developer Documentation', link: '/documentation' },
-            { text: 'Installation', link: '/getting-started/installation' },
-            { text: 'Basic Relationships', link: '/getting-started/basic-relationships' },
-            { text: 'Blogs', link: '/getting-started/blogs' },
-            { text: 'Snippets', link: '/getting-started/snippets' },
-          ],
-        },
-        {
-          text: 'API',
-          items: [
-            { text: 'PHP API', link: '/api/php-api' },
-            { text: 'WP_Query', link: '/api/wp-query' },
-            { text: 'REST API', link: '/api/rest-api' },
-            { text: 'WP-CLI', link: '/api/wp-cli' },
-            { text: 'Hooks & Filters', link: '/api/hooks-filters' },
-          ],
-        },
-        {
-          text: 'Resources',
-          items: [
-            { text: 'AI & LLM Index', link: '/llm' },
-            { text: 'Roadmap', link: '/roadmap' },
-            { text: 'Contributing', link: '/contributing' },
             { text: 'WordPress.org', link: 'https://wordpress.org/plugins/native-content-relationships/' },
             { text: 'GitHub', link: 'https://github.com/chetanupare/WP-Native-Content-Relationships' },
           ],
@@ -203,24 +184,12 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          text: 'Getting Started',
+          text: 'Guide',
           items: [
-            { text: 'Introduction', link: '/' },
-            { text: 'Developer Documentation', link: '/documentation' },
-            { text: 'Installation', link: '/getting-started/installation' },
-            { text: 'Quick Start', link: '/getting-started/quick-start' },
-            { text: 'Basic Relationships', link: '/getting-started/basic-relationships' },
-            { text: 'Blogs', link: '/getting-started/blogs' },
-            { text: 'Snippets', link: '/getting-started/snippets' },
-          ],
-        },
-        {
-          text: 'Core Concepts',
-          items: [
-            { text: 'Relationship Types', link: '/core-concepts/relationship-types' },
-            { text: 'Direction', link: '/core-concepts/direction' },
-            { text: 'Architecture', link: '/core-concepts/architecture' },
-            { text: 'Database Schema', link: '/core-concepts/database-schema' },
+            { text: 'Introduction', link: '/guide/introduction' },
+            { text: 'Installation', link: '/guide/installation' },
+            { text: 'Quick Start', link: '/guide/quick-start' },
+            { text: 'Relationships', link: '/guide/relationships' },
           ],
         },
         {
@@ -229,53 +198,28 @@ export default defineConfig({
             { text: 'PHP API', link: '/api/php-api' },
             { text: 'WP_Query', link: '/api/wp-query' },
             { text: 'REST API', link: '/api/rest-api' },
-            { text: 'WP-CLI', link: '/api/wp-cli' },
-            { text: 'Hooks & Filters', link: '/api/hooks-filters' },
           ],
         },
         {
-          text: 'Integrations',
+          text: 'Architecture',
           items: [
-            { text: 'WooCommerce', link: '/integrations/woocommerce' },
-            { text: 'Elementor', link: '/integrations/elementor' },
-            { text: 'Gutenberg', link: '/integrations/gutenberg' },
-            { text: 'Multilingual', link: '/integrations/multilingual' },
+            { text: 'Overview', link: '/architecture/overview' },
+            { text: 'Schema', link: '/architecture/schema' },
+            { text: 'Indexing', link: '/architecture/indexing' },
           ],
         },
         {
           text: 'Performance',
           items: [
             { text: 'Benchmarks', link: '/performance/benchmarks' },
-            { text: 'Indexing', link: '/performance/indexing' },
-            { text: 'Scaling Guide', link: '/performance/scaling-guide' },
-          ],
-        },
-        {
-          text: 'Extending',
-          items: [
-            { text: 'Custom Types', link: '/extending/custom-types' },
-            { text: 'Building Addons', link: '/extending/building-addons' },
-            { text: 'Extension Hooks', link: '/extending/extension-hooks' },
-          ],
-        },
-        {
-          text: 'Migration',
-          items: [
-            { text: 'From ACF', link: '/migration/from-acf' },
-            { text: 'From Meta', link: '/migration/from-meta' },
-            { text: 'From Posts 2 Posts', link: '/migration/from-posts-2-posts' },
-          ],
-        },
-        {
-          text: 'Project',
-          items: [
-            { text: 'AI & LLM Index', link: '/llm' },
-            { text: 'Roadmap', link: '/roadmap' },
-            { text: 'Contributing', link: '/contributing' },
           ],
         },
       ],
       outline: { level: [2, 3], label: 'On this page' },
+      docFooter: {
+        prev: 'Previous',
+        next: 'Next',
+      },
       editLink: {
         pattern: 'https://github.com/chetanupare/WP-Native-Content-Relationships/edit/main/docs/:path',
         text: 'Edit this page on GitHub',

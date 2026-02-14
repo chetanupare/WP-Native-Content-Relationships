@@ -36,4 +36,4 @@ Use a shortcode in post content or a widget:
 
 Or use the **Related Content** block in the block editor.
 
-For copy-paste PHP, shortcodes, and CLI one-liners, see [Snippets](/getting-started/snippets). For full API details: [Basic relationships](/getting-started/basic-relationships) and [PHP API](/api/php-api).
+Next: [Relationships](/guide/relationships) for PHP and [PHP API](/api/php-api) for the full reference.

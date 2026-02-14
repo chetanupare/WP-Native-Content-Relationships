@@ -1,5 +1,6 @@
 ---
 title: PHP API
+description: ncr_add_relation, ncr_get_related, ncr_remove_relation, and custom types. Full reference and examples.
 ---
 
 # PHP API
@@ -16,7 +17,7 @@ The primary API uses the `ncr_` prefix. Legacy `wp_*` wrappers remain for backwa
 | `ncr_register_relation_type( $args )` | Register a custom relation type |
 | `ncr_get_registered_relation_types()` | List registered types |
 
-Object types: `'post'`, `'user'`, `'term'`. See [Snippets](/getting-started/snippets) for copy-paste examples.
+Object types: `'post'`, `'user'`, `'term'`. See [Relationships](/guide/relationships) for copy-paste examples.
 
 ---
 

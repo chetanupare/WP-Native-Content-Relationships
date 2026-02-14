@@ -1,9 +1,9 @@
 ---
-title: Basic Relationships
+title: Relationships
 description: Create, query, and remove relationships from code. PHP, WP_Query, shortcodes.
 ---
 
-# Basic Relationships
+# Relationships
 
 Create, query, and remove relationships from code.
 
@@ -20,7 +20,7 @@ ncr_add_relation( $user_id, 'user', $post_id, 'post', 'favorite_posts' );
 ncr_add_relation( $post_id, 'post', $term_id, 'term', 'categorized_as' );
 ```
 
-Legacy wrappers: `wp_add_relation( $from_id, $to_id, 'related_to' )` — prefer `ncr_add_relation()` for new code.
+Legacy: `wp_add_relation( $from_id, $to_id, 'related_to' )` — prefer `ncr_add_relation()` for new code.
 
 ## Querying related content
 
@@ -38,7 +38,7 @@ $q = new WP_Query([
 ]);
 ```
 
-See [PHP API](/api/php-api) and [WP_Query](/api/wp-query) for full options. More copy-paste examples: [Snippets](/getting-started/snippets).
+See [PHP API](/api/php-api) and [WP_Query](/api/wp-query) for full options.
 
 ## Removing relationships
 
@@ -59,9 +59,7 @@ ncr_remove_relation( 123, 'post', null, 'post', 'related_to' );
 
 Common attributes: `type`, `limit`, `order`, `post_id`, `layout` (list/grid), `class`.
 
-## Real code example (theme template)
-
-Drop this in a single post template (e.g. `single.php` or a block template) to output related posts:
+## Theme template example
 
 ```php
 <?php

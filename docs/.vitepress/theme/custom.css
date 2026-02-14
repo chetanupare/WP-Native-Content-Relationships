@@ -1,50 +1,153 @@
-/* Vue.js docs–style theme for Native Content Relationships */
+/* Modern docs theme — Native Content Relationships */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --vp-c-brand-1: #42b883;
-  --vp-c-brand-2: #33a06f;
-  --vp-c-brand-3: #42b883;
-  --vp-button-brand-bg: #42b883;
-  --vp-button-brand-hover-bg: #33a06f;
-  --vp-button-brand-active-bg: #2d8f5f;
+  --vp-font-family-base: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --vp-c-brand-1: #0d9488;
+  --vp-c-brand-2: #0f766e;
+  --vp-c-brand-3: #14b8a6;
+  --vp-button-brand-bg: #0d9488;
+  --vp-button-brand-hover-bg: #0f766e;
+  --vp-button-brand-active-bg: #0c5c54;
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #42b883 30%, #33a06f);
-  --vp-home-hero-name-background: linear-gradient(120deg, #42b883 30%, #33a06f);
+  --vp-home-hero-name-background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #0f766e 100%);
+  --vp-custom-block-tip-border: #0d9488;
+  --vp-custom-block-tip-bg: rgba(13, 148, 136, 0.08);
+  --vp-custom-block-warning-border: #eab308;
+  --vp-custom-block-danger-border: #dc2626;
+  --doc-corner-radius: 12px;
+  --doc-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --doc-shadow-hover: 0 8px 32px rgba(13, 148, 136, 0.12);
 }
 
 .dark {
-  --vp-c-brand-1: #42d392;
-  --vp-c-brand-2: #33a06f;
-  --vp-c-brand-3: #42d392;
+  --vp-c-brand-1: #2dd4bf;
+  --vp-c-brand-2: #14b8a6;
+  --vp-c-brand-3: #5eead4;
+  --vp-custom-block-tip-bg: rgba(45, 212, 191, 0.1);
+  --doc-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --doc-shadow-hover: 0 8px 32px rgba(45, 212, 191, 0.15);
 }
 
-/* Vue-style “Pick your path” cards */
+/* Layout & typography */
+.vp-doc {
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.vp-doc h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 0;
+}
+
+.vp-doc h2 {
+  font-weight: 600;
+  padding-top: 1.5em;
+  margin-top: 2em;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.vp-doc h2:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.vp-doc h3 {
+  font-weight: 600;
+  margin-top: 1.5em;
+}
+
+.vp-doc p {
+  line-height: 1.7;
+}
+
+.vp-doc table {
+  border-radius: var(--doc-corner-radius);
+  overflow: hidden;
+  box-shadow: var(--doc-shadow);
+}
+
+.vp-doc th,
+.vp-doc td {
+  padding: 0.75rem 1rem;
+}
+
+.vp-doc tr:hover td {
+  background: var(--vp-c-bg-soft);
+}
+
+/* Code */
+.vp-doc div[class*='language-'] {
+  border-radius: var(--doc-corner-radius);
+  box-shadow: var(--doc-shadow);
+}
+
+.vp-doc :not(pre) > code {
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-size: 0.9em;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+.dark .vp-doc :not(pre) > code {
+  background: var(--vp-c-bg-alt);
+}
+
+/* Custom blocks (tip, warning, danger) */
+.vp-doc .custom-block {
+  border-radius: var(--doc-corner-radius);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid;
+}
+
+.vp-doc .custom-block.tip {
+  border-left-color: var(--vp-custom-block-tip-border);
+  background: var(--vp-custom-block-tip-bg);
+}
+
+.vp-doc .custom-block.warning {
+  border-left-color: var(--vp-custom-block-warning-border);
+}
+
+.vp-doc .custom-block.danger {
+  border-left-color: var(--vp-custom-block-danger-border);
+}
+
+/* Path / feature cards — modern */
 .path-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin: 2.5rem 0;
 }
 
 .path-card {
   display: block;
-  padding: 1.25rem 1.5rem;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 12px;
+  padding: 1.5rem;
+  border-radius: var(--doc-corner-radius);
   background: var(--vp-c-bg-soft);
-  transition: border-color 0.25s, box-shadow 0.25s;
+  border: 1px solid var(--vp-c-divider);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   text-decoration: none;
   color: var(--vp-c-text-1);
 }
 
 .path-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--doc-shadow-hover);
   border-color: var(--vp-c-brand-1);
-  box-shadow: 0 4px 12px rgba(66, 184, 131, 0.15);
 }
 
 .path-card h4 {
   margin: 0 0 0.5rem;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--vp-c-brand-1);
 }
@@ -52,16 +155,32 @@
 .path-card p {
   margin: 0;
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--vp-c-text-2);
 }
 
-/* TOC / outline label like Vue */
-.vp-doc .VPDocOutlineDropdown .outline-title {
-  font-weight: 500;
+/* Hero (home) */
+.VPHero .name {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: var(--vp-home-hero-name-background);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Nav bar: match Vue spacing and weight */
+.VPHero .text {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+.VPHero .tagline {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Nav & sidebar */
 .VPNavBar .link {
   font-weight: 500;
 }
@@ -71,12 +190,70 @@
   color: var(--vp-c-brand-1);
 }
 
-/* Sidebar active link */
 .VPSidebarItem.is-link.active .link {
   color: var(--vp-c-brand-1);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .VPSidebarItem.is-link .link:hover {
+  color: var(--vp-c-brand-1);
+}
+
+.VPSidebarItem .link {
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin: 2px 8px;
+}
+
+.VPSidebarItem.is-link.active .link {
+  background: var(--vp-custom-block-tip-bg);
+}
+
+/* Outline / TOC */
+.VPDocOutlineDropdown .outline-title,
+.vp-doc .VPDocOutlineDropdown .outline-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Footer */
+.VPFooter {
+  padding: 2rem 1.5rem;
+  margin-top: 3rem;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.VPFooter .message {
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+}
+
+/* Buttons */
+.vp-doc .vp-button {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Home: feature pills */
+.feature-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  justify-content: center;
+}
+
+.feature-pill {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  border: 1px solid var(--vp-c-divider);
+}
+
+.feature-pill strong {
   color: var(--vp-c-brand-1);
 }
