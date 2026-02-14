@@ -173,6 +173,7 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/' },
             { text: 'Quick Start', link: '/getting-started/quick-start' },
+            { text: 'Developer Documentation', link: '/documentation' },
             { text: 'Installation', link: '/getting-started/installation' },
             { text: 'Basic Relationships', link: '/getting-started/basic-relationships' },
             { text: 'Blogs', link: '/getting-started/blogs' },
@@ -205,6 +206,7 @@ export default defineConfig({
           text: 'Getting Started',
           items: [
             { text: 'Introduction', link: '/' },
+            { text: 'Developer Documentation', link: '/documentation' },
             { text: 'Installation', link: '/getting-started/installation' },
             { text: 'Quick Start', link: '/getting-started/quick-start' },
             { text: 'Basic Relationships', link: '/getting-started/basic-relationships' },
