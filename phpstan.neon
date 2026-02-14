@@ -3,10 +3,10 @@ parameters:
 	paths:
 		- includes
 	excludePaths:
-		- includes/class-settings-old.php
-		- includes/class-editors.php
-		- includes/class-acf.php
-		- includes/class-wpml.php
+		- includes/tools/class-settings-old.php
+		- includes/integrations/class-editors.php
+		- includes/integrations/class-acf.php
+		- includes/integrations/class-wpml.php
 	bootstrapFiles:
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 		- phpstan-stubs.php
