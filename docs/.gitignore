@@ -1,7 +1,0 @@
-# VitePress
-.vitepress/dist
-.vitepress/cache
-.vitepress/.temp
-
-# Dependencies (installed at plugin root)
-# node_modules is in plugin root .gitignore

@@ -1,0 +1,51 @@
+{
+  "name": "Native Content Relationships",
+  "shortName": "NCR",
+  "type": "WordPress plugin",
+  "description": "First-class relationship layer for WordPress. Link posts, users, and terms via a dedicated indexed table and API. Use for related posts, favorites, parent-child, WooCommerce related products, and custom relation types. Schema stable from 1.x; backward compatibility guaranteed.",
+  "urls": {
+    "home": "https://chetanupare.github.io/WP-Native-Content-Relationships/",
+    "documentation": "https://chetanupare.github.io/WP-Native-Content-Relationships/",
+    "sitemap": "https://chetanupare.github.io/WP-Native-Content-Relationships/sitemap.xml",
+    "llmIndex": "https://chetanupare.github.io/WP-Native-Content-Relationships/llm",
+    "llmsTxt": "https://chetanupare.github.io/WP-Native-Content-Relationships/llms.txt",
+    "aiTxt": "https://chetanupare.github.io/WP-Native-Content-Relationships/ai.txt",
+    "openApi": "https://chetanupare.github.io/WP-Native-Content-Relationships/openapi.json",
+    "repository": "https://github.com/chetanupare/WP-Native-Content-Relationships",
+    "wordpressOrg": "https://wordpress.org/plugins/native-content-relationships/"
+  },
+  "api": {
+    "php": [
+      "ncr_add_relation( from_id, from_type, to_id, to_type, relation_type )",
+      "ncr_get_related( from_id, from_type, relation_type, args )",
+      "ncr_remove_relation( from_id, from_type, to_id, to_type, relation_type )",
+      "ncr_register_relation_type( args )",
+      "ncr_get_registered_relation_types()"
+    ],
+    "wpQueryVar": "content_relation",
+    "hooks": [
+      "ncr_relation_added",
+      "ncr_relation_removed",
+      "ncr_get_related_args",
+      "ncr_max_relationships",
+      "ncr_skip_relationship_query"
+    ]
+  },
+  "keywords": [
+    "WordPress",
+    "relationships",
+    "related posts",
+    "post-to-post",
+    "ncr_add_relation",
+    "ncr_get_related",
+    "WP_Query",
+    "content relations",
+    "WooCommerce",
+    "Gutenberg",
+    "Elementor",
+    "migration ACF",
+    "migration P2P"
+  ],
+  "version": "1.x",
+  "stability": "Schema and public API stable; backward compatibility guaranteed."
+}

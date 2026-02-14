@@ -1,0 +1,21 @@
+{
+  "name": "Native Content Relationships — Documentation",
+  "short_name": "NCR Docs",
+  "description": "Documentation for Native Content Relationships: a WordPress plugin for post, user, and term relationships. PHP API, WP_Query, REST, shortcodes, blocks.",
+  "start_url": "/WP-Native-Content-Relationships/",
+  "scope": "/WP-Native-Content-Relationships/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#42b883",
+  "background_color": "#ffffff",
+  "lang": "en",
+  "categories": ["documentation", "developer"],
+  "icons": [
+    {
+      "src": "/WP-Native-Content-Relationships/wordpress-logo-svgrepo-com.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
