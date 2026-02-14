@@ -1,28 +1,27 @@
 # GitHub Pages setup
 
-Docs are **VitePress**. The **GitHub Pages** workflow builds the site and pushes it to the **gh-pages** branch. The built output includes **.nojekyll** so GitHub serves static files and does not run Jekyll.
+Docs are **VitePress**. The **GitHub Pages** workflow builds the site and deploys it via **GitHub Actions** (upload-pages-artifact + deploy-pages). You must set the Pages source to **GitHub Actions** so the built-in Jekyll job is not used (it fails with "No such file or directory - /github/workspace/docs" when triggered by branch updates).
 
-## Required: Deploy from gh-pages branch
+## Required: Use GitHub Actions as source
 
 1. In the repo go to **Settings → Pages**.
 2. Under **Build and deployment**:
-   - **Source:** **Deploy from a branch**
-   - **Branch:** **gh-pages**
-   - **Folder:** **/ (root)**
+   - **Source:** **GitHub Actions**
 3. Click **Save**.
 
-No environment approval or "GitHub Actions" source is needed. After the workflow runs (on push to `main` when `docs/` or package files change), the site is available at your Pages URL.
+The first time you use this, you may need to approve the **github-pages** environment (Actions run → Environment → Approve).
 
 ## How it works
 
 - The **GitHub Pages** workflow runs on push to `main` (when `docs/` or workflow/package files change) or via **Run workflow**.
-- It builds with `npm run docs:build`, adds `.nojekyll` to the output, and pushes `docs/.vitepress/dist` to the **gh-pages** branch.
-- GitHub serves the branch; `.nojekyll` ensures static files are served (no Jekyll).
+- It builds with `npm run docs:build`, uploads the `docs/.vitepress/dist` folder as a Pages artifact, then the **deploy** job deploys it. No Jekyll, no gh-pages branch push.
+- The built-in "pages build and deployment" (Jekyll) will not be used for your site once the source is **GitHub Actions**.
 
 ## If the site is 404 or blank
 
-- In **Actions**, confirm the **GitHub Pages** workflow run succeeded.
-- In **Settings → Pages**, confirm **Source** is **Deploy from a branch**, **Branch** is **gh-pages**, **Folder** is **/ (root)**.
+- In **Actions**, confirm the **GitHub Pages** workflow run succeeded (both **build** and **deploy** jobs).
+- In **Settings → Pages**, confirm **Source** is **GitHub Actions**.
+- If the deploy job is waiting for approval, approve the **github-pages** environment.
 - Wait 1–2 minutes after a successful run.
 
 **Manual deploy:** Actions → **GitHub Pages** → **Run workflow**.

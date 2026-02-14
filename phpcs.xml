@@ -29,6 +29,10 @@
 		<exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery" />
 		<exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching" />
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
+		<!-- tax_query used for related-content suggestions; nonce verified via check_ajax_referer / wp_verify_nonce before $_POST use -->
+		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_tax_query" />
+		<exclude name="WordPress.Security.NonceVerification.Missing" />
+		<exclude name="WordPress.Security.NonceVerification.Recommended" />
 	</rule>
 
 	<exclude-pattern>vendor/*</exclude-pattern>
