@@ -2,9 +2,9 @@
 Contributors: chetanupare
 Tags: relationships, content, posts, users, ai
 Requires at least: 5.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
@@ -261,6 +261,9 @@ When enabled, the plugin analyzes each new post on publish and automatically cre
 2. Relationship overview  
 
 == Changelog ==
+
+= 1.4.2 =
+* WordPress 7.1.0 compatibility: Updated Tested up to 7.1.0
 
 = 1.4.1 =
 * Feature: Relationship constraints — define which content type combinations are allowed

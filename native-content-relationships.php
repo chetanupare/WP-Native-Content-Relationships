@@ -10,7 +10,7 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: native-content-relationships
  * Requires at least: 5.0
- * Tested up to: 7.0
+ * Tested up to: 7.1.0
  * Requires PHP: 7.4
  * GitHub Plugin URI: https://github.com/chetanupare/WP-Native-Content-Relationships
  */
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define( 'NATICORE_VERSION', '1.4.1' );
+define( 'NATICORE_VERSION', '1.4.2' );
 define('NATICORE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('NATICORE_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('NATICORE_PLUGIN_BASENAME', plugin_basename(__FILE__));
