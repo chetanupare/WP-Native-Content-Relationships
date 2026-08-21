@@ -16,18 +16,22 @@ use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
  *
  * @covers \PHP_CodeSniffer\Files\File::getDeclarationName
  */
-final class GetDeclarationNameParseError1Test extends AbstractMethodUnitTest {
+final class GetDeclarationNameParseError1Test extends AbstractMethodUnitTest
+{
 
 
+    /**
+     * Test receiving "null" in case of a parse error.
+     *
+     * @return void
+     */
+    public function testGetDeclarationNameNull()
+    {
+        $target = $this->getTargetToken('/* testLiveCoding */', T_FUNCTION);
+        $result = self::$phpcsFile->getDeclarationName($target);
+        $this->assertNull($result);
 
-	/**
-	 * Test receiving "null" in case of a parse error.
-	 *
-	 * @return void
-	 */
-	public function testGetDeclarationNameNull() {
-		$target = $this->getTargetToken( '/* testLiveCoding */', T_FUNCTION );
-		$result = self::$phpcsFile->getDeclarationName( $target );
-		$this->assertNull( $result );
-	}//end testGetDeclarationNameNull()
+    }//end testGetDeclarationNameNull()
+
+
 }//end class

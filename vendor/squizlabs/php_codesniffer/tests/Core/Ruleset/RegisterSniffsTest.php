@@ -18,256 +18,276 @@ use PHPUnit\Framework\TestCase;
  *
  * @covers \PHP_CodeSniffer\Ruleset::registerSniffs
  */
-final class RegisterSniffsTest extends TestCase {
+final class RegisterSniffsTest extends TestCase
+{
+
+    /**
+     * The Ruleset object.
+     *
+     * @var \PHP_CodeSniffer\Ruleset
+     */
+    private static $ruleset;
+
+    /**
+     * Original value of the $sniffs property on the Ruleset.
+     *
+     * @var array<string, \PHP_CodeSniffer\Sniffs\Sniff>
+     */
+    private static $originalSniffs = [];
+
+    /**
+     * List of Standards dir relative sniff files loaded for the PSR1 standard.
+     *
+     * @var array<string>
+     */
+    private static $psr1SniffFiles = [
+        'Generic/Sniffs/Files/ByteOrderMarkSniff.php',
+        'Generic/Sniffs/NamingConventions/UpperCaseConstantNameSniff.php',
+        'Generic/Sniffs/PHP/DisallowAlternativePHPTagsSniff.php',
+        'Generic/Sniffs/PHP/DisallowShortOpenTagSniff.php',
+        'PSR1/Sniffs/Classes/ClassDeclarationSniff.php',
+        'PSR1/Sniffs/Files/SideEffectsSniff.php',
+        'PSR1/Sniffs/Methods/CamelCapsMethodNameSniff.php',
+        'Squiz/Sniffs/Classes/ValidClassNameSniff.php',
+    ];
+
+    /**
+     * Absolute paths to the sniff files loaded for the PSR1 standard.
+     *
+     * @var array<string>
+     */
+    private static $psr1SniffAbsolutePaths = [];
 
 
-	/**
-	 * The Ruleset object.
-	 *
-	 * @var \PHP_CodeSniffer\Ruleset
-	 */
-	private static $ruleset;
+    /**
+     * Initialize the config and ruleset objects which will be used for some of these tests.
+     *
+     * @beforeClass
+     *
+     * @return void
+     */
+    public static function initializeConfigAndRuleset()
+    {
+        // Set up the ruleset.
+        $config        = new ConfigDouble(['--standard=PSR1']);
+        self::$ruleset = new Ruleset($config);
 
-	/**
-	 * Original value of the $sniffs property on the Ruleset.
-	 *
-	 * @var array<string, \PHP_CodeSniffer\Sniffs\Sniff>
-	 */
-	private static $originalSniffs = array();
+        // Remember the original value of the Ruleset::$sniff property as the tests adjust it.
+        self::$originalSniffs = self::$ruleset->sniffs;
 
-	/**
-	 * List of Standards dir relative sniff files loaded for the PSR1 standard.
-	 *
-	 * @var array<string>
-	 */
-	private static $psr1SniffFiles = array(
-		'Generic/Sniffs/Files/ByteOrderMarkSniff.php',
-		'Generic/Sniffs/NamingConventions/UpperCaseConstantNameSniff.php',
-		'Generic/Sniffs/PHP/DisallowAlternativePHPTagsSniff.php',
-		'Generic/Sniffs/PHP/DisallowShortOpenTagSniff.php',
-		'PSR1/Sniffs/Classes/ClassDeclarationSniff.php',
-		'PSR1/Sniffs/Files/SideEffectsSniff.php',
-		'PSR1/Sniffs/Methods/CamelCapsMethodNameSniff.php',
-		'Squiz/Sniffs/Classes/ValidClassNameSniff.php',
-	);
+        // Sort the value to make the tests stable as different OSes will read directories
+        // in a different order and the order is not relevant for these tests. Just the values.
+        ksort(self::$originalSniffs);
 
-	/**
-	 * Absolute paths to the sniff files loaded for the PSR1 standard.
-	 *
-	 * @var array<string>
-	 */
-	private static $psr1SniffAbsolutePaths = array();
+        // Update the sniff file list.
+        $standardsDir  = dirname(dirname(dirname(__DIR__))).DIRECTORY_SEPARATOR;
+        $standardsDir .= 'src'.DIRECTORY_SEPARATOR.'Standards'.DIRECTORY_SEPARATOR;
+
+        self::$psr1SniffAbsolutePaths = self::relativeToAbsoluteSniffFiles($standardsDir, self::$psr1SniffFiles);
+
+    }//end initializeConfigAndRuleset()
 
 
-	/**
-	 * Initialize the config and ruleset objects which will be used for some of these tests.
-	 *
-	 * @beforeClass
-	 *
-	 * @return void
-	 */
-	public static function initializeConfigAndRuleset() {
-		// Set up the ruleset.
-		$config        = new ConfigDouble( array( '--standard=PSR1' ) );
-		self::$ruleset = new Ruleset( $config );
+    /**
+     * Convert relative paths to absolute paths and ensure the paths use the correct OS-specific directory separator.
+     *
+     * @param string        $baseDir       Directory to which these paths are relative to. Including trailing slash.
+     * @param array<string> $relativePaths Relative paths.
+     *
+     * @return array<string>
+     */
+    public static function relativeToAbsoluteSniffFiles($baseDir, $relativePaths)
+    {
+        $fileList = [];
+        foreach ($relativePaths as $sniffName) {
+            $sniffFile  = str_replace('/', DIRECTORY_SEPARATOR, $sniffName);
+            $sniffFile  = $baseDir.$sniffFile;
+            $fileList[] = $sniffFile;
+        }
 
-		// Remember the original value of the Ruleset::$sniff property as the tests adjust it.
-		self::$originalSniffs = self::$ruleset->sniffs;
+        return $fileList;
 
-		// Sort the value to make the tests stable as different OSes will read directories
-		// in a different order and the order is not relevant for these tests. Just the values.
-		ksort( self::$originalSniffs );
-
-		// Update the sniff file list.
-		$standardsDir  = dirname( dirname( dirname( __DIR__ ) ) ) . DIRECTORY_SEPARATOR;
-		$standardsDir .= 'src' . DIRECTORY_SEPARATOR . 'Standards' . DIRECTORY_SEPARATOR;
-
-		self::$psr1SniffAbsolutePaths = self::relativeToAbsoluteSniffFiles( $standardsDir, self::$psr1SniffFiles );
-	}//end initializeConfigAndRuleset()
+    }//end relativeToAbsoluteSniffFiles()
 
 
-	/**
-	 * Convert relative paths to absolute paths and ensure the paths use the correct OS-specific directory separator.
-	 *
-	 * @param string        $baseDir       Directory to which these paths are relative to. Including trailing slash.
-	 * @param array<string> $relativePaths Relative paths.
-	 *
-	 * @return array<string>
-	 */
-	public static function relativeToAbsoluteSniffFiles( $baseDir, $relativePaths ) {
-		$fileList = array();
-		foreach ( $relativePaths as $sniffName ) {
-			$sniffFile  = str_replace( '/', DIRECTORY_SEPARATOR, $sniffName );
-			$sniffFile  = $baseDir . $sniffFile;
-			$fileList[] = $sniffFile;
-		}
+    /**
+     * Clear out the Ruleset::$sniffs property.
+     *
+     * @before
+     *
+     * @return void
+     */
+    protected function clearOutSniffs()
+    {
+        // Clear out the Ruleset::$sniffs property.
+        self::$ruleset->sniffs = [];
 
-		return $fileList;
-	}//end relativeToAbsoluteSniffFiles()
+    }//end clearOutSniffs()
 
 
-	/**
-	 * Clear out the Ruleset::$sniffs property.
-	 *
-	 * @before
-	 *
-	 * @return void
-	 */
-	protected function clearOutSniffs() {
-		// Clear out the Ruleset::$sniffs property.
-		self::$ruleset->sniffs = array();
-	}//end clearOutSniffs()
+    /**
+     * Test that registering sniffs works as expected (simple base test case).
+     *
+     * @return void
+     */
+    public function testRegisteredSniffsShouldBeTheSame()
+    {
+        self::$ruleset->registerSniffs(self::$psr1SniffAbsolutePaths, [], []);
+
+        // Make sure the same sniff list was recreated (but without the objects having been created yet).
+        $this->assertSame(array_keys(self::$originalSniffs), array_keys(self::$ruleset->sniffs));
+        $this->assertSame(array_keys(self::$originalSniffs), array_values(self::$ruleset->sniffs));
+
+    }//end testRegisteredSniffsShouldBeTheSame()
 
 
-	/**
-	 * Test that registering sniffs works as expected (simple base test case).
-	 *
-	 * @return void
-	 */
-	public function testRegisteredSniffsShouldBeTheSame() {
-		self::$ruleset->registerSniffs( self::$psr1SniffAbsolutePaths, array(), array() );
+    /**
+     * Test that if only specific sniffs are requested, only those are registered.
+     *
+     * {@internal Can't test this via the CLI arguments due to some code in the Ruleset class
+     * related to sniff tests.}
+     *
+     * @return void
+     */
+    public function testRegisteredSniffsWithRestrictions()
+    {
+        $restrictions = [
+            'psr1\\sniffs\\classes\\classdeclarationsniff'    => true,
+            'psr1\\sniffs\\files\\sideeffectssniff'           => true,
+            'psr1\\sniffs\\methods\\camelcapsmethodnamesniff' => true,
+        ];
 
-		// Make sure the same sniff list was recreated (but without the objects having been created yet).
-		$this->assertSame( array_keys( self::$originalSniffs ), array_keys( self::$ruleset->sniffs ) );
-		$this->assertSame( array_keys( self::$originalSniffs ), array_values( self::$ruleset->sniffs ) );
-	}//end testRegisteredSniffsShouldBeTheSame()
+        $expected = [
+            'PHP_CodeSniffer\\Standards\\PSR1\\Sniffs\\Classes\\ClassDeclarationSniff',
+            'PHP_CodeSniffer\\Standards\\PSR1\\Sniffs\\Files\\SideEffectsSniff',
+            'PHP_CodeSniffer\\Standards\\PSR1\\Sniffs\\Methods\\CamelCapsMethodNameSniff',
+        ];
 
+        self::$ruleset->registerSniffs(self::$psr1SniffAbsolutePaths, $restrictions, []);
 
-	/**
-	 * Test that if only specific sniffs are requested, only those are registered.
-	 *
-	 * {@internal Can't test this via the CLI arguments due to some code in the Ruleset class
-	 * related to sniff tests.}
-	 *
-	 * @return void
-	 */
-	public function testRegisteredSniffsWithRestrictions() {
-		$restrictions = array(
-			'psr1\\sniffs\\classes\\classdeclarationsniff' => true,
-			'psr1\\sniffs\\files\\sideeffectssniff'        => true,
-			'psr1\\sniffs\\methods\\camelcapsmethodnamesniff' => true,
-		);
+        $this->assertSame($expected, array_keys(self::$ruleset->sniffs));
 
-		$expected = array(
-			'PHP_CodeSniffer\\Standards\\PSR1\\Sniffs\\Classes\\ClassDeclarationSniff',
-			'PHP_CodeSniffer\\Standards\\PSR1\\Sniffs\\Files\\SideEffectsSniff',
-			'PHP_CodeSniffer\\Standards\\PSR1\\Sniffs\\Methods\\CamelCapsMethodNameSniff',
-		);
-
-		self::$ruleset->registerSniffs( self::$psr1SniffAbsolutePaths, $restrictions, array() );
-
-		$this->assertSame( $expected, array_keys( self::$ruleset->sniffs ) );
-	}//end testRegisteredSniffsWithRestrictions()
+    }//end testRegisteredSniffsWithRestrictions()
 
 
-	/**
-	 * Test that sniffs excluded via the CLI are not registered.
-	 *
-	 * @return void
-	 */
-	public function testRegisteredSniffsWithExclusions() {
-		// Set up the ruleset.
-		$args    = array(
-			'--standard=PSR1',
-			'--exclude=PSR1.Classes.ClassDeclaration,PSR1.Files.SideEffects,PSR1.Methods.CamelCapsMethodName',
-		);
-		$config  = new ConfigDouble( $args );
-		$ruleset = new Ruleset( $config );
+    /**
+     * Test that sniffs excluded via the CLI are not registered.
+     *
+     * @return void
+     */
+    public function testRegisteredSniffsWithExclusions()
+    {
+        // Set up the ruleset.
+        $args    = [
+            '--standard=PSR1',
+            '--exclude=PSR1.Classes.ClassDeclaration,PSR1.Files.SideEffects,PSR1.Methods.CamelCapsMethodName',
+        ];
+        $config  = new ConfigDouble($args);
+        $ruleset = new Ruleset($config);
 
-		$expected = array(
-			'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\Files\\ByteOrderMarkSniff',
-			'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\NamingConventions\\UpperCaseConstantNameSniff',
-			'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\PHP\\DisallowAlternativePHPTagsSniff',
-			'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\PHP\\DisallowShortOpenTagSniff',
-			'PHP_CodeSniffer\\Standards\\Squiz\\Sniffs\\Classes\\ValidClassNameSniff',
-		);
+        $expected = [
+            'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\Files\\ByteOrderMarkSniff',
+            'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\NamingConventions\\UpperCaseConstantNameSniff',
+            'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\PHP\\DisallowAlternativePHPTagsSniff',
+            'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\PHP\\DisallowShortOpenTagSniff',
+            'PHP_CodeSniffer\\Standards\\Squiz\\Sniffs\\Classes\\ValidClassNameSniff',
+        ];
 
-		$actual = array_keys( $ruleset->sniffs );
-		sort( $actual );
+        $actual = array_keys($ruleset->sniffs);
+        sort($actual);
 
-		$this->assertSame( $expected, $actual );
-	}//end testRegisteredSniffsWithExclusions()
+        $this->assertSame($expected, $actual);
 
-
-	/**
-	 * Test combining requesting specific sniffs and excluding a subset of those.
-	 *
-	 * @return void
-	 */
-	public function testRegisteredSniffsBothRestrictionsAndExclusions() {
-		$restrictions = array(
-			'generic\\sniffs\\namingconventions\\uppercaseconstantnamesniff' => true,
-			'generic\\sniffs\\php\\disallowalternativephptagssniff' => true,
-			'generic\\sniffs\\php\\disallowshortopentagsniff' => true,
-			'psr1\\sniffs\\classes\\classdeclarationsniff' => true,
-			'squiz\\sniffs\\classes\\validclassnamesniff'  => true,
-		);
-
-		$exclusions = array(
-			'squiz\\sniffs\\classes\\validclassnamesniff' => true,
-			'generic\\sniffs\\php\\disallowalternativephptagssniff' => true,
-			'generic\\sniffs\\namingconventions\\uppercaseconstantnamesniff' => true,
-		);
-
-		$expected = array(
-			'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\PHP\\DisallowShortOpenTagSniff',
-			'PHP_CodeSniffer\\Standards\\PSR1\\Sniffs\\Classes\\ClassDeclarationSniff',
-		);
-
-		self::$ruleset->registerSniffs( self::$psr1SniffAbsolutePaths, $restrictions, $exclusions );
-
-		$this->assertSame( $expected, array_keys( self::$ruleset->sniffs ) );
-	}//end testRegisteredSniffsBothRestrictionsAndExclusions()
+    }//end testRegisteredSniffsWithExclusions()
 
 
-	/**
-	 * Verify that abstract sniffs are filtered out and not registered.
-	 *
-	 * @return void
-	 */
-	public function testRegisterSniffsFiltersOutAbstractClasses() {
-		$extraPathsBaseDir = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
-		$extraPaths        = array(
-			'DirectoryExpansion/.hiddenAbove/src/MyStandard/Sniffs/AbstractSniff.php',
-			'DirectoryExpansion/.hiddenAbove/src/MyStandard/Sniffs/CategoryB/AnotherAbstractSniff.php',
-		);
-		$extraPaths        = self::relativeToAbsoluteSniffFiles( $extraPathsBaseDir, $extraPaths );
+    /**
+     * Test combining requesting specific sniffs and excluding a subset of those.
+     *
+     * @return void
+     */
+    public function testRegisteredSniffsBothRestrictionsAndExclusions()
+    {
+        $restrictions = [
+            'generic\\sniffs\\namingconventions\\uppercaseconstantnamesniff' => true,
+            'generic\\sniffs\\php\\disallowalternativephptagssniff'          => true,
+            'generic\\sniffs\\php\\disallowshortopentagsniff'                => true,
+            'psr1\\sniffs\\classes\\classdeclarationsniff'                   => true,
+            'squiz\\sniffs\\classes\\validclassnamesniff'                    => true,
+        ];
 
-		$fileList = self::$psr1SniffAbsolutePaths;
-		foreach ( $extraPaths as $path ) {
-			$fileList[] = $path;
-		}
+        $exclusions = [
+            'squiz\\sniffs\\classes\\validclassnamesniff'                    => true,
+            'generic\\sniffs\\php\\disallowalternativephptagssniff'          => true,
+            'generic\\sniffs\\namingconventions\\uppercaseconstantnamesniff' => true,
+        ];
 
-		self::$ruleset->registerSniffs( $fileList, array(), array() );
+        $expected = [
+            'PHP_CodeSniffer\\Standards\\Generic\\Sniffs\\PHP\\DisallowShortOpenTagSniff',
+            'PHP_CodeSniffer\\Standards\\PSR1\\Sniffs\\Classes\\ClassDeclarationSniff',
+        ];
 
-		// Make sure the same sniff list was recreated (but without the objects having been created yet).
-		$this->assertSame( array_keys( self::$originalSniffs ), array_keys( self::$ruleset->sniffs ) );
-		$this->assertSame( array_keys( self::$originalSniffs ), array_values( self::$ruleset->sniffs ) );
-	}//end testRegisterSniffsFiltersOutAbstractClasses()
+        self::$ruleset->registerSniffs(self::$psr1SniffAbsolutePaths, $restrictions, $exclusions);
+
+        $this->assertSame($expected, array_keys(self::$ruleset->sniffs));
+
+    }//end testRegisteredSniffsBothRestrictionsAndExclusions()
 
 
-	/**
-	 * Test that sniff files not in a "/Sniffs/" directory are filtered out and not registered.
-	 *
-	 * @return void
-	 */
-	public function testRegisteredSniffsFiltersOutFilePathsWithoutSniffsDir() {
-		$extraPathsBaseDir = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
-		$extraPaths        = array(
-			'DirectoryExpansion/.hiddenAbove/src/MyStandard/Utils/NotInSniffsDirSniff.php',
-			'DirectoryExpansion/.hiddenAbove/src/MyStandard/Utils/SubDir/NotInSniffsDirSniff.php',
-		);
-		$extraPaths        = self::relativeToAbsoluteSniffFiles( $extraPathsBaseDir, $extraPaths );
+    /**
+     * Verify that abstract sniffs are filtered out and not registered.
+     *
+     * @return void
+     */
+    public function testRegisterSniffsFiltersOutAbstractClasses()
+    {
+        $extraPathsBaseDir = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR;
+        $extraPaths        = [
+            'DirectoryExpansion/.hiddenAbove/src/MyStandard/Sniffs/AbstractSniff.php',
+            'DirectoryExpansion/.hiddenAbove/src/MyStandard/Sniffs/CategoryB/AnotherAbstractSniff.php',
+        ];
+        $extraPaths        = self::relativeToAbsoluteSniffFiles($extraPathsBaseDir, $extraPaths);
 
-		$fileList = self::$psr1SniffAbsolutePaths;
-		foreach ( $extraPaths as $path ) {
-			$fileList[] = $path;
-		}
+        $fileList = self::$psr1SniffAbsolutePaths;
+        foreach ($extraPaths as $path) {
+            $fileList[] = $path;
+        }
 
-		self::$ruleset->registerSniffs( $fileList, array(), array() );
+        self::$ruleset->registerSniffs($fileList, [], []);
 
-		// Make sure the same sniff list was recreated (but without the objects having been created yet).
-		$this->assertSame( array_keys( self::$originalSniffs ), array_keys( self::$ruleset->sniffs ) );
-		$this->assertSame( array_keys( self::$originalSniffs ), array_values( self::$ruleset->sniffs ) );
-	}//end testRegisteredSniffsFiltersOutFilePathsWithoutSniffsDir()
+        // Make sure the same sniff list was recreated (but without the objects having been created yet).
+        $this->assertSame(array_keys(self::$originalSniffs), array_keys(self::$ruleset->sniffs));
+        $this->assertSame(array_keys(self::$originalSniffs), array_values(self::$ruleset->sniffs));
+
+    }//end testRegisterSniffsFiltersOutAbstractClasses()
+
+
+    /**
+     * Test that sniff files not in a "/Sniffs/" directory are filtered out and not registered.
+     *
+     * @return void
+     */
+    public function testRegisteredSniffsFiltersOutFilePathsWithoutSniffsDir()
+    {
+        $extraPathsBaseDir = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR;
+        $extraPaths        = [
+            'DirectoryExpansion/.hiddenAbove/src/MyStandard/Utils/NotInSniffsDirSniff.php',
+            'DirectoryExpansion/.hiddenAbove/src/MyStandard/Utils/SubDir/NotInSniffsDirSniff.php',
+        ];
+        $extraPaths        = self::relativeToAbsoluteSniffFiles($extraPathsBaseDir, $extraPaths);
+
+        $fileList = self::$psr1SniffAbsolutePaths;
+        foreach ($extraPaths as $path) {
+            $fileList[] = $path;
+        }
+
+        self::$ruleset->registerSniffs($fileList, [], []);
+
+        // Make sure the same sniff list was recreated (but without the objects having been created yet).
+        $this->assertSame(array_keys(self::$originalSniffs), array_keys(self::$ruleset->sniffs));
+        $this->assertSame(array_keys(self::$originalSniffs), array_values(self::$ruleset->sniffs));
+
+    }//end testRegisteredSniffsFiltersOutFilePathsWithoutSniffsDir()
+
+
 }//end class

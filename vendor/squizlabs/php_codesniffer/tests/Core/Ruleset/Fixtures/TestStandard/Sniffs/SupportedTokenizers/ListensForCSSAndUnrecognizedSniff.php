@@ -10,19 +10,21 @@ namespace Fixtures\TestStandard\Sniffs\SupportedTokenizers;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
-class ListensForCSSAndUnrecognizedSniff implements Sniff {
+class ListensForCSSAndUnrecognizedSniff implements Sniff
+{
 
+    public $supportedTokenizers = [
+        'CSS',
+        'Unrecognized',
+    ];
 
-	public $supportedTokenizers = array(
-		'CSS',
-		'Unrecognized',
-	);
+    public function register()
+    {
+        return [T_WHITESPACE];
+    }
 
-	public function register() {
-		return array( T_WHITESPACE );
-	}
-
-	public function process( File $phpcsFile, $stackPtr ) {
-		// Do something.
-	}
+    public function process(File $phpcsFile, $stackPtr)
+    {
+        // Do something.
+    }
 }

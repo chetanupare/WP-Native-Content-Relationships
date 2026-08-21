@@ -91,7 +91,7 @@ class NATICORE_Import_Export {
 			return;
 		}
 
-		if ( ! isset( $_POST['naticore_export_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['naticore_export_nonce'] ) ), 'naticore_export' ) ) {
+		if ( ! isset( $_POST['naticore_export_nonce'] ) || ! hash_equals( wp_create_nonce( 'naticore_export' ), sanitize_text_field( wp_unslash( $_POST['naticore_export_nonce'] ) ) ) ) {
 			return;
 		}
 
@@ -130,9 +130,9 @@ class NATICORE_Import_Export {
 
 		header( 'Content-Type: application/json' );
 		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
-		header( 'Content-Length: ' . strlen( json_encode( $export_data, JSON_PRETTY_PRINT ) ) );
+		header( 'Content-Length: ' . strlen( wp_json_encode( $export_data, JSON_PRETTY_PRINT ) ) );
 
-		echo json_encode( $export_data, JSON_PRETTY_PRINT );
+		echo wp_json_encode( $export_data, JSON_PRETTY_PRINT );
 		exit;
 	}
 
@@ -144,7 +144,7 @@ class NATICORE_Import_Export {
 			return;
 		}
 
-		if ( ! isset( $_POST['naticore_import_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['naticore_import_nonce'] ) ), 'naticore_import' ) ) {
+		if ( ! isset( $_POST['naticore_import_nonce'] ) || ! hash_equals( wp_create_nonce( 'naticore_import' ), sanitize_text_field( wp_unslash( $_POST['naticore_import_nonce'] ) ) ) ) {
 			return;
 		}
 

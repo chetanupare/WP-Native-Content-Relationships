@@ -18,92 +18,104 @@ use PHP_CodeSniffer\Tests\Core\Ruleset\AbstractRulesetTestCase;
  *
  * @covers \PHP_CodeSniffer\Ruleset::expandRulesetReference
  */
-final class ExpandRulesetReferenceHomePathTest extends AbstractRulesetTestCase {
+final class ExpandRulesetReferenceHomePathTest extends AbstractRulesetTestCase
+{
+
+    /**
+     * Original value of the user's home path environment variable.
+     *
+     * @var string|false Path or false is the `HOME` environment variable is not available.
+     */
+    private static $homepath = false;
 
 
-	/**
-	 * Original value of the user's home path environment variable.
-	 *
-	 * @var string|false Path or false is the `HOME` environment variable is not available.
-	 */
-	private static $homepath = false;
+    /**
+     * Store the user's home path.
+     *
+     * @beforeClass
+     *
+     * @return void
+     */
+    public static function storeHomePath()
+    {
+        self::$homepath = getenv('HOME');
+
+    }//end storeHomePath()
 
 
-	/**
-	 * Store the user's home path.
-	 *
-	 * @beforeClass
-	 *
-	 * @return void
-	 */
-	public static function storeHomePath() {
-		self::$homepath = getenv( 'HOME' );
-	}//end storeHomePath()
+    /**
+     * Restore the user's home path environment variable in case the test changed it or created it.
+     *
+     * @afterClass
+     *
+     * @return void
+     */
+    public static function restoreHomePath()
+    {
+        if (is_string(self::$homepath) === true) {
+            putenv('HOME='.self::$homepath);
+        } else {
+            // Remove the environment variable as it didn't exist before.
+            putenv('HOME');
+        }
+
+    }//end restoreHomePath()
 
 
-	/**
-	 * Restore the user's home path environment variable in case the test changed it or created it.
-	 *
-	 * @afterClass
-	 *
-	 * @return void
-	 */
-	public static function restoreHomePath() {
-		if ( is_string( self::$homepath ) === true ) {
-			putenv( 'HOME=' . self::$homepath );
-		} else {
-			// Remove the environment variable as it didn't exist before.
-			putenv( 'HOME' );
-		}
-	}//end restoreHomePath()
+    /**
+     * Set the home path to an alternative location.
+     *
+     * @before
+     *
+     * @return void
+     */
+    protected function setHomePath()
+    {
+        $fakeHomePath = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'FakeHomePath';
+        putenv("HOME=$fakeHomePath");
+
+    }//end setHomePath()
 
 
-	/**
-	 * Set the home path to an alternative location.
-	 *
-	 * @before
-	 *
-	 * @return void
-	 */
-	protected function setHomePath() {
-		$fakeHomePath = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'FakeHomePath';
-		putenv( "HOME=$fakeHomePath" );
-	}//end setHomePath()
+    /**
+     * Verify that a sniff reference with the magic "home path" placeholder gets expanded correctly
+     * and finds sniffs if the path exists underneath the "home path".
+     *
+     * @return void
+     */
+    public function testHomePathRefGetsExpandedAndFindsSniff()
+    {
+        // Set up the ruleset.
+        $standard = __DIR__.'/ExpandRulesetReferenceHomePathTest.xml';
+        $config   = new ConfigDouble(["--standard=$standard"]);
+        $ruleset  = new Ruleset($config);
+
+        $expected = ['MyStandard.Category.Valid' => 'FakeHomePath\\MyStandard\\Sniffs\\Category\\ValidSniff'];
+
+        $this->assertSame($expected, $ruleset->sniffCodes);
+
+    }//end testHomePathRefGetsExpandedAndFindsSniff()
 
 
-	/**
-	 * Verify that a sniff reference with the magic "home path" placeholder gets expanded correctly
-	 * and finds sniffs if the path exists underneath the "home path".
-	 *
-	 * @return void
-	 */
-	public function testHomePathRefGetsExpandedAndFindsSniff() {
-		// Set up the ruleset.
-		$standard = __DIR__ . '/ExpandRulesetReferenceHomePathTest.xml';
-		$config   = new ConfigDouble( array( "--standard=$standard" ) );
-		$ruleset  = new Ruleset( $config );
+    /**
+     * Verify that a sniff reference with the magic "home path" placeholder gets expanded correctly
+     * and still fails to find sniffs if the path doesn't exists underneath the "home path".
+     *
+     * @return void
+     */
+    public function testHomePathRefGetsExpandedAndThrowsExceptionWhenPathIsInvalid()
+    {
+        // Set up the ruleset.
+        $standard = __DIR__.'/ExpandRulesetReferenceHomePathFailTest.xml';
+        $config   = new ConfigDouble(["--standard=$standard"]);
 
-		$expected = array( 'MyStandard.Category.Valid' => 'FakeHomePath\\MyStandard\\Sniffs\\Category\\ValidSniff' );
+        $exceptionMessage  = 'ERROR: Referenced sniff "~/src/MyStandard/Sniffs/DoesntExist/" does not exist.'.PHP_EOL;
+        $exceptionMessage .= 'ERROR: No sniffs were registered.'.PHP_EOL.PHP_EOL;
+        $this->expectRuntimeExceptionMessage($exceptionMessage);
 
-		$this->assertSame( $expected, $ruleset->sniffCodes );
-	}//end testHomePathRefGetsExpandedAndFindsSniff()
+        new Ruleset($config);
+
+    }//end testHomePathRefGetsExpandedAndThrowsExceptionWhenPathIsInvalid()
 
 
-	/**
-	 * Verify that a sniff reference with the magic "home path" placeholder gets expanded correctly
-	 * and still fails to find sniffs if the path doesn't exists underneath the "home path".
-	 *
-	 * @return void
-	 */
-	public function testHomePathRefGetsExpandedAndThrowsExceptionWhenPathIsInvalid() {
-		// Set up the ruleset.
-		$standard = __DIR__ . '/ExpandRulesetReferenceHomePathFailTest.xml';
-		$config   = new ConfigDouble( array( "--standard=$standard" ) );
-
-		$exceptionMessage  = 'ERROR: Referenced sniff "~/src/MyStandard/Sniffs/DoesntExist/" does not exist.' . PHP_EOL;
-		$exceptionMessage .= 'ERROR: No sniffs were registered.' . PHP_EOL . PHP_EOL;
-		$this->expectRuntimeExceptionMessage( $exceptionMessage );
-
-		new Ruleset( $config );
-	}//end testHomePathRefGetsExpandedAndThrowsExceptionWhenPathIsInvalid()
 }//end class

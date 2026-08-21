@@ -1,45 +1,194 @@
 === Native Content Relationships ===
 Contributors: chetanupare
-Tags: relationships, content, posts, users, terms
+Tags: relationships, content, posts, users, ai
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.28
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/chetanupare
+Plugin URI: https://chetanupare.github.io/WP-Native-Content-Relationships/
 
-[![Good First Issues](https://img.shields.io/github/issues/chetanupare/WP-Native-Content-Relationships/good%20first%20issue)](https://github.com/chetanupare/WP-Native-Content-Relationships/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
-
-Add first-class relationships between posts, users, and terms using a fast, structured, and scalable architecture.
+WP relationship plugin with AI-powered suggestions, visual graph, and analytics. Connect content visually or let AI find connections for you.
 
 == Description ==
 
-WordPress does not provide a native way to model real relationships between content items such as posts, users, and terms.  
-Most solutions rely on post meta or taxonomies, which become difficult to query, scale, and maintain over time.
+**The first WordPress relationship plugin that thinks for you.**
 
-Native Content Relationships introduces a **structured relationship layer** for WordPress that allows you to define meaningful, queryable, and scalable relationships between content — without relying on hacks or editor-specific solutions.
+Native Content Relationships connects your posts, users, and terms with a visual drag-and-drop interface. But here's what makes it different from every other relationship plugin:
 
-This plugin is designed to be **core-friendly, developer-focused, and future-proof**.
+**AI-powered suggestions analyze your content and recommend the best connections automatically.**
 
-== What This Plugin Solves ==
+No other relationship plugin does this. ACF makes you pick items manually. JetEngine makes you configure field groups. MB Relationships makes you write code. Native Content Relationships reads your content and suggests what should be connected.
 
-• Many-to-many relationships between content  
-• Clean querying without meta or taxonomy abuse  
-• Long-term maintainability and portability  
-• Support for modern and headless WordPress setups  
+=== Features No Other Plugin Has ===
+
+**1. AI-Powered Suggestions**
+Click "Suggest related" and the plugin analyzes your content using WordPress 7.0 AI Client. It finds the most relevant posts based on meaning, not just keywords.
+
+**2. AI Auto-Link on Publish**
+When you publish a post, the plugin automatically creates relationships with the most relevant existing content. No manual work needed.
+
+**3. Visual Relationship Graph**
+See how your content is connected. An interactive force-directed graph shows all relationships with color-coded nodes. Drag nodes, zoom, filter by post type.
+
+**4. Analytics Dashboard**
+Know your content health at a glance. See total relationships, connected posts, orphaned content, most referenced posts, and activity over time.
+
+**5. Carousel Template**
+Display related content in a beautiful carousel with `[naticore_related_carousel]`. Includes prev/next buttons and optional autoplay.
+
+=== How It Works ===
+
+**Step 1: Install and activate.** Database tables create automatically. No configuration needed.
+
+**Step 2: Open any post.** Find the "Relationships" box below the editor.
+
+**Step 3: Click "Suggest related."** The plugin analyzes your content and shows the most relevant posts, complete with thumbnails.
+
+**Step 4: Click to connect.** One click adds the relationship. Drag to reorder.
+
+**Step 5: Display on frontend.** Use the Gutenberg block, Elementor dynamic tags, shortcodes, or widget.
+
+=== AI-Powered Suggestions (WordPress 7.0+) ===
+
+When you click "Suggest related," the plugin sends your post's title, content, and topics to an AI model through the WordPress 7.0 AI Client. The AI analyzes semantic similarity and returns the most relevant posts from your site.
+
+**What the AI considers:**
+* Post title and content meaning (not just keywords)
+* Topic and category overlap
+* Content freshness and relevance
+* Existing relationships (won't suggest what's already connected)
+
+**Requirements:**
+* WordPress 7.0 or later
+* An AI provider configured in Settings > Connectors (OpenAI, Anthropic, or Google)
+
+**No AI provider?** The plugin falls back to category and tag matching. It still works great — AI just makes it smarter.
+
+=== AI Auto-Link on Publish ===
+
+Enable this feature and the plugin works for you automatically. When you publish a post:
+
+1. AI analyzes the content
+2. Finds the top 5 most related existing posts
+3. Creates relationships automatically
+4. Shows a notice: "5 relationships created. View or edit."
+
+No other relationship plugin does this.
+
+=== Visual Relationship Graph ===
+
+Go to **Relationships > Graph** to see a visual map of how your content is connected.
+
+* **Force-directed layout** — Nodes arrange themselves based on connections
+* **Color-coded by type** — Posts (blue), Users (green), Terms (yellow), Pages (red)
+* **Draggable nodes** — Rearrange the graph manually
+* **Zoom and pan** — Scroll to zoom, drag to pan
+* **Filter by type** — Show only posts, pages, or users
+* **Click to edit** — Click any node to open it in the editor
+
+=== Analytics Dashboard ===
+
+Go to **Relationships > Analytics** to see:
+
+* **Summary cards** — Total relationships, connected posts, orphaned posts, avg per post
+* **Relationships by type** — Visual breakdown with percentage bars
+* **Most referenced posts** — Which content gets linked to most
+* **Most connected posts** — Which content links out most
+* **Activity over time** — Relationship creation trend (last 30 days)
+
+=== Bulk Relationship Manager ===
+
+Go to **Relationships > Bulk Manager** to:
+
+* View all relationships in a table
+* Select multiple relationships with checkboxes
+* Bulk delete relationships
+* Bulk change relationship type
+* Paginated for large datasets
+
+=== Visual Relationship Builder ===
+
+* **Search with thumbnails** — Type in the search box and see post thumbnails as you type
+* **Drag-and-drop sorting** — Reorder relationships by dragging
+* **One-way or bidirectional** — Choose which direction the relationship flows
+* **User profile relationships** — Connect users to their favorite posts, bookmarks, or contributions
+* **Term relationships** — Link categories, tags, or custom taxonomies to content
+
+=== Page Builder Integration ===
+
+**Gutenberg:**
+* "Related Content" block with live preview in the editor
+* Shows actual related content, not a placeholder
+* Configurable: number of posts, layout, thumbnails, excerpts
+
+**Elementor:**
+* Dynamic tags for Related Posts, Related Users, Related Terms
+* Works with any Elementor widget
+* No configuration needed — auto-detected
+
+**Shortcodes:**
+`[naticore_related_posts type="related_to" limit="5"]`
+`[naticore_related_users type="authored_by" limit="10"]`
+`[naticore_related_terms type="categorized_as" limit="5"]`
+`[naticore_related_carousel type="related_to" limit="10" autoplay="1"]`
+
+**Widget:**
+"Related Content (NCR)" — add to any sidebar or widget area.
+
+=== WooCommerce ===
+
+Link products to accessories, guides, or related items. Syncs with WooCommerce upsells and cross-sells if enabled.
+
+=== Why Choose This Over ACF or JetEngine? ===
+
+| Feature | Native Content Relationships | ACF Pro | JetEngine | MB Relationships |
+|---|---|---|---|---|
+| AI-powered suggestions | Yes | No | No | No |
+| AI auto-link on publish | Yes | No | No | No |
+| Visual relationship graph | Yes | No | No | No |
+| Analytics dashboard | Yes | No | No | No |
+| Bulk relationship manager | Yes | Yes | No | No |
+| Carousel template | Yes | No | No | No |
+| Visual drag-and-drop | Yes | Yes | Yes | No |
+| Post-to-user relationships | Yes | No | Yes | Yes |
+| Post-to-term relationships | Yes | No | Yes | Yes |
+| Custom database table | Yes | No | Yes | Yes |
+| No plugin dependency | Yes | No | No | Yes |
+| Gutenberg live preview | Yes | No | No | No |
+| Free version | Yes | Yes | No | Yes |
+
+=== Performance ===
+
+* Custom database table with composite indexes — not slow post meta queries
+* Sub-2ms P95 latency even with 1,000,000+ relationships
+* Object cache compatible
+* Lightweight — no bloat, no unnecessary features
+
+[View Performance Report](https://github.com/chetanupare/WP-Native-Content-Relationships/blob/main/docs/PERFORMANCE.md)
 
 == Key Features ==
 
-• Relationships between posts, users, and terms  
+• AI-powered relationship suggestions (WordPress 7.0+)  
+• AI auto-link on publish  
+• Visual relationship graph with force-directed layout  
+• Analytics dashboard with statistics  
+• Bulk relationship manager  
+• Carousel template with autoplay  
+• Visual search with thumbnails in the post editor  
+• Drag-and-drop relationship sorting  
 • One-way or bidirectional relationships  
-• Indexed database table for fast queries  
-• Clean PHP API for managing relationships  
-• WP_Query integration  
-• REST API support  
+• Gutenberg block with live preview  
+• Elementor dynamic tags for posts, users, and terms  
+• Shortcodes and widgets  
+• Many-to-many relationships between posts, users, and terms  
+• Custom database table with composite indexes  
+• WooCommerce product relationships  
+• REST API for headless setups  
 • Multilingual-ready (WPML / Polylang)  
-• WooCommerce optional integration  
-• Editor- and theme-agnostic  
+• Works with any theme — no template overrides  
 
 == Supported Relationship Types ==
 
@@ -66,105 +215,13 @@ This plugin is designed to be **core-friendly, developer-focused, and future-pro
 • Curated collections  
 • Semantic grouping beyond default taxonomies  
 
-== Admin Interface ==
-
-• Relationship management in post editor  
-• User profile relationship management  
-• Term editor relationship support  
-• AJAX-powered search for posts, users, and terms  
-• Modern UI matching WordPress admin style  
-
-== Stability & Backward Compatibility ==
-
-**Schema stable from 1.x onward. Backward compatibility guaranteed.**
-
-We lock the core before expanding. Ecosystem and agency confidence depend on it.
-
-* **Database schema stability** — The relationship table and `NCR_SCHEMA_VERSION` are stable in the 1.x line. Any future schema change will be additive (new columns/indexes) or run through a documented migration; no breaking table or column renames without a major version.
-* **Backward compatibility promise** — Public PHP APIs (functions, hooks, WP_Query arguments), shortcodes, and REST endpoints will not be removed or changed in breaking ways within the 1.x branch. Deprecations will be announced and supported for at least one minor version.
-* **Versioning policy** — 1.x = stable core. Minor/patch releases may add features and fix bugs; they will not break existing integrations. A major version (2.x) would be the only place for intentional breaking changes, with a clear migration path.
-* **Namespacing discipline** — One internal prefix: `ncr_` (functions, hooks, options), `NCR_` (classes, constants), `ncr-` (CSS/IDs/handles). No new alternate prefixes; documented and consistent so extensions and ecosystem plugins can rely on a stable surface.
-
-== Performance & Architecture ==
-
-• Dedicated indexed database table  
-• No post meta or taxonomy hacks  
-• Optimized for large and multilingual sites  
-• Cache-friendly and shared-hosting safe  
-• Designed to scale to large datasets  
-
-== Integrations ==
-
-• WooCommerce (product relationships)  
-• WPML / Polylang (relationship mirroring)  
-• Elementor (dynamic content support)  
-• Gutenberg (related content block)  
-• Advanced Custom Fields (one-time migration tool)  
-
-== Page Builder Integration =
-
-**Elementor:**
-* **Compatible with:** Elementor 2.0+
-* **Features:** Comprehensive Dynamic Tags suite for relationships
-* **Auto-detected:** Yes (no configuration needed)
-* **Tested up to:** Elementor 3.20
-
-**Elementor Dynamic Tags:**
-* **Related Posts**: Display related posts with customizable output formats
-* **Related Users**: Display users with relationships (favorites, bookmarks, etc.)
-* **Related Terms**: Display taxonomy terms with relationships
-* **Flexible Output**: IDs, titles, links, avatars, count-only options
-* **Direction Support**: Both outgoing and incoming relationships
-* **Native Controls**: Relationship type selector with validation
-
-**Gutenberg:**
-* **Compatible with:** WordPress 5.0+ (Core)
-* **Features:** "Related Content" block with relationship filtering
-* **Always available:** Yes (core WordPress feature)
-* **Tested up to:** WordPress 6.5 
-
-= Shortcodes =
-
-Use these in posts, pages, or widgets. They use the current post ID when not specified.
-
-*Related posts (default: type=related_to, limit=5):*
-[naticore_related_posts type="related_to" limit="5" order="date" layout="list" title="Related Content" class="my-class"]
-
-*Related users (default: type=authored_by):*
-[naticore_related_users type="authored_by" limit="10" order="name" layout="list" title="Authors"]
-
-*Related terms (default: type=categorized_as):*
-[naticore_related_terms type="categorized_as" limit="5" order="name" layout="grid" title="Categories"]
-
-**Attributes (all shortcodes):**
-* type – Relationship type slug (e.g. related_to, parent_of, authored_by, categorized_as)
-* limit – Number of items (1–50), default 5
-* order – Sort: date, title (posts) or name (users/terms)
-* post_id – Post ID; omit to use current post
-* layout – list or grid
-* title – Heading text above the list (optional)
-* class – Extra CSS class(es) for the wrapper
-* show_thumbnail – 1 to show post thumbnail (posts shortcode only), default 0
-* excerpt_length – Number of words for excerpt (0 = hide), default 0
-
-= Widget =
-
-**Related Content (NCR)** is available under Appearance → Widgets. Add it to any sidebar or widget area.
-
-* **Title** – Optional widget title (leave blank to use the shortcode’s default “Related Content” heading)
-* **Relationship type** – e.g. Related To, Parent Of, Depends On
-* **Number of items** – 1–50
-* **Order by** – Date or Title
-* **Post ID (optional)** – Leave 0 to use the current post; set a post ID to show relations for a specific post
-
-Output matches the shortcode (same markup and styles when the shortcode CSS is enqueued).
-
 == Installation ==
 
 1. Upload the plugin to `/wp-content/plugins/native-content-relationships/`
 2. Activate the plugin from the Plugins menu
 3. Database tables are created automatically
-4. Configure settings under **Settings → Content Relationships**
+4. For AI suggestions: go to Settings > Connectors and add an AI provider (OpenAI, Anthropic, or Google)
+5. Open any post and click "Suggest related" to see AI in action
 
 == Frequently Asked Questions ==
 
@@ -175,17 +232,88 @@ No. It complements WooCommerce and can optionally sync relationships.
 Yes. A one-time migration tool is included.
 
 = Does this work with page builders? =
-Yes. The plugin is editor-agnostic and works with Elementor, Gutenberg, and others.
+Yes. The plugin works with Elementor, Gutenberg, and any theme.
 
 = Does this support users and terms? =
 Yes. Full support for post–user and post–term relationships is included.
 
 = Does this send data externally? =
-No. All data is stored locally in your WordPress database.
+Only if you enable AI suggestions. When enabled, post content is sent to your configured AI provider for analysis. No data is sent if AI is disabled.
 
-== Developer Guide (Advanced) ==
+= Do I need an AI provider? =
+No. The plugin works without AI. AI suggestions are optional and require WordPress 7.0+ with a configured provider.
 
-This section is intended for developers who want programmatic control.
+= How is this different from ACF relationship fields? =
+ACF requires you to configure field groups and manually select each related post. Native Content Relationships gives you a visual search interface and optional AI suggestions that recommend connections automatically.
+
+= How is this different from JetEngine? =
+JetEngine is a full suite with listing grids, dynamic data, and relationships. Native Content Relationships is focused purely on relationships — simpler, lighter, and faster.
+
+= What is the relationship graph? =
+The graph is a visual map showing how your content is connected. Go to Relationships > Graph to see it. Nodes represent posts, users, and terms. Lines show relationships between them.
+
+= How does auto-link work? =
+When enabled, the plugin analyzes each new post on publish and automatically creates relationships with the most relevant existing content. You see a notice after publishing showing how many relationships were created.
+
+== Screenshots ==
+
+1. Settings screen  
+2. Relationship overview  
+
+== Changelog ==
+
+= 1.4.1 =
+* Feature: Relationship constraints — define which content type combinations are allowed
+* Feature: Cardinality rules — set max connection limits (one-to-one, one-to-many)
+* Feature: Relationship status workflow — track states (Applied → Shortlisted → Interviewed → Hired)
+* Feature: Relationship expiration — auto-deactivate relationships after a date
+* Feature: Role-based permissions — control who can create/edit/delete each relationship type
+* Feature: Relationship cloning — clone posts with all their relationships
+* Feature: Webhooks — fire HTTP POST requests on relationship changes (created, updated, deleted)
+* Feature: Caching layer — intelligent caching for relationship queries with auto-invalidation
+* Improved: Duplicate detection prevents creating the same relationship twice
+* Improved: Schema version bumped to 1.4
+
+= 1.3.0 =
+* Feature: Relationship metadata UI — add roles and notes to each relationship in the post editor
+* Feature: 8 preset templates (Event/Speaker, Course/Instructor, Product/Brand, Job/Skill, Candidate/Job, Author, Portfolio, Series)
+* Feature: Revision history tracking — see who added/removed relationships and when
+* Feature: Bidirectional auto-sync — metadata automatically syncs between bidirectional relationships
+* Feature: GraphQL support for WPGraphQL (headless WordPress)
+* Improved: Settings toggle for bidirectional sync
+* Improved: Schema version bumped to 1.3
+
+= 1.2.0 =
+* Feature: AI auto-link on publish — automatically create relationships when publishing
+* Feature: Visual relationship graph with force-directed layout
+* Feature: Analytics dashboard with statistics and charts
+* Feature: Bulk relationship manager with delete and type change
+* Feature: Carousel template with [naticore_related_carousel] shortcode
+* Improved: Admin menu reorganized with Graph, Bulk Manager, and Analytics pages
+
+= 1.1.0 =
+* Feature: AI-powered relationship suggestions using WordPress 7.0 AI Client
+* Feature: Settings option to enable/disable AI suggestions (Settings > Content Relationships)
+* Feature: AI analyzes post content for semantic relationship suggestions
+* Improved: Falls back to category/tag matching when AI is unavailable
+* Improved: Visual AI badge in admin when suggestions come from AI
+
+= 1.0.31 =
+* Fix: CSS class name mismatch in admin meta box (ncore- → naticore-) — meta box now styles correctly
+* Improved: Search results now show post thumbnails for better visual identification
+* Improved: Gutenberg block now shows live preview of related content instead of placeholder
+* Improved: Readme rewritten for better clarity and user focus
+* Updated: Tested up to WordPress 7.0
+
+= 1.0.30 =
+* WordPress 7.0 compatibility: Updated Tested up to 7.0
+* Fix: Remove IF NOT EXISTS from dbDelta() to ensure schema updates work correctly
+* Fix: Add DEFAULT NULL to nullable columns in database schema
+* Improved: Renamed wp_* global functions to ncr_* prefix (backward-compatible wrappers retained)
+* Improved: Replaced wp_verify_nonce() with hash_equals() pattern for modern nonce verification
+* Improved: Replaced json_encode() with wp_json_encode() for WordPress coding standards
+
+== Developer Guide ==
 
 = Core API =
 
@@ -203,243 +331,41 @@ Remove relationship:
 
 = WP_Query Integration =
 
+```
 new WP_Query( array(
-'post_type' => 'post',
-'content_relation' => array(
-'post_id' => 123,
-'type' => 'related_to',
-),
+    'post_type' => 'post',
+    'content_relation' => array(
+        'post_id' => 123,
+        'type' => 'related_to',
+    ),
 ) );
-
+```
 
 = REST API =
 
-Endpoints available under:
-`/wp-json/naticore/v1/`
-
-• Create relationships  
-• Fetch related content  
-• Delete relationships  
-
-**Embed relations in core REST responses (headless):**  
-Add `?naticore_relations=1` to any core resource request to include a `naticore_relations` array in the response. Works with:
-• `GET /wp-json/wp/v2/posts/<id>?naticore_relations=1`
-• `GET /wp-json/wp/v2/users/<id>?naticore_relations=1`
-• `GET /wp-json/wp/v2/categories/<id>?naticore_relations=1` (and other taxonomies)
-Each relation item includes `to_id`, `to_type`, `type`, and optional `title`/`display_name`/`name`. Opt-in only so default requests stay fast.
+Endpoints under `/wp-json/naticore/v1/`
 
 = Hooks & Filters =
 
 Actions:
-• `naticore_relation_added`
-• `naticore_relation_removed`
-• `naticore_after_duplicate_post` – fired after copying relations from one post to another (args: from_post_id, to_post_id, result array)
-
-Filters:
-• `naticore_relation_is_allowed`
-• `naticore_get_related_args`
-
-**Duplicate post:** Use helper `naticore_copy_relations( $from_post_id, $to_post_id, $relation_types = null )` to copy relationships when duplicating a post. Returns array with keys `copied`, `skipped`, `errors`. Out-of-the-box integration: Yoast Duplicate Post, Post Duplicator (metaphorcreations), Copy & Delete Posts (Inisev).
-
-= Elementor Integration =
-
-This plugin provides comprehensive Elementor Dynamic Tags for displaying relationships in Elementor-powered designs.
-
-**Available Dynamic Tags:**
-
-* **Related Posts** (ncr-related-posts)
-  - Display posts related to the current post
-  - Supports all post-to-post relationship types
-  - Output formats: IDs, titles, links, count
-  - Direction control: outgoing/incoming
-
-* **Related Users** (ncr-related-users)
-  - Display users with relationships to posts
-  - Supports user relationship types (favorites, bookmarks, etc.)
-  - Output formats: IDs, names, emails, avatars, profile links
-  - Direction control: posts-to-users/users-to-posts
-
-* **Related Terms** (ncr-related-terms)
-  - Display taxonomy terms with relationships
-  - Supports term relationship types (categories, tags, etc.)
-  - Output formats: IDs, names, slugs, archive links
-  - Direction control: posts-to-terms/terms-to-posts
-
-**Usage Examples:**
-
-*Display related post IDs:*
-```
-[ncr-related-posts relationship_type="related_to" output_format="ids" limit="5"]
-```
-
-*Display user avatars:*
-```
-[ncr-related-users relationship_type="favorite_posts" output_format="avatar_images" avatar_size="48"]
-```
-
-*Display term links:*
-```
-[ncr-related-terms relationship_type="categorized_as" output_format="term_links" limit="10"]
-```
-
-*Get count of related items:*
-```
-[ncr-related-posts relationship_type="related_to" output_format="count"]
-```
-
-**Advanced Features:**
-- **Context-aware**: Automatically detects current post, user, or term context
-- **Fallback content**: Display custom text when no relationships found
-- **Pagination support**: Limit results for performance
-- **Ordering options**: Sort by date, title, or random
-- **Multi-language**: Works with WPML/Polylang translations
-
-**Integration Benefits:**
-- **Native Elementor experience**: Tags appear in Elementor's Dynamic Tags panel
-- **No templates forced**: Users control output format and styling
-- **Performance optimized**: Uses cached relationship data
-- **Optional dependency**: Only loads when Elementor is active
+* `naticore_relation_added`
+* `naticore_relation_removed`
 
 = WP-CLI =
 
-• List relationships  
-• Add / remove relationships  
-• Integrity checks  
+* List relationships
+* Add / remove relationships
+* Integrity checks
 
-== Screenshots ==
+== Stability & Backward Compatibility ==
 
-1. Settings screen  
-2. Relationship overview  
-3. Post editor relationship UI  
-4. User profile relationships  
-5. Term editor relationships  
+**Schema stable from 1.x onward. Backward compatibility guaranteed.**
 
-== Performance & Scale ==
+* Database schema stable — no breaking changes in 1.x
+* Public PHP APIs stable — functions, hooks, and endpoints won't break
+* Versioning policy — 1.x = stable core
 
-Native Content Relationships is built for high-volume WordPress sites.
+== ACF Migration ==
 
-* Composite covering indexes for fast relationship lookups
-* SQL-native validation logic for integrity checks
-* Chunked processing to prevent memory spikes
-* Streaming WP-CLI operations for large datasets
-* Bounded memory usage (<5MB during full graph scans)
-
-Benchmarks confirm stable performance with 1,000,000+ relationship rows under InnoDB.
-
-[View Full Performance Report](https://github.com/chetanupare/WP-Native-Content-Relationships/blob/main/docs/PERFORMANCE.md)
-
-== Changelog ==
-
-= 1.0.28 =
-* WP_Query: Registered query vars, documented relation args, added ncr_skip_relationship_query filter for core migration path.
-
-= 1.0.27 =
-* Code quality: PHPCS compliance (WordPress coding standards); 0 errors.
-
-= 1.0.26 =
-* New: Playground Live Preview blueprint (assets/blueprints/blueprint.json) for Try in Playground on WordPress.org.
-
-= 1.0.25 =
-* Fix: Resolved WordPress.org SVN stable tag recognition issue.
-* Deployment: Updated stable tag to ensure proper plugin directory deployment.
-
-= 1.0.24 =
-* Translations: Added Spanish (es_ES), German (de_DE), French (fr_FR), and Portuguese (pt_BR) support.
-* Localization: Included master `.pot` file for community translations.
-* Core: Improved internationalization (i18n) for admin interfaces.
-
-= 1.0.23 =
-* Clean Release: Removed development artifacts (docs, tests, benchmarks) from distribution.
-* Documentation: Updated readme to link to external performance report.
-* Infrastructure: Verified 1M row benchmarks (see GitHub).
-
-= 1.0.22 =
-* Infrastructure-Grade Benchmarks: Refined docs/PERFORMANCE.md with high-fidelity metrics.
-* Enhanced Benchmarking Suite: Support for Mean/P95 latency and buffer pool warming.
-* Performance: Validated sub-2ms P95 latency at 1M rows.
-
-= 1.0.21 =
-
-= 1.0.20 =
-* **NEW**: Schema Versioning Guard (`NCR_SCHEMA_VERSION` 1.1)
-* **NEW**: Micro-Optimized Query Layer with composite indexes for 1M+ rows
-* **NEW**: WordPress Site Health integration for relationship integrity
-* **DEV**: Formalized database upgrade routine
-
-= 1.0.19 =
-* **PERFORMANCE**: Implemented chunked integrity processing to support 100k+ relationships
-* **PERFORMANCE**: SQL-native duplicate detection to minimize PHP memory overhead
-* **IMPROVED**: Streamed WP-CLI output for real-time progress during check/fix
-* **FIX**: Resolved "Stable Tag" race conditions in SVN deployment pipeline
-
-= 1.0.18 =
-* **NEW**: Relationship Integrity Engine with modular helper system
-* **NEW**: Expanded integrity checks (orphans, unregistered types, constraints, directional consistency)
-* **IMPROVED**: WP-CLI command `wp content-relations check` with `--fix` and `--verbose` reporting
-* **DEV**: New `includes/helpers/integrity-helpers.php` for modular data validation
-
-= 1.0.17 =
-* **REFINED**: Standardized relationship error codes with `ncr_` prefix (e.g. `ncr_max_connections_exceeded`)
-* **SECURITY**: Implemented relationship registry locking to prevent late/unsafe registrations after `init:20`
-* **DOCS**: Added architectural notes regarding future atomic write considerations
-
-= 1.0.16 =
-* **NEW**: Formal Relationship Type Registry with `ncr_get_registered_relation_types()`
-* **NEW**: Enforced Directional Logic (blocked reverse writes for one-way types)
-* **NEW**: Relationship constraints support with `max_connections` (e.g. "One Post to One Author")
-* **NEW**: REST API endpoint `GET /naticore/v1/types` to expose registry
-* **IMPROVED**: Enhanced verification layer in REST relationship creation
-
-= 1.0.15 =
-* **NEW**: Formal Relationship Type Registration API for developers
-* **NEW**: Added `ncr_register_relation_type` helper with schema validation
-* **NEW**: Strict validation for relationship object combinations
-* **IMPROVED**: Refactored internal type mapping for better maintainability
-
-= 1.0.14 =
-* **NEW**: Integrated Import/Export as a dedicated settings tab
-* **NEW**: Added empty state UI for cleaner Relationship Overview experience
-* **NEW**: Added dismissible post-activation notice with documentation links
-* **IMPROVED**: Moved Relationship Overview from Tools to Settings menu for better organization
-* **FIX**: Resolved CSS specificity issues in card-based settings layout
-
-= 1.0.13 =
-* **NEW**: Comprehensive CONTRIBUTING.md guidelines and security policy
-* **NEW**: Issue templates, automation, and contributor guidelines
-* **FIX**: CodeQL syntax errors and duplicate workflow fixes
-* **FIX**: Deprecated function usage and i18n inconsistencies
-* **IMPROVED**: Updated Elementor tag names to naticore- prefix
-* **IMPROVED**: Code quality standards and PHPDoc documentation
-
-= 1.0.12 =
-* **NEW**: Comprehensive Elementor Dynamic Tags integration
-* **NEW**: Related Posts Dynamic Tag with multiple output formats
-* **NEW**: Related Users Dynamic Tag with avatar and profile support
-* **NEW**: Related Terms Dynamic Tag with taxonomy filtering
-* **NEW**: Direction control for all relationship types (outgoing/incoming)
-* **NEW**: Flexible output formats (IDs, titles, links, avatars, count)
-* **NEW**: Context-aware relationship detection
-* **NEW**: Performance optimized with caching integration
-* **IMPROVED**: Enhanced Elementor integration with native controls
-* **IMPROVED**: Updated documentation with Elementor examples  
-
-= 1.0.11 =
-• Added full post-to-term and term-to-post relationships  
-• Improved database indexing  
-• Updated documentation  
-
-= 1.0.10 =
-• Added full post-to-user and user-to-post relationships  
-• User profile relationship UI  
-
-= 1.0.0 =
-• Initial release  
-
-== Contributing ==
-
-Contributions are welcome.  
-GitHub: https://github.com/chetanupare/WP-Native-Content-Relationships
-
-== License ==
-
-GPLv2 or later
+If you store relationships in Advanced Custom Fields or Post Meta, you can migrate to Native Content Relationships for better performance.
+[Migration guide](https://github.com/chetanupare/WP-Native-Content-Relationships/blob/main/docs/migration/from-acf.md)

@@ -11,26 +11,31 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\DeprecatedSniff;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
-class InvalidRemovalVersionSniff implements Sniff, DeprecatedSniff {
+class InvalidRemovalVersionSniff implements Sniff, DeprecatedSniff
+{
 
+    public function getDeprecationVersion()
+    {
+        return 'dummy';
+    }
 
-	public function getDeprecationVersion() {
-		return 'dummy';
-	}
+    public function getRemovalVersion()
+    {
+        return ['4.0'];
+    }
 
-	public function getRemovalVersion() {
-		return array( '4.0' );
-	}
+    public function getDeprecationMessage()
+    {
+        return 'dummy';
+    }
 
-	public function getDeprecationMessage() {
-		return 'dummy';
-	}
+    public function register()
+    {
+        return [T_WHITESPACE];
+    }
 
-	public function register() {
-		return array( T_WHITESPACE );
-	}
-
-	public function process( File $phpcsFile, $stackPtr ) {
-		// Do something.
-	}
+    public function process(File $phpcsFile, $stackPtr)
+    {
+        // Do something.
+    }
 }

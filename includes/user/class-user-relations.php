@@ -283,7 +283,7 @@ class NATICORE_User_Relations {
 	 */
 	public function save_post_user_relations( $post_id ) {
 		// Verify nonce
-		if ( ! isset( $_POST['naticore_user_relations_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['naticore_user_relations_nonce'] ), 'naticore_save_user_relations' ) ) {
+		if ( ! isset( $_POST['naticore_user_relations_nonce'] ) || ! hash_equals( wp_create_nonce( 'naticore_save_user_relations' ), sanitize_key( $_POST['naticore_user_relations_nonce'] ) ) ) {
 			return;
 		}
 
@@ -304,34 +304,35 @@ class NATICORE_User_Relations {
 	}
 
 	/**
-	 * AJAX: Search users
+	 * AJAX: Search users.
+	 *
+	 * Security: check_ajax_referer + list_users capability.
+	 * Delegates to NATICORE_Object_Search::search_users().
+	 * user_email is never returned (privacy protection).
+	 * Response shape is preserved for backward compatibility with user-relations.js.
 	 */
 	public function ajax_search_users() {
-		// Verify nonce
-		if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ?? '' ), 'naticore_search_nonce' ) ) {
-			wp_die( 'Security check failed' );
+		check_ajax_referer( 'naticore_ajax', 'nonce' );
+
+		if ( ! current_user_can( 'list_users' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
 		}
 
-		$search = sanitize_text_field( wp_unslash( $_POST['search'] ?? '' ) );
-		if ( empty( $search ) ) {
-			wp_die();
+		$search  = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
+		$service = new NATICORE_Object_Search();
+		$items   = $service->search_users( $search );
+
+		if ( is_wp_error( $items ) ) {
+			wp_send_json_error( array( 'message' => $items->get_error_message() ) );
 		}
 
-		$users = get_users(
-			array(
-				'search'         => '*' . $search . '*',
-				'search_columns' => array( 'user_login', 'user_nicename', 'user_email', 'display_name' ),
-				'number'         => 20,
-			)
-		);
-
+		// Map normalized results to the legacy response shape expected by user-relations.js.
 		$results = array();
-		foreach ( $users as $user ) {
+		foreach ( $items as $item ) {
 			$results[] = array(
-				'id'           => $user->ID,
-				'display_name' => $user->display_name,
-				'user_email'   => $user->user_email,
-				'user_login'   => $user->user_login,
+				'id'           => $item['id'],
+				'display_name' => $item['title'],
+				'user_login'   => $item['secondary_label'],
 			);
 		}
 
@@ -339,41 +340,41 @@ class NATICORE_User_Relations {
 	}
 
 	/**
-	 * AJAX: Search posts for user
+	 * AJAX: Search posts for user.
+	 *
+	 * Security: check_ajax_referer + edit_posts capability.
+	 * Delegates to NATICORE_Object_Search::search_posts().
+	 * Post content is never searched (title-only, scalability protection).
+	 * Response shape is preserved for backward compatibility with user-relations.js.
 	 */
 	public function ajax_search_posts_for_user() {
-		// Verify nonce
-		if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ?? '' ), 'naticore_search_nonce' ) ) {
-			wp_die( 'Security check failed' );
+		check_ajax_referer( 'naticore_ajax', 'nonce' );
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
 		}
 
-		$search = sanitize_text_field( wp_unslash( $_POST['search'] ?? '' ) );
-		if ( empty( $search ) ) {
-			wp_die();
-		}
-
-		$args = array(
-			's'              => $search,
-			'post_type'      => $this->get_supported_post_types(),
-			'post_status'    => 'publish',
-			'posts_per_page' => 20,
+		$search  = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
+		$service = new NATICORE_Object_Search();
+		$items   = $service->search_posts(
+			$search,
+			array( 'post_type' => $this->get_supported_post_types() )
 		);
 
-		$query   = new WP_Query( $args );
-		$results = array();
-
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$results[] = array(
-					'id'         => get_the_ID(),
-					'post_title' => get_the_title(),
-					'post_type'  => get_post_type(),
-					'edit_link'  => get_edit_post_link(),
-				);
-			}
+		if ( is_wp_error( $items ) ) {
+			wp_send_json_error( array( 'message' => $items->get_error_message() ) );
 		}
-		wp_reset_postdata();
+
+		// Map normalized results to the legacy response shape expected by user-relations.js.
+		$results = array();
+		foreach ( $items as $item ) {
+			$results[] = array(
+				'id'         => $item['id'],
+				'post_title' => $item['title'],
+				'post_type'  => $item['object_type'],
+				'edit_link'  => $item['edit_url'],
+			);
+		}
 
 		wp_send_json_success( $results );
 	}
@@ -399,7 +400,7 @@ class NATICORE_User_Relations {
 			'naticoreUserRelations',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'naticore_search_nonce' ),
+				'nonce'   => wp_create_nonce( 'naticore_ajax' ),
 				'strings' => array(
 					'addRelation'    => __( 'Add Relation', 'native-content-relationships' ),
 					'removeRelation' => __( 'Remove', 'native-content-relationships' ),

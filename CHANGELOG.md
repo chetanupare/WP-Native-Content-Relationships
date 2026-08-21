@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.29] - 2026-02-21
+
+### Added
+- **Feature**: Added Lightweight Relationship Metadata API (`wp_content_relationmeta` table).
+- **Feature**: Added Advanced WP_Query arguments (`content_relation` with nested OR/AND logic and type exclusions).
+
+### Changed
+- **Update**: Improved documentation highlighting enterprise-grade features and ACF migration path.
+
 ## [1.0.24] - 2026-02-11
 
 ### Added

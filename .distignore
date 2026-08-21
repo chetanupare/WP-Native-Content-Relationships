@@ -1,0 +1,38 @@
+# Tests
+tests/
+
+# Benchmarks
+benchmarks/
+
+# Phase reports
+PHASE*.md
+P0_VALIDATION_REPORT.md
+PHASE5_RELEASE_CANDIDATE_REPORT.md
+PHASE6_RELEASE_VALIDATION_REPORT.md
+PHASE6.1_RUNTIME_BUG_FIX_REPORT.md
+
+# Dev scripts
+run-syntax-check.sh
+run-integration-tests.sh
+
+# Dev-only files
+phpstan-stubs.php
+developer-guide.php
+test_cleanup.php
+
+# Dev dependencies
+composer.json
+composer.lock
+vendor/
+phpstan.neon
+phpcs.xml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

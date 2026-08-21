@@ -55,10 +55,7 @@ class NATICORE_User_Relations_Ajax {
 	 * AJAX: Add user relationship
 	 */
 	public function add_user_relation() {
-		// Verify nonce
-		if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ?? '' ), 'naticore_search_nonce' ) ) {
-			wp_send_json_error( 'Security check failed' );
-		}
+		check_ajax_referer( 'naticore_ajax', 'nonce' );
 
 		// Get and validate parameters
 		$from_id = absint( $_POST['from_id'] ?? 0 );
@@ -91,10 +88,7 @@ class NATICORE_User_Relations_Ajax {
 	 * AJAX: Remove user relationship
 	 */
 	public function remove_user_relation() {
-		// Verify nonce
-		if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ?? '' ), 'naticore_search_nonce' ) ) {
-			wp_send_json_error( 'Security check failed' );
-		}
+		check_ajax_referer( 'naticore_ajax', 'nonce' );
 
 		// Get and validate parameters
 		$from_id = absint( $_POST['from_id'] ?? 0 );

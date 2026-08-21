@@ -17,102 +17,110 @@ use PHPUnit\Framework\TestCase;
  *
  * @covers \PHP_CodeSniffer\Autoload::determineLoadedClass
  */
-final class DetermineLoadedClassTest extends TestCase {
+final class DetermineLoadedClassTest extends TestCase
+{
 
 
+    /**
+     * Load the test files.
+     *
+     * @beforeClass
+     *
+     * @return void
+     */
+    public static function includeFixture()
+    {
+        include __DIR__.'/TestFiles/Sub/C.inc';
 
-	/**
-	 * Load the test files.
-	 *
-	 * @beforeClass
-	 *
-	 * @return void
-	 */
-	public static function includeFixture() {
-		include __DIR__ . '/TestFiles/Sub/C.inc';
-	}//end includeFixture()
-
-
-	/**
-	 * Test for when class list is ordered.
-	 *
-	 * @return void
-	 */
-	public function testOrdered() {
-		$classesBeforeLoad = array(
-			'classes'    => array(),
-			'interfaces' => array(),
-			'traits'     => array(),
-		);
-
-		$classesAfterLoad = array(
-			'classes'    => array(
-				'PHP_CodeSniffer\Tests\Core\Autoloader\A',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\B',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\C',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C',
-			),
-			'interfaces' => array(),
-			'traits'     => array(),
-		);
-
-		$className = Autoload::determineLoadedClass( $classesBeforeLoad, $classesAfterLoad );
-		$this->assertSame( 'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C', $className );
-	}//end testOrdered()
+    }//end includeFixture()
 
 
-	/**
-	 * Test for when class list is out of order.
-	 *
-	 * @return void
-	 */
-	public function testUnordered() {
-		$classesBeforeLoad = array(
-			'classes'    => array(),
-			'interfaces' => array(),
-			'traits'     => array(),
-		);
+    /**
+     * Test for when class list is ordered.
+     *
+     * @return void
+     */
+    public function testOrdered()
+    {
+        $classesBeforeLoad = [
+            'classes'    => [],
+            'interfaces' => [],
+            'traits'     => [],
+        ];
 
-		$classesAfterLoad = array(
-			'classes'    => array(
-				'PHP_CodeSniffer\Tests\Core\Autoloader\A',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\C',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\B',
-			),
-			'interfaces' => array(),
-			'traits'     => array(),
-		);
+        $classesAfterLoad = [
+            'classes'    => [
+                'PHP_CodeSniffer\Tests\Core\Autoloader\A',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\B',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\C',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C',
+            ],
+            'interfaces' => [],
+            'traits'     => [],
+        ];
 
-		$className = Autoload::determineLoadedClass( $classesBeforeLoad, $classesAfterLoad );
-		$this->assertSame( 'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C', $className );
+        $className = Autoload::determineLoadedClass($classesBeforeLoad, $classesAfterLoad);
+        $this->assertSame('PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C', $className);
 
-		$classesAfterLoad = array(
-			'classes'    => array(
-				'PHP_CodeSniffer\Tests\Core\Autoloader\A',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\C',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\B',
-			),
-			'interfaces' => array(),
-			'traits'     => array(),
-		);
+    }//end testOrdered()
 
-		$className = Autoload::determineLoadedClass( $classesBeforeLoad, $classesAfterLoad );
-		$this->assertSame( 'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C', $className );
 
-		$classesAfterLoad = array(
-			'classes'    => array(
-				'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\A',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\C',
-				'PHP_CodeSniffer\Tests\Core\Autoloader\B',
-			),
-			'interfaces' => array(),
-			'traits'     => array(),
-		);
+    /**
+     * Test for when class list is out of order.
+     *
+     * @return void
+     */
+    public function testUnordered()
+    {
+        $classesBeforeLoad = [
+            'classes'    => [],
+            'interfaces' => [],
+            'traits'     => [],
+        ];
 
-		$className = Autoload::determineLoadedClass( $classesBeforeLoad, $classesAfterLoad );
-		$this->assertSame( 'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C', $className );
-	}//end testUnordered()
+        $classesAfterLoad = [
+            'classes'    => [
+                'PHP_CodeSniffer\Tests\Core\Autoloader\A',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\C',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\B',
+            ],
+            'interfaces' => [],
+            'traits'     => [],
+        ];
+
+        $className = Autoload::determineLoadedClass($classesBeforeLoad, $classesAfterLoad);
+        $this->assertSame('PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C', $className);
+
+        $classesAfterLoad = [
+            'classes'    => [
+                'PHP_CodeSniffer\Tests\Core\Autoloader\A',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\C',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\B',
+            ],
+            'interfaces' => [],
+            'traits'     => [],
+        ];
+
+        $className = Autoload::determineLoadedClass($classesBeforeLoad, $classesAfterLoad);
+        $this->assertSame('PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C', $className);
+
+        $classesAfterLoad = [
+            'classes'    => [
+                'PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\A',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\C',
+                'PHP_CodeSniffer\Tests\Core\Autoloader\B',
+            ],
+            'interfaces' => [],
+            'traits'     => [],
+        ];
+
+        $className = Autoload::determineLoadedClass($classesBeforeLoad, $classesAfterLoad);
+        $this->assertSame('PHP_CodeSniffer\Tests\Core\Autoloader\Sub\C', $className);
+
+    }//end testUnordered()
+
+
 }//end class

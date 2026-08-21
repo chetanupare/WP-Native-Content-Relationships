@@ -101,6 +101,49 @@ class NATICORE_REST_API {
 			)
 		);
 
+		// Paginated relationships by type for the Gutenberg sidebar.
+		register_rest_route(
+			'naticore/v1',
+			'/post/(?P<id>\d+)/type/(?P<type>[a-z0-9_]+)',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_type_page' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => array(
+					'id'       => array(
+						'required'          => true,
+						'validate_callback' => function ( $param ) {
+							return is_numeric( $param );
+						},
+						'sanitize_callback' => 'absint',
+					),
+					'type'     => array(
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+						'type'              => 'string',
+					),
+					'page'     => array(
+						'default'           => 1,
+						'sanitize_callback' => 'absint',
+						'type'              => 'integer',
+						'minimum'           => 1,
+					),
+					'per_page' => array(
+						'default'           => 5,
+						'sanitize_callback' => 'absint',
+						'type'              => 'integer',
+						'minimum'           => 1,
+						'maximum'           => 100,
+					),
+					'search'   => array(
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+						'type'              => 'string',
+					),
+				),
+			)
+		);
+
 		// Get registered relationship types.
 		register_rest_route(
 			'naticore/v1',
@@ -553,7 +596,13 @@ class NATICORE_REST_API {
 	}
 
 	/**
-	 * Check permissions with read-only mode support
+	 * Check permissions with read-only mode support and object-level authorization.
+	 *
+	 * For mutations (POST/DELETE), checks edit_post against the from_id to ensure
+	 * the user can edit the specific post whose relationships are being managed.
+	 * This prevents Authors from modifying other Authors' post relationships.
+	 *
+	 * For GET requests, uses the broader edit_posts capability.
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 * @return bool|WP_Error True if permission granted, WP_Error if not.
@@ -575,15 +624,6 @@ class NATICORE_REST_API {
 			);
 		}
 
-		// Check basic permissions.
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			return new WP_Error(
-				'naticore_insufficient_permissions',
-				__( 'You do not have sufficient permissions to manage relationships.', 'native-content-relationships' ),
-				array( 'status' => 403 )
-			);
-		}
-
 		// Additional checks for specific operations.
 		if ( strpos( $route, '/bulk' ) !== false ) {
 			// Bulk operations require higher permissions.
@@ -594,6 +634,32 @@ class NATICORE_REST_API {
 					array( 'status' => 403 )
 				);
 			}
+			return true;
+		}
+
+		// For mutations (POST/DELETE), use object-level authorization.
+		if ( in_array( $method, array( 'POST', 'DELETE' ), true ) ) {
+			$from_id = $request->get_param( 'from_id' );
+			if ( $from_id ) {
+				// Object-specific: can the user edit the source post?
+				if ( ! current_user_can( 'edit_post', absint( $from_id ) ) ) {
+					return new WP_Error(
+						'naticore_insufficient_permissions',
+						__( 'You do not have sufficient permissions to manage relationships for this post.', 'native-content-relationships' ),
+						array( 'status' => 403 )
+					);
+				}
+				return true;
+			}
+		}
+
+		// For GET requests and fallback: role-level capability.
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return new WP_Error(
+				'naticore_insufficient_permissions',
+				__( 'You do not have sufficient permissions to manage relationships.', 'native-content-relationships' ),
+				array( 'status' => 403 )
+			);
 		}
 
 		return true;
@@ -608,6 +674,142 @@ class NATICORE_REST_API {
 	public function get_relationship_types( $request ) {
 		$types = NATICORE_Relation_Types::get_types();
 		return rest_ensure_response( $types );
+	}
+
+	/**
+	 * Get a single page of relationships for a specific type.
+	 *
+	 * Used by the Gutenberg sidebar for Show More / pagination.
+	 * Returns items + total so the client knows whether more pages exist.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response|WP_Error The response object or WP_Error.
+	 */
+	public function get_type_page( $request ) {
+		global $wpdb;
+
+		$post_id  = absint( $request['id'] );
+		$type     = sanitize_text_field( $request['type'] );
+		$page     = max( 1, absint( $request['page'] ) );
+		$per_page = min( max( 1, absint( $request['per_page'] ) ), 100 );
+		$search   = sanitize_text_field( $request['search'] );
+		$offset   = ( $page - 1 ) * $per_page;
+
+		$type_info = NATICORE_Relation_Types::get_type( $type );
+		if ( ! $type_info ) {
+			return new WP_Error(
+				'ncr_invalid_type',
+				__( 'Invalid relationship type.', 'native-content-relationships' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$to_type = isset( $type_info['to'] ) ? $type_info['to'] : ( isset( $type_info['to_type'] ) ? $type_info['to_type'] : 'post' );
+
+		$table = $wpdb->prefix . 'content_relations';
+
+		// Build WHERE clause.
+		$where   = array( 'from_id = %d', 'type = %s', 'to_type = %s' );
+		$params  = array( $post_id, $type, $to_type );
+		$join    = '';
+		$join_where = '';
+
+		// Optional search: join target table and filter by title/name.
+		if ( ! empty( $search ) && strlen( $search ) >= 2 ) {
+			$like = '%' . $wpdb->esc_like( $search ) . '%';
+			if ( 'user' === $to_type ) {
+				$join      = "INNER JOIN {$wpdb->users} AS u ON u.ID = r.to_id";
+				$join_where = ' AND (u.display_name LIKE %s OR u.user_login LIKE %s)';
+				$params[]  = $like;
+				$params[]  = $like;
+			} elseif ( 'term' === $to_type ) {
+				$join      = "INNER JOIN {$wpdb->terms} AS t ON t.term_id = r.to_id";
+				$join_where = ' AND t.name LIKE %s';
+				$params[]  = $like;
+			} else {
+				$join      = "INNER JOIN {$wpdb->posts} AS p ON p.ID = r.to_id";
+				$join_where = ' AND p.post_title LIKE %s';
+				$params[]  = $like;
+			}
+		}
+
+		$where_clause = implode( ' AND ', $where ) . $join_where;
+
+		// Count total matching rows.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$total = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM `{$table}` AS r {$join} WHERE {$where_clause}",
+				$params
+			)
+		);
+
+		// Fetch page of items.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT r.to_id, r.type, r.to_type FROM `{$table}` AS r {$join} WHERE {$where_clause} ORDER BY r.created_at DESC LIMIT %d OFFSET %d",
+				array_merge( $params, array( $per_page, $offset ) )
+			)
+		);
+
+		$items = array();
+		if ( $rows ) {
+			foreach ( $rows as $row ) {
+				$item = array(
+					'id'      => absint( $row->to_id ),
+					'type'    => $row->type,
+					'to_type' => $row->to_type,
+				);
+
+				if ( 'user' === $row->to_type ) {
+					$user = get_userdata( $row->to_id );
+					if ( $user ) {
+						$item['title']           = $user->display_name;
+						$item['secondaryLabel']  = $user->user_login;
+						$item['editLink']        = get_edit_user_link( $row->to_id );
+					}
+				} elseif ( 'term' === $row->to_type ) {
+					$term = get_term( $row->to_id );
+					if ( $term && ! is_wp_error( $term ) ) {
+						$item['title']           = $term->name;
+						$item['secondaryLabel']  = $term->taxonomy;
+						$item['editLink']        = get_edit_term_link( $row->to_id, $term->taxonomy );
+					}
+				} else {
+					$post = get_post( $row->to_id );
+					if ( $post ) {
+						$item['title']           = $post->post_title;
+						$item['postType']        = '';
+						$item['editLink']        = current_user_can( 'edit_post', $row->to_id ) ? get_edit_post_link( $row->to_id, 'raw' ) : '';
+						$pto = get_post_type_object( $post->post_type );
+						if ( $pto ) {
+							$item['postType'] = $pto->labels->singular_name;
+						}
+						$thumb_id = get_post_thumbnail_id( $row->to_id );
+						if ( $thumb_id ) {
+							$thumb = wp_get_attachment_image_src( $thumb_id, 'thumbnail' );
+							if ( $thumb ) {
+								$item['thumbnail'] = $thumb[0];
+							}
+						}
+					}
+				}
+
+				if ( ! empty( $item['title'] ) ) {
+					$items[] = $item;
+				}
+			}
+		}
+
+		return rest_ensure_response(
+			array(
+				'items'   => $items,
+				'total'   => $total,
+				'page'    => $page,
+				'perPage' => $per_page,
+			)
+		);
 	}
 
 	/**

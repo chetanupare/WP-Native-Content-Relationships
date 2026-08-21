@@ -8,13 +8,15 @@
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
-final class NoNamespaceSniff implements Sniff {
+final class NoNamespaceSniff implements Sniff
+{
+    public function register()
+    {
+        return [T_OPEN_TAG];
+    }
 
-	public function register() {
-		return array( T_OPEN_TAG );
-	}
-
-	public function process( File $phpcsFile, $stackPtr ) {
-		// Do something.
-	}
+    public function process(File $phpcsFile, $stackPtr)
+    {
+        // Do something.
+    }
 }

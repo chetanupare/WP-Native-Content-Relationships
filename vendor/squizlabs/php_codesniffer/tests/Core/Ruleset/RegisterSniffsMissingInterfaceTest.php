@@ -18,42 +18,48 @@ use PHPUnit\Framework\TestCase;
  *
  * @covers \PHP_CodeSniffer\Ruleset::registerSniffs
  */
-final class RegisterSniffsMissingInterfaceTest extends TestCase {
+final class RegisterSniffsMissingInterfaceTest extends TestCase
+{
 
 
+    /**
+     * Test that no deprecation is shown when sniffs implement the `PHP_CodeSniffer\Sniffs\Sniff` interface.
+     *
+     * @return void
+     */
+    public function testNoNoticesForSniffsImplementingInterface()
+    {
+        // Set up the ruleset.
+        $standard = __DIR__.'/RegisterSniffsMissingInterfaceValidTest.xml';
+        $config   = new ConfigDouble(["--standard=$standard"]);
 
-	/**
-	 * Test that no deprecation is shown when sniffs implement the `PHP_CodeSniffer\Sniffs\Sniff` interface.
-	 *
-	 * @return void
-	 */
-	public function testNoNoticesForSniffsImplementingInterface() {
-		// Set up the ruleset.
-		$standard = __DIR__ . '/RegisterSniffsMissingInterfaceValidTest.xml';
-		$config   = new ConfigDouble( array( "--standard=$standard" ) );
+        $this->expectOutputString('');
 
-		$this->expectOutputString( '' );
+        new Ruleset($config);
 
-		new Ruleset( $config );
-	}//end testNoNoticesForSniffsImplementingInterface()
+    }//end testNoNoticesForSniffsImplementingInterface()
 
 
-	/**
-	 * Test that a deprecation notice is shown if a sniff doesn't implement the Sniff interface.
-	 *
-	 * @return void
-	 */
-	public function testDeprecationNoticeWhenSniffDoesntImplementInterface() {
-		// Set up the ruleset.
-		$standard = __DIR__ . '/RegisterSniffsMissingInterfaceInvalidTest.xml';
-		$config   = new ConfigDouble( array( "--standard=$standard" ) );
+    /**
+     * Test that a deprecation notice is shown if a sniff doesn't implement the Sniff interface.
+     *
+     * @return void
+     */
+    public function testDeprecationNoticeWhenSniffDoesntImplementInterface()
+    {
+        // Set up the ruleset.
+        $standard = __DIR__.'/RegisterSniffsMissingInterfaceInvalidTest.xml';
+        $config   = new ConfigDouble(["--standard=$standard"]);
 
-		$expected  = 'DEPRECATED: All sniffs must implement the PHP_CodeSniffer\\Sniffs\\Sniff interface.' . PHP_EOL;
-		$expected .= 'Interface not implemented for sniff Fixtures\\TestStandard\\Sniffs\\MissingInterface\\InvalidImplementsWithoutImplementSniff.' . PHP_EOL;
-		$expected .= 'Contact the sniff author to fix the sniff.' . PHP_EOL . PHP_EOL;
+        $expected  = 'DEPRECATED: All sniffs must implement the PHP_CodeSniffer\\Sniffs\\Sniff interface.'.PHP_EOL;
+        $expected .= 'Interface not implemented for sniff Fixtures\\TestStandard\\Sniffs\\MissingInterface\\InvalidImplementsWithoutImplementSniff.'.PHP_EOL;
+        $expected .= 'Contact the sniff author to fix the sniff.'.PHP_EOL.PHP_EOL;
 
-		$this->expectOutputString( $expected );
+        $this->expectOutputString($expected);
 
-		new Ruleset( $config );
-	}//end testDeprecationNoticeWhenSniffDoesntImplementInterface()
+        new Ruleset($config);
+
+    }//end testDeprecationNoticeWhenSniffDoesntImplementInterface()
+
+
 }//end class

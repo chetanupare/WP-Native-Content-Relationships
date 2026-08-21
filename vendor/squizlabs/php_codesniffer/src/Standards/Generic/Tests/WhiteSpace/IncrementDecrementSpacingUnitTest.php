@@ -16,65 +16,71 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace\IncrementDecrementSpacingSniff
  */
-final class IncrementDecrementSpacingUnitTest extends AbstractSniffUnitTest {
+final class IncrementDecrementSpacingUnitTest extends AbstractSniffUnitTest
+{
 
 
+    /**
+     * Returns the lines where errors should occur.
+     *
+     * The key of the array should represent the line number and the value
+     * should represent the number of errors that should occur on that line.
+     *
+     * @param string $testFile The name of the file being tested.
+     *
+     * @return array<int, int>
+     */
+    public function getErrorList($testFile='')
+    {
+        $errors = [
+            5  => 1,
+            6  => 1,
+            8  => 1,
+            10 => 1,
+            13 => 1,
+            14 => 1,
+            16 => 1,
+            17 => 1,
+        ];
 
-	/**
-	 * Returns the lines where errors should occur.
-	 *
-	 * The key of the array should represent the line number and the value
-	 * should represent the number of errors that should occur on that line.
-	 *
-	 * @param string $testFile The name of the file being tested.
-	 *
-	 * @return array<int, int>
-	 */
-	public function getErrorList( $testFile = '' ) {
-		$errors = array(
-			5  => 1,
-			6  => 1,
-			8  => 1,
-			10 => 1,
-			13 => 1,
-			14 => 1,
-			16 => 1,
-			17 => 1,
-		);
+        switch ($testFile) {
+        case 'IncrementDecrementSpacingUnitTest.inc':
+            $errors[21] = 1;
+            $errors[23] = 1;
+            $errors[26] = 1;
+            $errors[27] = 1;
+            $errors[30] = 1;
+            $errors[31] = 1;
+            $errors[34] = 1;
+            $errors[37] = 1;
+            $errors[40] = 1;
+            $errors[42] = 1;
 
-		switch ( $testFile ) {
-			case 'IncrementDecrementSpacingUnitTest.inc':
-				$errors[21] = 1;
-				$errors[23] = 1;
-				$errors[26] = 1;
-				$errors[27] = 1;
-				$errors[30] = 1;
-				$errors[31] = 1;
-				$errors[34] = 1;
-				$errors[37] = 1;
-				$errors[40] = 1;
-				$errors[42] = 1;
+            return $errors;
 
-				return $errors;
+        case 'IncrementDecrementSpacingUnitTest.js':
+            return $errors;
 
-			case 'IncrementDecrementSpacingUnitTest.js':
-				return $errors;
+        default:
+            return [];
+        }//end switch
 
-			default:
-				return array();
-		}//end switch
-	}//end getErrorList()
+    }//end getErrorList()
 
 
-	/**
-	 * Returns the lines where warnings should occur.
-	 *
-	 * The key of the array should represent the line number and the value
-	 * should represent the number of warnings that should occur on that line.
-	 *
-	 * @return array<int, int>
-	 */
-	public function getWarningList() {
-		return array();
-	}//end getWarningList()
+    /**
+     * Returns the lines where warnings should occur.
+     *
+     * The key of the array should represent the line number and the value
+     * should represent the number of warnings that should occur on that line.
+     *
+     * @return array<int, int>
+     */
+    public function getWarningList()
+    {
+        return [];
+
+    }//end getWarningList()
+
+
 }//end class

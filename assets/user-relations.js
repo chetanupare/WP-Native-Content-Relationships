@@ -117,9 +117,9 @@ jQuery( document ).ready(
 
 			users.forEach(
 				function (user) {
-					html += '<div class="naticore-search-result-item" data-id="' + user.id + '" data-type="' + type + '">';
+					html += '<div class="naticore-search-result-item" data-id="' + user.id + '" data-type="' + type + '" data-login="' + user.user_login + '">';
 					html += '<strong>' + user.display_name + '</strong>';
-					html += ' <span class="naticore-search-user-email">(' + user.user_email + ')</span>';
+					html += ' <span class="naticore-search-user-login">(' + user.user_login + ')</span>';
 					html += '</div>';
 				}
 			);
@@ -157,8 +157,8 @@ jQuery( document ).ready(
 					$newItem.append( '<span class="naticore-item-title"><a href="#" target="_blank">' + title + '</a></span>' );
 				} else {
 					// Post editor - adding user
-					var email = $item.find( '.naticore-search-user-email' ).text();
-					$newItem.append( '<span class="naticore-item-title"><a href="#" target="_blank">' + title + '</a> ' + email + '</span>' );
+					var login = $item.find( '.naticore-search-user-login' ).text();
+					$newItem.append( '<span class="naticore-item-title"><a href="#" target="_blank">' + title + '</a> ' + login + '</span>' );
 				}
 
 				$newItem.append( '<span class="naticore-item-type">' + type + '</span>' );

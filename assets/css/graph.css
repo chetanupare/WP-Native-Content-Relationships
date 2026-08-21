@@ -1,0 +1,43 @@
+/**
+ * Relationship Graph Styles
+ *
+ * @package Native Content Relationships
+ * @since 1.2.0
+ */
+
+#naticore-graph-container {
+    position: relative;
+    overflow: hidden;
+}
+
+#naticore-graph-canvas {
+    cursor: grab;
+}
+
+#naticore-graph-canvas:active {
+    cursor: grabbing;
+}
+
+.naticore-graph-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.naticore-graph-controls select,
+.naticore-graph-controls button {
+    vertical-align: middle;
+}
+
+#naticore-graph-legend {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+#naticore-graph-legend span {
+    display: inline-flex;
+    align-items: center;
+}

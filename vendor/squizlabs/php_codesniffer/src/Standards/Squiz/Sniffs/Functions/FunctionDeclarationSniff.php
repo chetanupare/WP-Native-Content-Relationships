@@ -11,20 +11,24 @@ namespace PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions;
 
 use PHP_CodeSniffer\Sniffs\AbstractPatternSniff;
 
-class FunctionDeclarationSniff extends AbstractPatternSniff {
+class FunctionDeclarationSniff extends AbstractPatternSniff
+{
 
 
+    /**
+     * Returns an array of patterns to check are correct.
+     *
+     * @return array
+     */
+    protected function getPatterns()
+    {
+        return [
+            'function abc(...);',
+            'function abc(...)',
+            'abstract function abc(...);',
+        ];
 
-	/**
-	 * Returns an array of patterns to check are correct.
-	 *
-	 * @return array
-	 */
-	protected function getPatterns() {
-		return array(
-			'function abc(...);',
-			'function abc(...)',
-			'abstract function abc(...);',
-		);
-	}//end getPatterns()
+    }//end getPatterns()
+
+
 }//end class

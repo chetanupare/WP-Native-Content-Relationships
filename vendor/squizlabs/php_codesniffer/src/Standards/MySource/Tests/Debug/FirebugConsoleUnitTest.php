@@ -16,45 +16,51 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers PHP_CodeSniffer\Standards\MySource\Sniffs\Debug\FirebugConsoleSniff
  */
-final class FirebugConsoleUnitTest extends AbstractSniffUnitTest {
+final class FirebugConsoleUnitTest extends AbstractSniffUnitTest
+{
 
 
+    /**
+     * Returns the lines where errors should occur.
+     *
+     * The key of the array should represent the line number and the value
+     * should represent the number of errors that should occur on that line.
+     *
+     * @param string $testFile The name of the file being tested.
+     *
+     * @return array<int, int>
+     */
+    public function getErrorList($testFile='')
+    {
+        if ($testFile !== 'FirebugConsoleUnitTest.js') {
+            return [];
+        }
 
-	/**
-	 * Returns the lines where errors should occur.
-	 *
-	 * The key of the array should represent the line number and the value
-	 * should represent the number of errors that should occur on that line.
-	 *
-	 * @param string $testFile The name of the file being tested.
-	 *
-	 * @return array<int, int>
-	 */
-	public function getErrorList( $testFile = '' ) {
-		if ( $testFile !== 'FirebugConsoleUnitTest.js' ) {
-			return array();
-		}
+        return [
+            1 => 1,
+            2 => 1,
+            3 => 1,
+            5 => 1,
+            6 => 1,
+            8 => 1,
+        ];
 
-		return array(
-			1 => 1,
-			2 => 1,
-			3 => 1,
-			5 => 1,
-			6 => 1,
-			8 => 1,
-		);
-	}//end getErrorList()
+    }//end getErrorList()
 
 
-	/**
-	 * Returns the lines where warnings should occur.
-	 *
-	 * The key of the array should represent the line number and the value
-	 * should represent the number of warnings that should occur on that line.
-	 *
-	 * @return array<int, int>
-	 */
-	public function getWarningList() {
-		return array();
-	}//end getWarningList()
+    /**
+     * Returns the lines where warnings should occur.
+     *
+     * The key of the array should represent the line number and the value
+     * should represent the number of warnings that should occur on that line.
+     *
+     * @return array<int, int>
+     */
+    public function getWarningList()
+    {
+        return [];
+
+    }//end getWarningList()
+
+
 }//end class

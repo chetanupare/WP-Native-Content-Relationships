@@ -8,7 +8,7 @@
  */
 
 // Exit if accessed directly
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
@@ -22,7 +22,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package NativeContentRelationships
  * @since 1.0.0
  */
-class NATICORE_API {
+class NATICORE_API
+{
 
 	/**
 	 * Instance
@@ -34,8 +35,9 @@ class NATICORE_API {
 	/**
 	 * Get instance
 	 */
-	public static function get_instance() {
-		if ( null === self::$instance ) {
+	public static function get_instance()
+	{
+		if (null === self::$instance) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -44,7 +46,8 @@ class NATICORE_API {
 	/**
 	 * Constructor
 	 */
-	private function __construct() {
+	private function __construct()
+	{
 		// Nothing to do.
 	}
 
@@ -98,64 +101,65 @@ class NATICORE_API {
 	 * @see wp_is_related() Check if relationship exists
 	 * @see NATICORE_API::remove_relation() Remove a relationship
 	 */
-	public static function add_relation( $from_id, $to_id, $type = 'related_to', $direction = null, $to_type = 'post' ) {
+	public static function add_relation($from_id, $to_id, $type = 'related_to', $direction = null, $to_type = 'post')
+	{
 		global $wpdb;
 
 		// Apply filter to check if relation is allowed.
-		$context    = array(
+		$context = array(
 			'from_id' => $from_id,
-			'to_id'   => $to_id,
-			'type'    => $type,
+			'to_id' => $to_id,
+			'type' => $type,
 		);
-		$is_allowed = apply_filters( 'naticore_relation_is_allowed', true, $context );
-		if ( ! $is_allowed ) {
-			return new WP_Error( 'relation_not_allowed', __( 'This relationship is not allowed.', 'native-content-relationships' ) );
+		$is_allowed = apply_filters('naticore_relation_is_allowed', true, $context);
+		if (!$is_allowed) {
+			return new WP_Error('relation_not_allowed', __('This relationship is not allowed.', 'native-content-relationships'));
 		}
 
 		// Check capabilities (bypass in test mode).
-		$can_create = ( defined( 'NCR_TEST_MODE' ) && NCR_TEST_MODE ) || current_user_can( 'naticore_create_relation', $from_id, $to_id, $type );
+		$can_create = (defined('NCR_TEST_MODE') && NCR_TEST_MODE) || current_user_can('naticore_create_relation', $from_id, $to_id, $type);
 
-		if ( ! $can_create ) {
-			return new WP_Error( 'permission_denied', __( 'You do not have permission to create this relationship.', 'native-content-relationships' ) );
+		if (!$can_create) {
+			return new WP_Error('permission_denied', __('You do not have permission to create this relationship.', 'native-content-relationships'));
 		}
 
-		$from_id = absint( $from_id );
-		$to_id   = absint( $to_id );
-		$to_type = in_array( $to_type, array( 'post', 'user', 'term' ), true ) ? $to_type : 'post';
+		$from_id = absint($from_id);
+		$to_id = absint($to_id);
+		$to_type = in_array($to_type, array('post', 'user', 'term'), true) ? $to_type : 'post';
 
 		// Validate inputs.
-		if ( 0 === $from_id || 0 === $to_id ) {
-			return new WP_Error( 'invalid_id', __( 'Invalid content ID.', 'native-content-relationships' ) );
+		if (0 === $from_id || 0 === $to_id) {
+			return new WP_Error('invalid_id', __('Invalid content ID.', 'native-content-relationships'));
 		}
 
 		// Validate relation type exists.
-		$type_info = NATICORE_Relation_Types::get_type( $type );
-		if ( ! $type_info ) {
-			return new WP_Error( 'ncr_invalid_type', __( 'Invalid relationship type.', 'native-content-relationships' ) );
+		$type_info = NATICORE_Relation_Types::get_type($type);
+		if (!$type_info) {
+			return new WP_Error('ncr_invalid_type', __('Invalid relationship type.', 'native-content-relationships'));
 		}
 		$from_type = $type_info['from_type'];
 
 		// Prevent self-linking (only for same types).
-		if ( $from_id === $to_id && $from_type === $to_type ) {
-			return new WP_Error( 'self_relation', __( 'Content cannot be related to itself.', 'native-content-relationships' ) );
+		if ($from_id === $to_id && $from_type === $to_type) {
+			return new WP_Error('self_relation', __('Content cannot be related to itself.', 'native-content-relationships'));
 		}
 
 		// Validate target exists (bypass in test mode).
-		if ( ! ( defined( 'NCR_TEST_MODE' ) && NCR_TEST_MODE ) ) {
-			if ( 'post' === $to_type ) {
-				$to_post = get_post( $to_id );
-				if ( ! $to_post ) {
-					return new WP_Error( 'post_not_found', __( 'Target post does not exist.', 'native-content-relationships' ) );
+		if (!(defined('NCR_TEST_MODE') && NCR_TEST_MODE)) {
+			if ('post' === $to_type) {
+				$to_post = get_post($to_id);
+				if (!$to_post) {
+					return new WP_Error('post_not_found', __('Target post does not exist.', 'native-content-relationships'));
 				}
-			} elseif ( 'user' === $to_type ) {
-				$to_user = get_userdata( $to_id );
-				if ( ! $to_user ) {
-					return new WP_Error( 'user_not_found', __( 'Target user does not exist.', 'native-content-relationships' ) );
+			} elseif ('user' === $to_type) {
+				$to_user = get_userdata($to_id);
+				if (!$to_user) {
+					return new WP_Error('user_not_found', __('Target user does not exist.', 'native-content-relationships'));
 				}
-			} elseif ( 'term' === $to_type ) {
-				$to_term = get_term( $to_id );
-				if ( is_wp_error( $to_term ) || ! $to_term ) {
-					return new WP_Error( 'term_not_found', __( 'Target term does not exist.', 'native-content-relationships' ) );
+			} elseif ('term' === $to_type) {
+				$to_term = get_term($to_id);
+				if (is_wp_error($to_term) || !$to_term) {
+					return new WP_Error('term_not_found', __('Target term does not exist.', 'native-content-relationships'));
 				}
 			}
 		}
@@ -163,34 +167,34 @@ class NATICORE_API {
 		// Target validation (already verified above)
 
 		// Source validation (bypass in test mode).
-		if ( ! ( defined( 'NCR_TEST_MODE' ) && NCR_TEST_MODE ) ) {
-			if ( 'post' === $from_type ) {
-				$from_post = get_post( $from_id );
-				if ( ! $from_post ) {
-					return new WP_Error( 'post_not_found', __( 'Source post does not exist.', 'native-content-relationships' ) );
+		if (!(defined('NCR_TEST_MODE') && NCR_TEST_MODE)) {
+			if ('post' === $from_type) {
+				$from_post = get_post($from_id);
+				if (!$from_post) {
+					return new WP_Error('post_not_found', __('Source post does not exist.', 'native-content-relationships'));
 				}
-			} elseif ( 'user' === $from_type ) {
-				$from_user = get_userdata( $from_id );
-				if ( ! $from_user ) {
-					return new WP_Error( 'user_not_found', __( 'Source user does not exist.', 'native-content-relationships' ) );
+			} elseif ('user' === $from_type) {
+				$from_user = get_userdata($from_id);
+				if (!$from_user) {
+					return new WP_Error('user_not_found', __('Source user does not exist.', 'native-content-relationships'));
 				}
-			} elseif ( 'term' === $from_type ) {
-				$from_term = get_term( $from_id );
-				if ( is_wp_error( $from_term ) || ! $from_term ) {
-					return new WP_Error( 'term_not_found', __( 'Source term does not exist.', 'native-content-relationships' ) );
+			} elseif ('term' === $from_type) {
+				$from_term = get_term($from_id);
+				if (is_wp_error($from_term) || !$from_term) {
+					return new WP_Error('term_not_found', __('Source term does not exist.', 'native-content-relationships'));
 				}
 			}
 		}
 
 		// Check immutable mode (lock relationships after publish - only for posts).
-		if ( 'post' === $from_type && isset( $from_post ) ) {
+		if ('post' === $from_type && isset($from_post)) {
 			$settings = NATICORE_Settings::get_instance();
-			if ( $settings->get_setting( 'immutable_mode', 0 ) ) {
+			if ($settings->get_setting('immutable_mode', 0)) {
 				// Check if posts are published.
-				if ( 'publish' === $from_post->post_status ) {
+				if ('publish' === $from_post->post_status) {
 					// Only allow changes via admin or WP-CLI.
-					if ( ! is_admin() && ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
-						return new WP_Error( 'immutable_mode', __( 'Relationships for published posts are locked. Use the admin interface or WP-CLI to modify.', 'native-content-relationships' ) );
+					if (!is_admin() && !(defined('WP_CLI') && WP_CLI)) {
+						return new WP_Error('immutable_mode', __('Relationships for published posts are locked. Use the admin interface or WP-CLI to modify.', 'native-content-relationships'));
 					}
 				}
 			}
@@ -208,30 +212,30 @@ class NATICORE_API {
 			)
 		);
 
-		if ( $existing ) {
-			return new WP_Error( 'ncr_relation_exists', __( 'This relationship already exists.', 'native-content-relationships' ) );
+		if ($existing) {
+			return new WP_Error('ncr_relation_exists', __('This relationship already exists.', 'native-content-relationships'));
 		}
 
 		// Check for infinite loops (A → B → A) - respect settings.
 		$settings = NATICORE_Settings::get_instance();
-		if ( $settings->get_setting( 'prevent_circular', 1 ) ) {
-			if ( self::would_create_loop( $from_id, $to_id, $type ) ) {
-				return new WP_Error( 'ncr_infinite_loop', __( 'This relationship would create an infinite loop.', 'native-content-relationships' ) );
+		if ($settings->get_setting('prevent_circular', 1)) {
+			if (self::would_create_loop($from_id, $to_id, $type)) {
+				return new WP_Error('ncr_infinite_loop', __('This relationship would create an infinite loop.', 'native-content-relationships'));
 			}
 		}
 
 		// Check static max relationships limit from settings.
-		$ncr_max_relationships = $settings->get_setting( 'ncr_max_relationships', 0 );
-		if ( $ncr_max_relationships > 0 ) {
-			$current_count = count( self::get_all_relations( $from_id ) );
-			if ( $current_count >= $ncr_max_relationships ) {
+		$ncr_max_relationships = $settings->get_setting('ncr_max_relationships', 0);
+		if ($ncr_max_relationships > 0) {
+			$current_count = count(self::get_all_relations($from_id));
+			if ($current_count >= $ncr_max_relationships) {
 				/* translators: %d: Maximum number of relationships allowed */
-				return new WP_Error( 'ncr_max_relationships', sprintf( __( 'Maximum relationships limit (%d) reached for this post.', 'native-content-relationships' ), $ncr_max_relationships ) );
+				return new WP_Error('ncr_max_relationships', sprintf(__('Maximum relationships limit (%d) reached for this post.', 'native-content-relationships'), $ncr_max_relationships));
 			}
 		}
 
 		// Check type-level max_connections limit.
-		if ( isset( $type_info['max_connections'] ) && $type_info['max_connections'] > 0 ) {
+		if (isset($type_info['max_connections']) && $type_info['max_connections'] > 0) {
 			// Bypass cache for enforcement check using direct DB query.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Constraint enforcement requires real-time data.
 			$type_count = $wpdb->get_var(
@@ -242,48 +246,48 @@ class NATICORE_API {
 					$to_type
 				)
 			);
-			if ( $type_count >= $type_info['max_connections'] ) {
+			if ($type_count >= $type_info['max_connections']) {
 				/* translators: 1: relationship type label, 2: max connections allowed */
-				return new WP_Error( 'ncr_max_connections_exceeded', sprintf( __( 'Relationship limit reached for type "%1$s": max %2$d allowed.', 'native-content-relationships' ), $type_info['label'], $type_info['max_connections'] ) );
+				return new WP_Error('ncr_max_connections_exceeded', sprintf(__('Relationship limit reached for type "%1$s": max %2$d allowed.', 'native-content-relationships'), $type_info['label'], $type_info['max_connections']));
 			}
 		}
 
 		// Validate relation type exists.
-		if ( ! NATICORE_Relation_Types::exists( $type ) ) {
-			return new WP_Error( 'ncr_invalid_type', __( 'Invalid relationship type.', 'native-content-relationships' ) );
+		if (!NATICORE_Relation_Types::exists($type)) {
+			return new WP_Error('ncr_invalid_type', __('Invalid relationship type.', 'native-content-relationships'));
 		}
 
 		// Check if post types are allowed for this relation type (only for post-to-post, bypassed in test mode if posts not loaded).
-		if ( ! ( defined( 'NCR_TEST_MODE' ) && NCR_TEST_MODE ) ) {
-			if ( 'post' === $from_type && 'post' === $to_type ) {
-				if ( ! NATICORE_Relation_Types::are_post_types_allowed( $type, $from_post->post_type, $to_post->post_type ) ) {
-					return new WP_Error( 'ncr_post_type_not_allowed', __( 'This relationship type is not allowed between these post types.', 'native-content-relationships' ) );
+		if (!(defined('NCR_TEST_MODE') && NCR_TEST_MODE)) {
+			if ('post' === $from_type && 'post' === $to_type) {
+				if (!NATICORE_Relation_Types::are_post_types_allowed($type, $from_post->post_type, $to_post->post_type)) {
+					return new WP_Error('ncr_post_type_not_allowed', __('This relationship type is not allowed between these post types.', 'native-content-relationships'));
 				}
 			}
 		}
 
-		$type_supports_bidirectional = NATICORE_Relation_Types::is_bidirectional( $type );
+		$type_supports_bidirectional = NATICORE_Relation_Types::is_bidirectional($type);
 
 		// Determine direction.
-		if ( null === $direction ) {
+		if (null === $direction) {
 			// Default direction is derived from type, but can be overridden by global setting IF type supports it.
-			$settings          = NATICORE_Settings::get_instance();
-			$default_direction = $settings->get_setting( 'default_direction', $type_supports_bidirectional ? 'bidirectional' : 'unidirectional' );
-			$direction         = ( 'bidirectional' === $default_direction && $type_supports_bidirectional ) ? 'bidirectional' : 'unidirectional';
+			$settings = NATICORE_Settings::get_instance();
+			$default_direction = $settings->get_setting('default_direction', $type_supports_bidirectional ? 'bidirectional' : 'unidirectional');
+			$direction = ('bidirectional' === $default_direction && $type_supports_bidirectional) ? 'bidirectional' : 'unidirectional';
 		}
 
 		// Validate direction value.
-		if ( ! in_array( $direction, array( 'unidirectional', 'bidirectional' ), true ) ) {
+		if (!in_array($direction, array('unidirectional', 'bidirectional'), true)) {
 			$direction = 'unidirectional';
 		}
 
 		// Enforce type capability: one-way types MUST stay one-way.
-		if ( ! $type_supports_bidirectional ) {
+		if (!$type_supports_bidirectional) {
 			$direction = 'unidirectional';
 		}
 
 		// Generate deterministic hash for this relationship.
-		$relation_hash = self::generate_relation_hash( $from_id, $to_id, $type );
+		$relation_hash = self::generate_relation_hash($from_id, $to_id, $type);
 
 		/**
 		 * FUTURE CONSIDERATION: Atomic Writes
@@ -297,72 +301,72 @@ class NATICORE_API {
 		$result = $wpdb->insert(
 			$wpdb->prefix . 'content_relations',
 			array(
-				'from_id'    => $from_id,
-				'to_id'      => $to_id,
-				'type'       => $type,
-				'direction'  => $direction,
-				'to_type'    => $to_type,
+				'from_id' => $from_id,
+				'to_id' => $to_id,
+				'type' => $type,
+				'direction' => $direction,
+				'to_type' => $to_type,
 				'to_user_id' => 'user' === $to_type ? $to_id : null,
 				'to_term_id' => 'term' === $to_type ? $to_id : null,
 			),
-			array( '%d', '%d', '%s', '%s', '%s', '%d', '%d' )
+			array('%d', '%d', '%s', '%s', '%s', '%d', '%d')
 		);
 
-		if ( false === $result ) {
-			return new WP_Error( 'db_error', __( 'Failed to create relationship.', 'native-content-relationships' ) );
+		if (false === $result) {
+			return new WP_Error('db_error', __('Failed to create relationship.', 'native-content-relationships'));
 		}
 
 		$relation_id = $wpdb->insert_id;
 
 		// If bidirectional, create reverse relation.
-		if ( 'bidirectional' === $direction && 'post' === $to_type ) {
+		if ('bidirectional' === $direction && 'post' === $to_type) {
 			// Only create reverse for post-to-post relationships.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table insert
 			$wpdb->insert(
 				$wpdb->prefix . 'content_relations',
 				array(
-					'from_id'    => $to_id,
-					'to_id'      => $from_id,
-					'type'       => $type,
-					'direction'  => $direction,
-					'to_type'    => 'post',
+					'from_id' => $to_id,
+					'to_id' => $from_id,
+					'type' => $type,
+					'direction' => $direction,
+					'to_type' => 'post',
 					'to_user_id' => null,
 				),
-				array( '%d', '%d', '%s', '%s', '%s', '%d' )
+				array('%d', '%d', '%s', '%s', '%s', '%d')
 			);
 		}
 
 		// Create relation object for hooks.
 		$relation_object = (object) array(
-			'id'         => $relation_id,
-			'from_id'    => $from_id,
-			'to_id'      => $to_id,
-			'type'       => $type,
-			'direction'  => $direction,
-			'to_type'    => $to_type,
+			'id' => $relation_id,
+			'from_id' => $from_id,
+			'to_id' => $to_id,
+			'type' => $type,
+			'direction' => $direction,
+			'to_type' => $to_type,
 			'to_user_id' => 'user' === $to_type ? $to_id : null,
 			'to_term_id' => 'term' === $to_type ? $to_id : null,
-			'hash'       => $relation_hash,
+			'hash' => $relation_hash,
 		);
 
 		// Fire actions
-		do_action( 'naticore_relation_added', $relation_id, $from_id, $to_id, $type );
+		do_action('naticore_relation_added', $relation_id, $from_id, $to_id, $type);
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility
-		do_action( 'wp_content_relation_added', $from_id, $to_id, $type );
+		do_action('wp_content_relation_added', $from_id, $to_id, $type);
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility
-		do_action( 'wpcr_relation_created', $relation_object );
+		do_action('wpcr_relation_created', $relation_object);
 
 		// Debug logging
 		$settings = NATICORE_Settings::get_instance();
-		if ( $settings->get_setting( 'debug_logging', 0 ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		if ($settings->get_setting('debug_logging', 0)) {
+			if (defined('WP_DEBUG') && WP_DEBUG) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging only when enabled via settings
-				error_log( sprintf( 'WPNCR: Relation added - from_id: %d, to_id: %d, type: %s', $from_id, $to_id, $type ) );
+				error_log(sprintf('WPNCR: Relation added - from_id: %d, to_id: %d, type: %s', $from_id, $to_id, $type));
 			}
 		}
 
 		// Clear cache
-		self::clear_cache( $from_id, $to_id, $type, $to_type );
+		self::clear_cache($from_id, $to_id, $type, $to_type);
 
 		return $relation_id;
 	}
@@ -375,13 +379,14 @@ class NATICORE_API {
 	 * @param string $type    Relationship type
 	 * @return string SHA1 hash
 	 */
-	public static function generate_relation_hash( $from_id, $to_id, $type ) {
+	public static function generate_relation_hash($from_id, $to_id, $type)
+	{
 		// Create stable hash: from_id + to_id + type
 		// Sort IDs to ensure same hash regardless of direction (for bidirectional)
-		$ids = array( absint( $from_id ), absint( $to_id ) );
-		sort( $ids );
-		$hash_string = $ids[0] . '|' . $ids[1] . '|' . sanitize_text_field( $type );
-		return sha1( $hash_string );
+		$ids = array(absint($from_id), absint($to_id));
+		sort($ids);
+		$hash_string = $ids[0] . '|' . $ids[1] . '|' . sanitize_text_field($type);
+		return sha1($hash_string);
 	}
 
 	/**
@@ -392,18 +397,19 @@ class NATICORE_API {
 	 * @param string $type    Relation type
 	 * @return bool True if loop would be created
 	 */
-	private static function would_create_loop( $from_id, $to_id, $type ) {
+	private static function would_create_loop($from_id, $to_id, $type)
+	{
 		// For unidirectional relations, check if to_id already relates back to from_id
-		$reverse_exists = self::is_related( $to_id, $from_id, $type );
+		$reverse_exists = self::is_related($to_id, $from_id, $type);
 
-		if ( $reverse_exists ) {
+		if ($reverse_exists) {
 			return true;
 		}
 
 		// Check for longer loops (A → B → C → A)
 		// This is a simplified check - for production, you might want a more thorough graph traversal
-		$visited = array( $from_id );
-		return self::check_loop_recursive( $to_id, $from_id, $type, $visited, 0, 10 ); // Max depth 10
+		$visited = array($from_id);
+		return self::check_loop_recursive($to_id, $from_id, $type, $visited, 0, 10); // Max depth 10
 	}
 
 	/**
@@ -417,26 +423,27 @@ class NATICORE_API {
 	 * @param int    $max_depth Maximum depth to check
 	 * @return bool
 	 */
-	private static function check_loop_recursive( $current, $target, $type, &$visited, $depth, $max_depth ) {
-		if ( $depth >= $max_depth ) {
+	private static function check_loop_recursive($current, $target, $type, &$visited, $depth, $max_depth)
+	{
+		if ($depth >= $max_depth) {
 			return false; // Too deep, assume no loop
 		}
 
-		if ( $current === $target ) {
+		if ($current === $target) {
 			return true; // Found a loop!
 		}
 
-		if ( in_array( $current, $visited, true ) ) {
+		if (in_array($current, $visited, true)) {
 			return false; // Already visited this node
 		}
 
 		$visited[] = $current;
 
 		// Get all relations from current post
-		$related = self::get_related( $current, $type );
+		$related = self::get_related($current, $type);
 
-		foreach ( $related as $rel ) {
-			if ( self::check_loop_recursive( $rel['id'], $target, $type, $visited, $depth + 1, $max_depth ) ) {
+		foreach ($related as $rel) {
+			if (self::check_loop_recursive($rel['id'], $target, $type, $visited, $depth + 1, $max_depth)) {
 				return true;
 			}
 		}
@@ -498,23 +505,24 @@ class NATICORE_API {
 	 * @action wp_content_relation_removed Backward compatibility hook
 	 * @action wpcr_relation_deleted Extended relationship object hook
 	 */
-	public static function remove_relation( $from_id, $to_id, $type = null, $to_type = 'post' ) {
+	public static function remove_relation($from_id, $to_id, $type = null, $to_type = 'post')
+	{
 		global $wpdb;
 
 		// Check capabilities
 
-		$can_delete = current_user_can( 'naticore_delete_relation', $from_id, $to_id, $type );
+		$can_delete = current_user_can('naticore_delete_relation', $from_id, $to_id, $type);
 
-		if ( ! $can_delete ) {
-			return new WP_Error( 'permission_denied', __( 'You do not have permission to delete this relationship.', 'native-content-relationships' ) );
+		if (!$can_delete) {
+			return new WP_Error('permission_denied', __('You do not have permission to delete this relationship.', 'native-content-relationships'));
 		}
 
-		$from_id = absint( $from_id );
-		$to_id   = absint( $to_id );
-		$to_type = in_array( $to_type, array( 'post', 'user', 'term' ), true ) ? $to_type : 'post';
+		$from_id = absint($from_id);
+		$to_id = absint($to_id);
+		$to_type = in_array($to_type, array('post', 'user', 'term'), true) ? $to_type : 'post';
 
 		// Get direction before deletion - use conditional queries for PHPCS compliance
-		if ( $type ) {
+		if ($type) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
 			$direction = $wpdb->get_var(
 				$wpdb->prepare(
@@ -540,60 +548,96 @@ class NATICORE_API {
 		// Delete relationship(s)
 		$where = array(
 			'from_id' => $from_id,
-			'to_id'   => $to_id,
+			'to_id' => $to_id,
 			'to_type' => $to_type,
 		);
 
-		if ( $type ) {
+		if ($type) {
 			$where['type'] = $type;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-		$result = $wpdb->delete( $wpdb->prefix . 'content_relations', $where, array( '%d', '%d', '%s', $type ? '%s' : null ) );
+		// First find all IDs to delete, including reverse relations if bidirectional
+		$ids_to_delete = array();
 
-		if ( false === $result ) {
-			return new WP_Error( 'db_error', __( 'Failed to remove relationship.', 'native-content-relationships' ) );
+		$query = $wpdb->prepare(
+			"SELECT id FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s" . ($type ? " AND type = %s" : ""),
+			$type ? array($from_id, $to_id, $to_type, $type) : array($from_id, $to_id, $to_type)
+		);
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+		$ids1 = $wpdb->get_col($query);
+		if ($ids1) {
+			$ids_to_delete = array_merge($ids_to_delete, $ids1);
+		}
+
+		if ('bidirectional' === $direction && 'post' === $to_type) {
+			$query2 = $wpdb->prepare(
+				"SELECT id FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = 'post'" . ($type ? " AND type = %s" : ""),
+				$type ? array($to_id, $from_id, $type) : array($to_id, $from_id)
+			);
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+			$ids2 = $wpdb->get_col($query2);
+			if ($ids2) {
+				$ids_to_delete = array_merge($ids_to_delete, $ids2);
+			}
+		}
+
+		// Now delete relation meta for these IDs
+		if (!empty($ids_to_delete)) {
+			$ids_list = implode(',', array_map('absint', $ids_to_delete));
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table meta cleanup
+			$wpdb->query("DELETE FROM `{$wpdb->prefix}content_relationmeta` WHERE content_relation_id IN ($ids_list)");
+
+			foreach ($ids_to_delete as $id_to_delete) {
+				wp_cache_delete($id_to_delete, 'content_relation_meta');
+			}
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
+		$result = $wpdb->delete($wpdb->prefix . 'content_relations', $where, array('%d', '%d', '%s', $type ? '%s' : null));
+
+		if (false === $result) {
+			return new WP_Error('db_error', __('Failed to remove relationship.', 'native-content-relationships'));
 		}
 
 		// If bidirectional, remove reverse relation too
-		if ( 'bidirectional' === $direction && 'post' === $to_type ) {
+		if ('bidirectional' === $direction && 'post' === $to_type) {
 			$reverse_where = array(
 				'from_id' => $to_id,
-				'to_id'   => $from_id,
+				'to_id' => $from_id,
 				'to_type' => 'post',
 			);
-			if ( $type ) {
+			if ($type) {
 				$reverse_where['type'] = $type;
 			}
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$wpdb->delete( $wpdb->prefix . 'content_relations', $reverse_where, array( '%d', '%d', '%s', $type ? '%s' : null ) );
+			$wpdb->delete($wpdb->prefix . 'content_relations', $reverse_where, array('%d', '%d', '%s', $type ? '%s' : null));
 		}
 
 		// Fire action
-		do_action( 'naticore_relation_removed', $from_id, $to_id, $type );
+		do_action('naticore_relation_removed', $from_id, $to_id, $type);
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility
-		do_action( 'wp_content_relation_removed', $from_id, $to_id, $type );
+		do_action('wp_content_relation_removed', $from_id, $to_id, $type);
 
 		// Create relation object for hooks
 		$relation_object = (object) array(
 			'from_id' => $from_id,
-			'to_id'   => $to_id,
-			'type'    => $type,
+			'to_id' => $to_id,
+			'type' => $type,
 			'to_type' => $to_type,
 		);
 
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility
-		do_action( 'wpcr_relation_deleted', $relation_object );
+		do_action('wpcr_relation_deleted', $relation_object);
 
 		// Debug logging
 		$settings = NATICORE_Settings::get_instance();
-		if ( $settings->get_setting( 'debug_logging', 0 ) && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		if ($settings->get_setting('debug_logging', 0) && defined('WP_DEBUG') && WP_DEBUG) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging only when enabled
-			error_log( sprintf( 'WPNCR: Relation removed - from_id: %d, to_id: %d, type: %s', $from_id, $to_id, $type ) );
+			error_log(sprintf('WPNCR: Relation removed - from_id: %d, to_id: %d, type: %s', $from_id, $to_id, $type));
 		}
 
 		// Clear cache
-		self::clear_cache( $from_id, $to_id, $type, $to_type );
+		self::clear_cache($from_id, $to_id, $type, $to_type);
 
 		return true;
 	}
@@ -621,24 +665,34 @@ class NATICORE_API {
 	 * NATICORE_API::clear_cache();
 	 * ```
 	 */
-	public static function clear_cache( $from_id = null, $to_id = null, $type = null ) {
-		if ( null !== $from_id ) {
+	public static function clear_cache($from_id = null, $to_id = null, $type = null)
+	{
+		if (null !== $from_id) {
 			// Clear specific post cache
-			$from_id = absint( $from_id );
-			wp_cache_delete( "naticore_get_related_{$from_id}_all_all_0_default", 'naticore_relationships' );
-			wp_cache_delete( "naticore_exists_{$from_id}_all_all", 'naticore_relationships' );
+			$from_id = absint($from_id);
+			wp_cache_delete("naticore_get_related_{$from_id}_all_all_0_default", 'naticore_relationships');
+			wp_cache_delete("naticore_exists_{$from_id}_all_all", 'naticore_relationships');
 		}
 
-		if ( null !== $from_id && null !== $to_id && null !== $type ) {
-			// Clear specific relationship cache
-			$from_id = absint( $from_id );
-			$to_id   = absint( $to_id );
-			$type    = sanitize_key( (string) $type );
-			wp_cache_delete( "naticore_exists_{$from_id}_{$to_id}_{$type}_post", 'naticore_relationships' );
+		if (null !== $from_id && null !== $to_id) {
+			// Clear specific relationship cache — both directions for bidirectional consistency.
+			$from_id = absint($from_id);
+			$to_id = absint($to_id);
+
+			if (null !== $type) {
+				$type = sanitize_key((string) $type);
+				wp_cache_delete("naticore_exists_{$from_id}_{$to_id}_{$type}_post", 'naticore_relationships');
+				wp_cache_delete("naticore_exists_{$to_id}_{$from_id}_{$type}_post", 'naticore_relationships');
+			}
+
+			// Also clear the null-type wildcard key used when is_related() is called without a type.
+			// PHP interpolates null as empty string, producing "__post" (double underscore).
+			wp_cache_delete("naticore_exists_{$from_id}_{$to_id}__post", 'naticore_relationships');
+			wp_cache_delete("naticore_exists_{$to_id}_{$from_id}__post", 'naticore_relationships');
 		}
 
 		// Clear admin cache.
-		wp_cache_delete( 'naticore_admin_total_count', 'naticore_relationships' );
+		wp_cache_delete('naticore_admin_total_count', 'naticore_relationships');
 	}
 
 	/**
@@ -647,12 +701,13 @@ class NATICORE_API {
 	 * @param array $where Array of where conditions
 	 * @return string WHERE clause string
 	 */
-	private static function build_where_clause( $where ) {
+	private static function build_where_clause($where)
+	{
 		$clauses = array();
-		foreach ( array_keys( $where ) as $key ) {
+		foreach (array_keys($where) as $key) {
 			$clauses[] = "`{$key}` = %s";
 		}
-		return implode( ' AND ', $clauses );
+		return implode(' AND ', $clauses);
 	}
 
 	/**
@@ -734,29 +789,30 @@ class NATICORE_API {
 	 * @filter naticore_content_relations_allowed Allow/disallow relationship queries
 	 * @filter naticore_get_related_args Filter query arguments
 	 */
-	public static function get_related( $post_id, $type = null, $args = array(), $to_type = 'post' ) {
+	public static function get_related($post_id, $type = null, $args = array(), $to_type = 'post')
+	{
 		// Apply filters for extensibility
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility
-		$allowed = apply_filters( 'naticore_content_relations_allowed', true, $post_id, $type );
-		if ( ! $allowed ) {
+		$allowed = apply_filters('naticore_content_relations_allowed', true, $post_id, $type);
+		if (!$allowed) {
 			return array();
 		}
 
 		// Allow filtering of query arguments
-		$args = apply_filters( 'naticore_get_related_args', $args, $post_id, $type );
+		$args = apply_filters('naticore_get_related_args', $args, $post_id, $type);
 
 		global $wpdb;
 
-		$post_id = absint( $post_id );
-		$to_type = in_array( $to_type, array( 'post', 'user', 'term', 'all' ), true ) ? $to_type : 'post';
+		$post_id = absint($post_id);
+		$to_type = in_array($to_type, array('post', 'user', 'term', 'all'), true) ? $to_type : 'post';
 
 		// Use conditional queries for PHPCS compliance - ORDER BY and LIMIT use %d
-		$has_type  = ! empty( $type );
-		$has_limit = isset( $args['limit'] );
-		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
+		$has_type = !empty($type);
+		$has_limit = isset($args['limit']);
+		$limit = $has_limit ? absint($args['limit']) : 0;
 
-		$settings             = NATICORE_Settings::get_instance();
-		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
+		$settings = NATICORE_Settings::get_instance();
+		$manual_order_enabled = $settings->get_setting('enable_manual_order', 0);
 
 		// Create cache key (include manual_order so cache respects setting)
 		$cache_key = sprintf(
@@ -765,37 +821,37 @@ class NATICORE_API {
 			(string) $type,
 			$to_type,
 			$limit,
-			isset( $args['orderby'] ) ? sanitize_key( (string) $args['orderby'] ) : 'default',
+			isset($args['orderby']) ? sanitize_key((string) $args['orderby']) : 'default',
 			$manual_order_enabled
 		);
 
 		// Check cache first
-		$cached_result = wp_cache_get( $cache_key, 'naticore_relationships' );
-		if ( false !== $cached_result ) {
+		$cached_result = wp_cache_get($cache_key, 'naticore_relationships');
+		if (false !== $cached_result) {
 			return $cached_result;
 		}
 
 		$has_to_type_filter = 'all' !== $to_type;
 
 		// Build SQL using array-based WHERE clause (scanner-friendly)
-		$where  = array( 'from_id = %d' );
-		$params = array( $post_id );
+		$where = array('from_id = %d');
+		$params = array($post_id);
 
-		if ( $has_to_type_filter ) {
-			$where[]  = 'to_type = %s';
+		if ($has_to_type_filter) {
+			$where[] = 'to_type = %s';
 			$params[] = $to_type;
 		}
 
-		if ( $has_type ) {
-			$where[]  = 'type = %s';
+		if ($has_type) {
+			$where[] = 'type = %s';
 			$params[] = $type;
 		}
 
-		$where_clause = implode( ' AND ', $where );
+		$where_clause = implode(' AND ', $where);
 
 		$order_clause = $manual_order_enabled ? 'ORDER BY relation_order ASC, created_at DESC' : 'ORDER BY created_at DESC';
 
-		if ( $has_limit ) {
+		if ($has_limit) {
 			/**
 			 * Custom table query with manual caching.
 			 */
@@ -804,7 +860,7 @@ class NATICORE_API {
 				$wpdb->prepare(
 					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Dynamic where/order clause.
 					"SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where_clause} {$order_clause} LIMIT %d",
-					array_merge( $params, array( $limit ) )
+					array_merge($params, array($limit))
 				)
 			);
 		} else {
@@ -820,36 +876,36 @@ class NATICORE_API {
 			);
 		}
 
-		if ( ! $results ) {
+		if (!$results) {
 			$related_items = array();
 		} else {
 			$related_items = array();
-			foreach ( $results as $row ) {
+			foreach ($results as $row) {
 				$item = array(
-					'id'      => absint( $row->to_id ),
-					'type'    => $row->type,
+					'id' => absint($row->to_id),
+					'type' => $row->type,
 					'to_type' => $row->to_type,
 				);
 
 				// Add additional data based on target type
-				if ( 'user' === $row->to_type ) {
-					$user = get_userdata( $row->to_id );
-					if ( $user ) {
+				if ('user' === $row->to_type) {
+					$user = get_userdata($row->to_id);
+					if ($user) {
 						$item['display_name'] = $user->display_name;
-						$item['user_email']   = $user->user_email;
+						$item['user_email'] = $user->user_email;
 					}
-				} elseif ( 'term' === $row->to_type ) {
-					$term = get_term( $row->to_id );
-					if ( $term && ! is_wp_error( $term ) ) {
-						$item['term_name']     = $term->name;
+				} elseif ('term' === $row->to_type) {
+					$term = get_term($row->to_id);
+					if ($term && !is_wp_error($term)) {
+						$item['term_name'] = $term->name;
 						$item['term_taxonomy'] = $term->taxonomy;
-						$item['term_slug']     = $term->slug;
+						$item['term_slug'] = $term->slug;
 					}
 				} else {
-					$post = get_post( $row->to_id );
-					if ( $post ) {
+					$post = get_post($row->to_id);
+					if ($post) {
 						$item['post_title'] = $post->post_title;
-						$item['post_type']  = $post->post_type;
+						$item['post_type'] = $post->post_type;
 					}
 				}
 
@@ -858,7 +914,7 @@ class NATICORE_API {
 		}
 
 		// Cache the result for 1 hour
-		wp_cache_set( $cache_key, $related_items, 'naticore_relationships', HOUR_IN_SECONDS );
+		wp_cache_set($cache_key, $related_items, 'naticore_relationships', HOUR_IN_SECONDS);
 
 		return $related_items;
 	}
@@ -871,20 +927,21 @@ class NATICORE_API {
 	 * @param int $post_id The ID of the content
 	 * @return array Array of relationships (objects with to_id, type, direction, created_at; id and relation_order when manual order is on)
 	 */
-	public static function get_all_relations( $post_id ) {
+	public static function get_all_relations($post_id)
+	{
 		global $wpdb;
 
-		$post_id = absint( $post_id );
+		$post_id = absint($post_id);
 
-		$settings             = NATICORE_Settings::get_instance();
-		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
+		$settings = NATICORE_Settings::get_instance();
+		$manual_order_enabled = $settings->get_setting('enable_manual_order', 0);
 
 		$select = 'to_id, type, direction, created_at';
-		$order  = 'ORDER BY type, created_at DESC';
+		$order = 'ORDER BY type, created_at DESC';
 
-		if ( $manual_order_enabled ) {
+		if ($manual_order_enabled) {
 			$select = 'id, to_id, type, direction, created_at, relation_order';
-			$order  = 'ORDER BY type, relation_order ASC, created_at DESC';
+			$order = 'ORDER BY type, relation_order ASC, created_at DESC';
 		}
 
 		$results = $wpdb->get_results(
@@ -951,23 +1008,63 @@ class NATICORE_API {
 	 *
 	 * @filter naticore_relation_is_allowed Allow/disallow relationship checks
 	 */
-	public static function is_related( $from_id, $to_id, $type = null, $direction = null, $to_type = 'post' ) {
+	public static function count_relations($from_id, $type = null, $to_type = 'post') {
+		global $wpdb;
+		$from_id = absint($from_id);
+		
+		$where = array('from_id = %d');
+		$params = array($from_id);
+		if ($type) {
+			$where[] = 'type = %s';
+			$params[] = $type;
+		}
+		if ($to_type && $to_type !== 'all') {
+			$where[] = 'to_type = %s';
+			$params[] = $to_type;
+		}
+		
+		$query = "SELECT COUNT(*) FROM {$wpdb->prefix}content_relations WHERE " . implode(' AND ', $where);
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		return (int) $wpdb->get_var($wpdb->prepare($query, ...$params));
+	}
+
+	/**
+	 * Count incoming relationships
+	 */
+	public static function count_related_to($to_id, $type = null, $from_type = 'post') {
+		global $wpdb;
+		$to_id = absint($to_id);
+		
+		$where = array('to_id = %d');
+		$params = array($to_id);
+		if ($type) {
+			$where[] = 'type = %s';
+			$params[] = $type;
+		}
+		
+		$query = "SELECT COUNT(*) FROM {$wpdb->prefix}content_relations WHERE " . implode(' AND ', $where);
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		return (int) $wpdb->get_var($wpdb->prepare($query, ...$params));
+	}
+
+	public static function is_related($from_id, $to_id, $type = null, $direction = null, $to_type = 'post')
+	{
 		global $wpdb;
 
-		$from_id = absint( $from_id );
-		$to_id   = absint( $to_id );
-		$to_type = in_array( $to_type, array( 'post', 'user', 'term' ), true ) ? $to_type : 'post';
+		$from_id = absint($from_id);
+		$to_id = absint($to_id);
+		$to_type = in_array($to_type, array('post', 'user', 'term'), true) ? $to_type : 'post';
 
 		// Create cache key
 		$cache_key = "naticore_exists_{$from_id}_{$to_id}_{$type}_{$to_type}";
 
 		// Check cache first
-		$cached_result = wp_cache_get( $cache_key, 'naticore_relationships' );
-		if ( false !== $cached_result ) {
+		$cached_result = wp_cache_get($cache_key, 'naticore_relationships');
+		if (false !== $cached_result) {
 			return (bool) $cached_result;
 		}
 
-		if ( $type ) {
+		if ($type) {
 			$result = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT COUNT(*) FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_id = %d AND to_type = %s AND type = %s",
@@ -991,7 +1088,7 @@ class NATICORE_API {
 		$exists = (int) $result > 0;
 
 		// Cache the result for 1 hour
-		wp_cache_set( $cache_key, $exists, 'naticore_relationships', HOUR_IN_SECONDS );
+		wp_cache_set($cache_key, $exists, 'naticore_relationships', HOUR_IN_SECONDS);
 
 		return $exists;
 	}
@@ -1005,42 +1102,43 @@ class NATICORE_API {
 	 * @param array|null $relation_types Optional. Only copy these relation type slugs. Null = copy all.
 	 * @return array{ copied: int, skipped: int, errors: array } Counts and any WP_Error messages.
 	 */
-	public static function copy_relations( $from_post_id, $to_post_id, $relation_types = null ) {
+	public static function copy_relations($from_post_id, $to_post_id, $relation_types = null)
+	{
 		global $wpdb;
 
-		$from_post_id = absint( $from_post_id );
-		$to_post_id   = absint( $to_post_id );
-		if ( ! $from_post_id || ! $to_post_id || $from_post_id === $to_post_id ) {
+		$from_post_id = absint($from_post_id);
+		$to_post_id = absint($to_post_id);
+		if (!$from_post_id || !$to_post_id || $from_post_id === $to_post_id) {
 			return array(
-				'copied'  => 0,
+				'copied' => 0,
 				'skipped' => 0,
-				'errors'  => array(),
+				'errors' => array(),
 			);
 		}
 
-		$where  = 'from_id = %d';
-		$params = array( $from_post_id );
-		if ( is_array( $relation_types ) && ! empty( $relation_types ) ) {
-			$relation_types = array_map( 'sanitize_key', $relation_types );
-			$placeholders   = implode( ',', array_fill( 0, count( $relation_types ), '%s' ) );
-			$where         .= " AND type IN ($placeholders)";
-			$params         = array_merge( $params, $relation_types );
+		$where = 'from_id = %d';
+		$params = array($from_post_id);
+		if (is_array($relation_types) && !empty($relation_types)) {
+			$relation_types = array_map('sanitize_key', $relation_types);
+			$placeholders = implode(',', array_fill(0, count($relation_types), '%s'));
+			$where .= " AND type IN ($placeholders)";
+			$params = array_merge($params, $relation_types);
 		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table read; $where built from sanitize_key.
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where}", $params ) );
+		$rows = $wpdb->get_results($wpdb->prepare("SELECT to_id, type, to_type FROM `{$wpdb->prefix}content_relations` WHERE {$where}", $params));
 
-		$copied  = 0;
+		$copied = 0;
 		$skipped = 0;
-		$errors  = array();
+		$errors = array();
 
-		foreach ( (array) $rows as $row ) {
-			$to_type = isset( $row->to_type ) ? $row->to_type : 'post';
-			if ( ! in_array( $to_type, array( 'post', 'user', 'term' ), true ) ) {
+		foreach ((array) $rows as $row) {
+			$to_type = isset($row->to_type) ? $row->to_type : 'post';
+			if (!in_array($to_type, array('post', 'user', 'term'), true)) {
 				$to_type = 'post';
 			}
-			$result = self::add_relation( $to_post_id, (int) $row->to_id, $row->type, null, $to_type );
-			if ( is_wp_error( $result ) ) {
+			$result = self::add_relation($to_post_id, (int) $row->to_id, $row->type, null, $to_type);
+			if (is_wp_error($result)) {
 				$errors[] = $result->get_error_message();
 				++$skipped;
 			} else {
@@ -1053,233 +1151,97 @@ class NATICORE_API {
 			$from_post_id,
 			$to_post_id,
 			array(
-				'copied'  => $copied,
+				'copied' => $copied,
 				'skipped' => $skipped,
 			)
 		);
 
 		return array(
-			'copied'  => $copied,
+			'copied' => $copied,
 			'skipped' => $skipped,
-			'errors'  => $errors,
+			'errors' => $errors,
 		);
 	}
 }
 
 // phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound -- Legacy wrapper functions in same file as class.
-// Make functions available globally (backward compatibility)
-if ( ! function_exists( 'wp_add_relation' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
-	function wp_add_relation( $from_id, $to_id, $type = 'related_to', $direction = null, $to_type = 'post' ) {
-		if ( ! class_exists( 'NATICORE_API' ) ) {
-			return new WP_Error( 'class_not_loaded', 'NATICORE_API class is not loaded yet.' );
-		}
-		return NATICORE_API::add_relation( $from_id, $to_id, $type, $direction, $to_type );
+// Backward-compatible wp_* wrappers (deprecated, use ncr_* equivalents instead).
+if (!function_exists('wp_add_relation')) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Deprecated backward-compat wrapper
+	function wp_add_relation($from_id, $to_id, $type = 'related_to', $direction = null, $to_type = 'post')
+	{
+		return ncr_add_relation($from_id, $to_id, $type, $direction, $to_type);
 	}
 }
 
-if ( ! function_exists( 'wp_remove_relation' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
-	function wp_remove_relation( $from_id, $to_id, $type = null, $to_type = 'post' ) {
-		if ( ! class_exists( 'NATICORE_API' ) ) {
-			return new WP_Error( 'class_not_loaded', 'NATICORE_API class is not loaded yet.' );
+if (!function_exists('wp_remove_relation')) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Deprecated backward-compat wrapper
+	function wp_remove_relation($from_id, $to_id, $type = null, $to_type = 'post')
+	{
+		if (!class_exists('NATICORE_API')) {
+			return new WP_Error('class_not_loaded', 'NATICORE_API class is not loaded yet.');
 		}
-		return NATICORE_API::remove_relation( $from_id, $to_id, $type, $to_type );
+		return NATICORE_API::remove_relation($from_id, $to_id, $type, $to_type);
 	}
 }
 
-if ( ! function_exists( 'wp_get_related' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
-	function wp_get_related( $post_id, $type = null, $args = array(), $to_type = 'post' ) {
-		if ( ! class_exists( 'NATICORE_API' ) ) {
-			return new WP_Error( 'class_not_loaded', 'NATICORE_API class is not loaded yet.' );
+if (!function_exists('wp_get_related')) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Deprecated backward-compat wrapper
+	function wp_get_related($post_id, $type = null, $args = array(), $to_type = 'post')
+	{
+		if (!class_exists('NATICORE_API')) {
+			return new WP_Error('class_not_loaded', 'NATICORE_API class is not loaded yet.');
 		}
-		return NATICORE_API::get_related( $post_id, $type, $args, $to_type );
+		return NATICORE_API::get_related($post_id, $type, $args, $to_type);
 	}
 }
 
-if ( ! function_exists( 'wp_is_related' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
-	function wp_is_related( $from_id, $to_id, $type = null ) {
-		if ( ! class_exists( 'NATICORE_API' ) ) {
-			return new WP_Error( 'class_not_loaded', 'NATICORE_API class is not loaded yet.' );
+if (!function_exists('wp_is_related')) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Deprecated backward-compat wrapper
+	function wp_is_related($from_id, $to_id, $type = null, $to_type = 'post')
+	{
+		if (!class_exists('NATICORE_API')) {
+			return new WP_Error('class_not_loaded', 'NATICORE_API class is not loaded yet.');
 		}
-		return NATICORE_API::is_related( $from_id, $to_id, $type );
+		return NATICORE_API::is_related($from_id, $to_id, $type, null, $to_type);
 	}
 }
 
-// User relationship helper functions
-if ( ! function_exists( 'wp_get_related_users' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
-	function wp_get_related_users( $post_id, $type = null, $args = array() ) {
-		if ( ! class_exists( 'NATICORE_API' ) ) {
-			return new WP_Error( 'class_not_loaded', 'NATICORE_API class is not loaded yet.' );
+if (!function_exists('wp_get_related_users')) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Deprecated backward-compat wrapper
+	function wp_get_related_users($post_id, $type = null, $args = array())
+	{
+		if (!class_exists('NATICORE_API')) {
+			return new WP_Error('class_not_loaded', 'NATICORE_API class is not loaded yet.');
 		}
-		return NATICORE_API::get_related( $post_id, $type, $args, 'user' );
+		return NATICORE_API::get_related($post_id, $type, $args, 'user');
 	}
 }
 
-if ( ! function_exists( 'wp_get_user_related_posts' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
-	function wp_get_user_related_posts( $user_id, $type = null, $args = array() ) {
-		if ( ! class_exists( 'NATICORE_API' ) ) {
-			return new WP_Error( 'class_not_loaded', 'NATICORE_API class is not loaded yet.' );
-		}
-		// For user-to-post relationships, we need to query where from_id is the user
-		// This is a simplified version - in a full implementation, you'd add a dedicated method
-		global $wpdb;
-		$user_id   = absint( $user_id );
-		$has_type  = ! empty( $type );
-		$has_limit = isset( $args['limit'] );
-		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
-
-		if ( $has_type && $has_limit ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT to_id, type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s AND to_type = %s ORDER BY created_at DESC LIMIT %d",
-					$user_id,
-					$type,
-					'post',
-					$limit
-				)
-			);
-		} elseif ( $has_type ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT to_id, type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s AND to_type = %s ORDER BY created_at DESC",
-					$user_id,
-					$type,
-					'post'
-				)
-			);
-		} elseif ( $has_limit ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT to_id, type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC LIMIT %d",
-					$user_id,
-					'post',
-					$limit
-				)
-			);
-		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT to_id, type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC",
-					$user_id,
-					'post'
-				)
-			);
-		}
-
-		if ( ! $results ) {
-			return array();
-		}
-
-		$related_posts = array();
-		foreach ( $results as $row ) {
-			$post = get_post( $row->to_id );
-			if ( $post ) {
-				$related_posts[] = array(
-					'id'         => absint( $row->to_id ),
-					'type'       => $row->type,
-					'post_title' => $post->post_title,
-					'post_type'  => $post->post_type,
-				);
-			}
-		}
-
-		return $related_posts;
+if (!function_exists('wp_get_user_related_posts')) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Deprecated backward-compat wrapper
+	function wp_get_user_related_posts($user_id, $type = null, $args = array())
+	{
+		return ncr_get_relations($user_id, $args);
 	}
 }
 
-// Term relationship helper functions
-if ( ! function_exists( 'wp_get_related_terms' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
-	function wp_get_related_terms( $post_id, $type = null, $args = array() ) {
-		if ( ! class_exists( 'NATICORE_API' ) ) {
-			return new WP_Error( 'class_not_loaded', 'NATICORE_API class is not loaded yet.' );
+if (!function_exists('wp_get_related_terms')) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Deprecated backward-compat wrapper
+	function wp_get_related_terms($post_id, $type = null, $args = array())
+	{
+		if (!class_exists('NATICORE_API')) {
+			return new WP_Error('class_not_loaded', 'NATICORE_API class is not loaded yet.');
 		}
-		return NATICORE_API::get_related( $post_id, $type, $args, 'term' );
+		return NATICORE_API::get_related($post_id, $type, $args, 'term');
 	}
 }
 
-if ( ! function_exists( 'wp_get_term_related_posts' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Intentional API function name
-	function wp_get_term_related_posts( $term_id, $type = null, $args = array() ) {
-		if ( ! class_exists( 'NATICORE_API' ) ) {
-			return new WP_Error( 'class_not_loaded', 'NATICORE_API class is not loaded yet.' );
-		}
-		// For term-to-post relationships, we need to query where from_id is the term
-		global $wpdb;
-		$term_id   = absint( $term_id );
-		$has_type  = ! empty( $type );
-		$has_limit = isset( $args['limit'] );
-		$limit     = $has_limit ? absint( $args['limit'] ) : 0;
-
-		if ( $has_type && $has_limit ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT to_id, type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s AND to_type = %s ORDER BY created_at DESC LIMIT %d",
-					$term_id,
-					$type,
-					'post',
-					$limit
-				)
-			);
-		} elseif ( $has_type ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT to_id, type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND type = %s AND to_type = %s ORDER BY created_at DESC",
-					$term_id,
-					$type,
-					'post'
-				)
-			);
-		} elseif ( $has_limit ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT to_id, type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC LIMIT %d",
-					$term_id,
-					'post',
-					$limit
-				)
-			);
-		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table
-			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT to_id, type FROM `{$wpdb->prefix}content_relations` WHERE from_id = %d AND to_type = %s ORDER BY created_at DESC",
-					$term_id,
-					'post'
-				)
-			);
-		}
-
-		if ( ! $results ) {
-			return array();
-		}
-
-		$related_posts = array();
-		foreach ( $results as $row ) {
-			$post = get_post( $row->to_id );
-			if ( $post ) {
-				$related_posts[] = array(
-					'id'         => absint( $row->to_id ),
-					'type'       => $row->type,
-					'post_title' => $post->post_title,
-					'post_type'  => $post->post_type,
-				);
-			}
-		}
-
-		return $related_posts;
+if (!function_exists('wp_get_term_related_posts')) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Deprecated backward-compat wrapper
+	function wp_get_term_related_posts($term_id, $type = null, $args = array())
+	{
+		return ncr_get_relations($term_id, $args);
 	}
 }
 
@@ -1287,7 +1249,7 @@ if ( ! function_exists( 'wp_get_term_related_posts' ) ) {
  * Global Relationship API Helpers
  */
 
-if ( ! function_exists( 'ncr_add_relation' ) ) {
+if (!function_exists('ncr_add_relation')) {
 	/**
 	 * Add a relationship between two content items.
 	 *
@@ -1299,12 +1261,13 @@ if ( ! function_exists( 'ncr_add_relation' ) ) {
 	 * @param string $to_type   Optional target type.
 	 * @return int|WP_Error
 	 */
-	function ncr_add_relation( $from_id, $to_id, $type, $direction = null, $to_type = 'post' ) {
-		return NATICORE_API::get_instance()->add_relation( $from_id, $to_id, $type, $direction, $to_type );
+	function ncr_add_relation($from_id, $to_id, $type, $direction = null, $to_type = 'post')
+	{
+		return NATICORE_API::get_instance()->add_relation($from_id, $to_id, $type, $direction, $to_type);
 	}
 }
 
-if ( ! function_exists( 'ncr_get_relations' ) ) {
+if (!function_exists('ncr_get_relations')) {
 	/**
 	 * Get relationships for a content item.
 	 *
@@ -1313,12 +1276,13 @@ if ( ! function_exists( 'ncr_get_relations' ) ) {
 	 * @param array $args    Optional arguments.
 	 * @return array
 	 */
-	function ncr_get_relations( $from_id, $args = array() ) {
-		return NATICORE_API::get_instance()->get_relations( $from_id, $args );
+	function ncr_get_relations($from_id, $args = array())
+	{
+		return NATICORE_API::get_related($from_id, null, $args);
 	}
 }
 
-if ( ! function_exists( 'naticore_copy_relations' ) ) {
+if (!function_exists('naticore_copy_relations')) {
 	/**
 	 * Copy relationships from one post to another (e.g. after duplicating a post).
 	 *
@@ -1328,7 +1292,8 @@ if ( ! function_exists( 'naticore_copy_relations' ) ) {
 	 * @param array|null $relation_types Optional. Only copy these relation type slugs. Null = copy all.
 	 * @return array{ copied: int, skipped: int, errors: array }
 	 */
-	function naticore_copy_relations( $from_post_id, $to_post_id, $relation_types = null ) {
-		return NATICORE_API::copy_relations( $from_post_id, $to_post_id, $relation_types );
+	function naticore_copy_relations($from_post_id, $to_post_id, $relation_types = null)
+	{
+		return NATICORE_API::copy_relations($from_post_id, $to_post_id, $relation_types);
 	}
 }

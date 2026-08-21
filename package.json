@@ -1,6 +1,6 @@
 {
   "name": "native-content-relationships",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "private": true,
   "overrides": {
     "@babel/parser": "^7.24.0"

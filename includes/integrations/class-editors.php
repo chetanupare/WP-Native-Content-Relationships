@@ -126,6 +126,7 @@ class NATICORE_Editors {
 			'naticoreBlockData',
 			array(
 				'relationTypes' => $type_options,
+				'postId'        => get_the_ID(),
 			)
 		);
 	}

@@ -318,7 +318,7 @@ class NATICORE_WP_CLI {
 		}
 
 		if ( 'json' === $format ) {
-			WP_CLI::line( json_encode( $schema, JSON_PRETTY_PRINT ) );
+			WP_CLI::line( wp_json_encode( $schema, JSON_PRETTY_PRINT ) );
 		} else {
 			WP_CLI::error( 'Only JSON format is currently supported.' );
 		}

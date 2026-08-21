@@ -12,14 +12,16 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 #[AllowDynamicProperties]
-class NotAllowedViaAttributeSniff implements Sniff {
+class NotAllowedViaAttributeSniff implements Sniff
+{
 
+    public function register()
+    {
+        return [T_WHITESPACE];
+    }
 
-	public function register() {
-		return array( T_WHITESPACE );
-	}
-
-	public function process( File $phpcsFile, $stackPtr ) {
-		// Do something.
-	}
+    public function process(File $phpcsFile, $stackPtr)
+    {
+        // Do something.
+    }
 }

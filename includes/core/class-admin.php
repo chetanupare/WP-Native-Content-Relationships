@@ -42,6 +42,12 @@ class NATICORE_Admin {
 		add_action( 'wp_ajax_naticore_suggest_related', array( $this, 'ajax_suggest_related' ) );
 		add_action( 'wp_ajax_naticore_add_relation', array( $this, 'ajax_add_relation' ) );
 		add_action( 'wp_ajax_naticore_remove_relation', array( $this, 'ajax_remove_relation' ) );
+		add_action( 'wp_ajax_naticore_save_relation_meta', array( $this, 'ajax_save_relation_meta' ) );
+
+		// Stitch Admin AJAX handlers.
+		add_action( 'wp_ajax_naticore_save_type', array( $this, 'ajax_save_type' ) );
+		add_action( 'wp_ajax_naticore_delete_relation', array( $this, 'ajax_delete_relation' ) );
+		add_action( 'wp_ajax_naticore_get_relation', array( $this, 'ajax_get_relation' ) );
 
 		add_action( 'admin_notices', array( $this, 'render_activation_notice' ) );
 	}
@@ -60,6 +66,12 @@ class NATICORE_Admin {
 
 		foreach ( $enabled_post_types as $post_type ) {
 			if ( post_type_exists( $post_type ) ) {
+				// Suppress classic metabox if Gutenberg sidebar will be shown.
+				$pt_obj = get_post_type_object( $post_type );
+				if ( function_exists( 'use_block_editor_for_post_type' ) && use_block_editor_for_post_type( $post_type ) && $pt_obj && $pt_obj->show_in_rest ) {
+					continue;
+				}
+
 				add_meta_box(
 					'naticore_related_content',
 					__( 'Related Content', 'native-content-relationships' ),
@@ -124,6 +136,16 @@ class NATICORE_Admin {
 									if ( $manual_order_enabled && ! empty( $rel->id ) ) {
 										$item_attrs .= ' data-relation-id="' . esc_attr( $rel->id ) . '"';
 									}
+
+									// Get relationship metadata
+									$meta_role  = '';
+									$meta_note  = '';
+									$meta_order = '';
+									if ( ! empty( $rel->id ) && class_exists( 'NATICORE_Meta_API' ) ) {
+										$meta_role  = NATICORE_Meta_API::get_meta( $rel->id, 'role' );
+										$meta_note  = NATICORE_Meta_API::get_meta( $rel->id, 'note' );
+										$meta_order = NATICORE_Meta_API::get_meta( $rel->id, 'order' );
+									}
 									?>
 									<div <?php echo $item_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr() above. ?>>
 										<span class="naticore-relation-title">
@@ -134,6 +156,10 @@ class NATICORE_Admin {
 												<?php echo esc_html( get_the_title( $rel->to_id ) ); ?>
 											</a>
 											<small>(<?php echo esc_html( get_post_type_object( $related_post->post_type )->labels->singular_name ); ?>)</small>
+										</span>
+										<span class="naticore-relation-meta">
+											<input type="text" class="naticore-meta-role" placeholder="<?php esc_attr_e( 'Role (e.g. Speaker)', 'native-content-relationships' ); ?>" value="<?php echo esc_attr( $meta_role ); ?>" data-relation-id="<?php echo esc_attr( $rel->id ?? '' ); ?>" data-meta-key="role" style="width: 140px; font-size: 12px; margin-left: 8px;">
+											<input type="text" class="naticore-meta-note" placeholder="<?php esc_attr_e( 'Note', 'native-content-relationships' ); ?>" value="<?php echo esc_attr( $meta_note ); ?>" data-relation-id="<?php echo esc_attr( $rel->id ?? '' ); ?>" data-meta-key="note" style="width: 120px; font-size: 12px; margin-left: 4px;">
 										</span>
 										<button 
 											type="button" 
@@ -203,7 +229,7 @@ class NATICORE_Admin {
 		$settings             = NATICORE_Settings::get_instance();
 		$manual_order_enabled = $settings->get_setting( 'enable_manual_order', 0 );
 
-		$deps = array( 'jquery', 'jquery-ui-autocomplete' );
+		$deps = array( 'jquery' );
 		if ( $manual_order_enabled ) {
 			$deps[] = 'jquery-ui-sortable';
 		}
@@ -242,131 +268,149 @@ class NATICORE_Admin {
 
 	/**
 	 * AJAX: Search products (WooCommerce)
+	/**
+	 * AJAX: Search WooCommerce products.
+	 *
+	 * Delegates to NATICORE_Object_Search::search_products().
+	 * Response format is unchanged for backward compatibility.
 	 */
 	public function ajax_search_products() {
 		check_ajax_referer( 'naticore_ajax', 'nonce' );
 
-		$search          = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
 		$current_post_id = isset( $_POST['current_post_id'] ) ? absint( $_POST['current_post_id'] ) : 0;
+		$capability      = $current_post_id ? 'edit_post' : 'edit_posts';
+		$cap_target      = $current_post_id ? $current_post_id : null;
 
-		if ( empty( $search ) ) {
-			wp_send_json_error( array( 'message' => __( 'Search term required.', 'native-content-relationships' ) ) );
+		if ( ! current_user_can( $capability, $cap_target ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
 		}
 
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			wp_send_json_error( array( 'message' => __( 'WooCommerce is not active.', 'native-content-relationships' ) ) );
-		}
+		$search = isset( $_POST['search'] ) ? wp_unslash( $_POST['search'] ) : '';
 
-		// Build search query
-		global $wpdb;
-		$search_term = '%' . $wpdb->esc_like( $search ) . '%';
-
-		$args = array(
-			'post_type'      => 'product',
-			'post_status'    => 'publish',
-			'posts_per_page' => 20,
-			// phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in -- Necessary for excluding current post
-			'post__not_in'   => array( $current_post_id ),
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary for SKU search
-			'meta_query'     => array(
-				'relation' => 'OR',
-				array(
-					'key'     => '_sku',
-					'value'   => $search,
-					'compare' => 'LIKE',
-				),
-			),
+		$service = new NATICORE_Object_Search();
+		$items   = $service->search_products(
+			$search,
+			array(
+				'exclude_ids' => $current_post_id ? array( $current_post_id ) : array(),
+			)
 		);
 
-		// Add title search via posts_where
-		$search_filter = function ( $where ) use ( $search_term ) {
-			global $wpdb;
-			$where .= $wpdb->prepare( " AND ({$wpdb->posts}.post_title LIKE %s OR {$wpdb->posts}.post_content LIKE %s)", $search_term, $search_term );
-			return $where;
-		};
+		if ( is_wp_error( $items ) ) {
+			wp_send_json_error( array( 'message' => $items->get_error_message() ) );
+		}
 
-		add_filter( 'posts_where', $search_filter );
-
-		$query = new WP_Query( $args );
-
-		// Remove filter after query safely
-		remove_filter( 'posts_where', $search_filter );
-
+		// Map normalized results to the legacy response shape expected by admin.js.
 		$results = array();
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$product   = wc_get_product( get_the_ID() );
-				$results[] = array(
-					'id'    => get_the_ID(),
-					'title' => get_the_title(),
-					'sku'   => $product ? $product->get_sku() : '',
-					'type'  => 'product',
-				);
+		foreach ( $items as $item ) {
+			$sku       = '';
+			if ( ! empty( $item['secondary_label'] ) && 0 === strpos( $item['secondary_label'], 'SKU: ' ) ) {
+				$sku = substr( $item['secondary_label'], 5 );
 			}
-			wp_reset_postdata();
+			$results[] = array(
+				'id'    => $item['id'],
+				'title' => $item['title'],
+				'sku'   => $sku,
+				'type'  => 'product',
+			);
 		}
 
 		wp_send_json_success( $results );
 	}
 
 	/**
-	 * AJAX: Search content
+	 * AJAX: Search content (posts).
+	 *
+	 * Delegates to NATICORE_Object_Search::search_posts().
+	 * Response format is unchanged for backward compatibility.
 	 */
 	public function ajax_search_content() {
 		check_ajax_referer( 'naticore_ajax', 'nonce' );
 
-		$search          = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
 		$current_post_id = isset( $_POST['current_post_id'] ) ? absint( $_POST['current_post_id'] ) : 0;
+		$capability      = $current_post_id ? 'edit_post' : 'edit_posts';
+		$cap_target      = $current_post_id ? $current_post_id : null;
 
-		if ( empty( $search ) ) {
-			wp_send_json_error( array( 'message' => __( 'Search term required.', 'native-content-relationships' ) ) );
+		if ( ! current_user_can( $capability, $cap_target ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
 		}
 
-		$args = array(
-			'post_type'      => get_post_types( array( 'public' => true ) ),
-			'post_status'    => 'publish',
-			'posts_per_page' => 20,
-			's'              => $search,
-			// phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in -- Necessary for excluding current post
-			'post__not_in'   => array( $current_post_id ),
+		$search = isset( $_POST['search'] ) ? wp_unslash( $_POST['search'] ) : '';
+
+		$service = new NATICORE_Object_Search();
+		$items   = $service->search_posts(
+			$search,
+			array(
+				'exclude_ids' => $current_post_id ? array( $current_post_id ) : array(),
+			)
 		);
 
-		$query = new WP_Query( $args );
+		if ( is_wp_error( $items ) ) {
+			wp_send_json_error( array( 'message' => $items->get_error_message() ) );
+		}
 
+		// Map normalized results to the legacy response shape expected by admin.js.
 		$results = array();
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$results[] = array(
-					'id'    => get_the_ID(),
-					'title' => get_the_title(),
-					'type'  => get_post_type(),
-				);
-			}
-			wp_reset_postdata();
+		foreach ( $items as $item ) {
+			$results[] = array(
+				'id'        => $item['id'],
+				'title'     => $item['title'],
+				'type'      => $item['object_type'],
+				'thumbnail' => $item['thumbnail_url'] ?? '',
+				'url'       => $item['edit_url'] ?? '',
+			);
 		}
 
 		wp_send_json_success( $results );
 	}
 
 	/**
-	 * AJAX: Suggest related posts by same category, tag, or post type.
-	 * Kept cheap: limit 10, no heavy queries.
+	 * AJAX: Suggest related posts using AI or fallback to category/tag matching.
 	 */
 	public function ajax_suggest_related() {
 		check_ajax_referer( 'naticore_ajax', 'nonce' );
 
 		$current_post_id = isset( $_POST['current_post_id'] ) ? absint( $_POST['current_post_id'] ) : 0;
+		$capability      = $current_post_id ? 'edit_post' : 'edit_posts';
+		$cap_target      = $current_post_id ? $current_post_id : null;
+
+		if ( ! current_user_can( $capability, $cap_target ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
+		}
 		if ( ! $current_post_id || ! get_post( $current_post_id ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid post.', 'native-content-relationships' ) ) );
 		}
 
-		$post    = get_post( $current_post_id );
-		$exclude = array( $current_post_id );
+		// Use AI suggestions if available
+		if ( class_exists( 'NATICORE_AI_Suggestions' ) ) {
+			$ai       = NATICORE_AI_Suggestions::get_instance();
+			$results  = $ai->get_suggestions( $current_post_id, 10 );
+			$source   = $ai->is_enabled() ? 'ai' : 'fallback';
+		} else {
+			// Fallback to category/tag suggestions
+			$results = $this->get_fallback_suggestions( $current_post_id, 10 );
+			$source  = 'fallback';
+		}
 
-		// Already related post IDs (exclude so we don't suggest them again)
-		$relations = NATICORE_API::get_all_relations( $current_post_id );
+		wp_send_json_success( $results );
+	}
+
+	/**
+	 * Get fallback suggestions based on categories and tags
+	 *
+	 * @param int $post_id Post ID.
+	 * @param int $limit   Number of suggestions.
+	 * @return array Suggestions array.
+	 */
+	private function get_fallback_suggestions( $post_id, $limit = 10 ) {
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			return array();
+		}
+
+		$exclude = array( $post_id );
+
+		// Already related post IDs
+		$relations = NATICORE_API::get_all_relations( $post_id );
 		foreach ( $relations as $rel ) {
 			if ( ! empty( $rel->to_id ) ) {
 				$exclude[] = (int) $rel->to_id;
@@ -375,8 +419,8 @@ class NATICORE_Admin {
 		$exclude = array_unique( array_filter( $exclude ) );
 
 		$tax_query = array();
-		$terms_cat = get_the_terms( $current_post_id, 'category' );
-		$terms_tag = get_the_terms( $current_post_id, 'post_tag' );
+		$terms_cat = get_the_terms( $post_id, 'category' );
+		$terms_tag = get_the_terms( $post_id, 'post_tag' );
 		if ( $terms_cat && ! is_wp_error( $terms_cat ) ) {
 			$tax_query[] = array(
 				'taxonomy' => 'category',
@@ -398,7 +442,7 @@ class NATICORE_Admin {
 		$args = array(
 			'post_type'      => $post->post_type,
 			'post_status'    => 'publish',
-			'posts_per_page' => 10,
+			'posts_per_page' => $limit,
 			'post__not_in'   => $exclude,
 			'orderby'        => 'date',
 			'order'          => 'DESC',
@@ -412,16 +456,27 @@ class NATICORE_Admin {
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
+				$thumbnail_url = '';
+				$thumbnail_id  = get_post_thumbnail_id( get_the_ID() );
+				if ( $thumbnail_id ) {
+					$thumbnail = wp_get_attachment_image_src( $thumbnail_id, 'thumbnail' );
+					if ( $thumbnail ) {
+						$thumbnail_url = $thumbnail[0];
+					}
+				}
 				$results[] = array(
-					'id'    => get_the_ID(),
-					'title' => get_the_title(),
-					'type'  => get_post_type(),
+					'id'        => get_the_ID(),
+					'title'     => get_the_title(),
+					'type'      => get_post_type(),
+					'thumbnail' => $thumbnail_url,
+					'url'       => get_the_permalink(),
+					'source'    => 'fallback',
 				);
 			}
 			wp_reset_postdata();
 		}
 
-		wp_send_json_success( $results );
+		return $results;
 	}
 
 	/**
@@ -429,7 +484,7 @@ class NATICORE_Admin {
 	 */
 	public function save_relationships( $post_id, $post ) {
 		// Verify nonce
-		if ( ! isset( $_POST['naticore_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['naticore_nonce'] ) ), 'naticore_save_relationships' ) ) {
+		if ( ! isset( $_POST['naticore_nonce'] ) || ! hash_equals( wp_create_nonce( 'naticore_save_relationships' ), sanitize_text_field( wp_unslash( $_POST['naticore_nonce'] ) ) ) ) {
 			return;
 		}
 
@@ -495,6 +550,10 @@ class NATICORE_Admin {
 			wp_send_json_error( array( 'message' => __( 'Invalid parameters.', 'native-content-relationships' ) ) );
 		}
 
+		if ( ! current_user_can( 'edit_post', $from_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this content.', 'native-content-relationships' ) ) );
+		}
+
 		$result = NATICORE_API::add_relation( $from_id, $to_id, $relation_type );
 
 		if ( is_wp_error( $result ) ) {
@@ -518,6 +577,10 @@ class NATICORE_Admin {
 			wp_send_json_error( array( 'message' => __( 'Invalid parameters.', 'native-content-relationships' ) ) );
 		}
 
+		if ( ! current_user_can( 'edit_post', $from_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this content.', 'native-content-relationships' ) ) );
+		}
+
 		$result = NATICORE_API::remove_relation( $from_id, $to_id, $relation_type );
 
 		if ( is_wp_error( $result ) ) {
@@ -525,6 +588,187 @@ class NATICORE_Admin {
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * AJAX: Save relationship metadata
+	 */
+	public function ajax_save_relation_meta() {
+		check_ajax_referer( 'naticore_ajax', 'nonce' );
+
+		$relation_id = isset( $_POST['relation_id'] ) ? absint( $_POST['relation_id'] ) : 0;
+		$meta_key    = isset( $_POST['meta_key'] ) ? sanitize_text_field( wp_unslash( $_POST['meta_key'] ) ) : '';
+		$meta_value  = isset( $_POST['meta_value'] ) ? sanitize_text_field( wp_unslash( $_POST['meta_value'] ) ) : '';
+
+		if ( ! $relation_id || empty( $meta_key ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid parameters.', 'native-content-relationships' ) ) );
+		}
+
+		// Verify the user can edit the source post of this relationship.
+		global $wpdb;
+		$table  = $wpdb->prefix . 'content_relations';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$from_id = $wpdb->get_var( $wpdb->prepare( "SELECT from_id FROM `{$table}` WHERE id = %d", $relation_id ) );
+		if ( ! $from_id || ! current_user_can( 'edit_post', (int) $from_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this content.', 'native-content-relationships' ) ) );
+		}
+
+		// Sanitize meta key - only allow alphanumeric and underscores
+		$meta_key = preg_replace( '/[^a-z0-9_]/', '', strtolower( $meta_key ) );
+
+		if ( class_exists( 'NATICORE_Meta_API' ) ) {
+			$result = NATICORE_Meta_API::update_meta( $relation_id, $meta_key, $meta_value );
+			if ( is_wp_error( $result ) ) {
+				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+			}
+		}
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * AJAX: Save (create or update) a relationship type.
+	 *
+	 * Built-in types are toggled via settings. Custom types are stored in settings.
+	 */
+	public function ajax_save_type() {
+		check_ajax_referer( 'nc_stitch_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
+		}
+
+		$slug  = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+		$label = isset( $_POST['label'] ) ? sanitize_text_field( wp_unslash( $_POST['label'] ) ) : '';
+		$bidir = isset( $_POST['bidirectional'] ) ? absint( $_POST['bidirectional'] ) : 0;
+		$from  = isset( $_POST['from_type'] ) ? sanitize_text_field( wp_unslash( $_POST['from_type'] ) ) : 'post';
+		$to    = isset( $_POST['to_type'] ) ? sanitize_text_field( wp_unslash( $_POST['to_type'] ) ) : 'post';
+
+		if ( empty( $slug ) || empty( $label ) ) {
+			wp_send_json_error( array( 'message' => __( 'Slug and label are required.', 'native-content-relationships' ) ) );
+		}
+
+		$settings    = get_option( 'naticore_settings', array() );
+		$type_config = isset( $settings['relationship_types_config'] ) ? $settings['relationship_types_config'] : array();
+
+		// Check if this is a built-in type being toggled.
+		$reflection         = new ReflectionClass( 'NATICORE_Relation_Types' );
+		$default_types_prop = $reflection->getProperty( 'default_types' );
+		$default_types_prop->setAccessible( true );
+		$built_in_defaults  = $default_types_prop->getValue();
+
+		if ( isset( $built_in_defaults[ $slug ] ) ) {
+			// Built-in type: toggle enabled/disabled.
+			if ( ! isset( $type_config['built_in'] ) ) {
+				$type_config['built_in'] = array();
+			}
+			$type_config['built_in'][ $slug ] = array(
+				'enabled' => 1,
+			);
+		} else {
+			// Custom type: create or update.
+			if ( ! isset( $type_config['custom'] ) ) {
+				$type_config['custom'] = array();
+			}
+			$type_config['custom'][ $slug ] = array(
+				'label'         => $label,
+				'bidirectional' => $bidir,
+				'from_type'     => $from,
+				'to_type'       => $to,
+			);
+		}
+
+		$settings['relationship_types_config'] = $type_config;
+		update_option( 'naticore_settings', $settings );
+
+		wp_send_json_success( array( 'message' => __( 'Type saved.', 'native-content-relationships' ) ) );
+	}
+
+	/**
+	 * AJAX: Delete a relationship by ID.
+	 */
+	public function ajax_delete_relation() {
+		check_ajax_referer( 'nc_stitch_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
+		}
+
+		$relation_id = isset( $_POST['relation_id'] ) ? absint( $_POST['relation_id'] ) : 0;
+
+		if ( ! $relation_id ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid relationship ID.', 'native-content-relationships' ) ) );
+		}
+
+		global $wpdb;
+		$table = $wpdb->prefix . 'content_relations';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$relation = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE id = %d", $relation_id ) );
+
+		if ( ! $relation ) {
+			wp_send_json_error( array( 'message' => __( 'Relationship not found.', 'native-content-relationships' ) ) );
+		}
+
+		if ( ! current_user_can( 'edit_post', (int) $relation->from_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
+		}
+
+		$result = NATICORE_API::remove_relation( (int) $relation->from_id, (int) $relation->to_id, $relation->type );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		wp_send_json_success( array( 'message' => __( 'Relationship deleted.', 'native-content-relationships' ) ) );
+	}
+
+	/**
+	 * AJAX: Get a single relationship by ID (for editing).
+	 */
+	public function ajax_get_relation() {
+		check_ajax_referer( 'nc_stitch_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'native-content-relationships' ) ) );
+		}
+
+		$relation_id = isset( $_GET['relation_id'] ) ? absint( $_GET['relation_id'] ) : 0;
+
+		if ( ! $relation_id ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid relationship ID.', 'native-content-relationships' ) ) );
+		}
+
+		global $wpdb;
+		$table = $wpdb->prefix . 'content_relations';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$relation = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE id = %d", $relation_id ) );
+
+		if ( ! $relation ) {
+			wp_send_json_error( array( 'message' => __( 'Relationship not found.', 'native-content-relationships' ) ) );
+		}
+
+		// Get titles.
+		$from_title = get_the_title( (int) $relation->from_id );
+		$to_title   = '';
+		if ( 'post' === $relation->to_type ) {
+			$to_title = get_the_title( (int) $relation->to_id );
+		} elseif ( 'user' === $relation->to_type ) {
+			$user = get_userdata( (int) $relation->to_id );
+			$to_title = $user ? $user->display_name : '';
+		}
+
+		wp_send_json_success( array(
+			'id'         => (int) $relation->id,
+			'from_id'    => (int) $relation->from_id,
+			'to_id'      => (int) $relation->to_id,
+			'type'       => $relation->type,
+			'from_type'  => $relation->from_type ?? 'post',
+			'to_type'    => $relation->to_type ?? 'post',
+			'from_title' => $from_title ?: __( '(unknown)', 'native-content-relationships' ),
+			'to_title'   => $to_title ?: __( '(unknown)', 'native-content-relationships' ),
+		) );
 	}
 
 	/**
@@ -543,8 +787,8 @@ class NATICORE_Admin {
 		// Delete transient so it only shows once
 		delete_transient( 'naticore_activation_notice' );
 
-		$settings_url    = admin_url( 'options-general.php?page=naticore-settings' );
-		$get_started_url = admin_url( 'options-general.php?page=naticore-settings&tab=get_started' );
+		$settings_url    = admin_url( 'admin.php?page=naticore-settings' );
+		$wizard_url      = admin_url( 'admin.php?page=naticore-wizard' );
 		$docs_url        = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
 		?>
 		<div class="notice notice-info is-dismissible">
@@ -552,9 +796,9 @@ class NATICORE_Admin {
 				<strong><?php esc_html_e( 'Native Content Relationships is active!', 'native-content-relationships' ); ?></strong>
 				<?php
 				printf(
-					/* translators: 1: Get started URL, 2: Settings URL, 3: Documentation URL */
-					wp_kses_post( __( ' <a href="%1$s">Get started</a> with the quick setup checklist, <a href="%2$s">visit settings</a>, or <a href="%3$s" target="_blank">read the documentation</a>.', 'native-content-relationships' ) ),
-					esc_url( $get_started_url ),
+					/* translators: 1: Wizard URL, 2: Settings URL, 3: Documentation URL */
+					wp_kses_post( __( ' <a href="%1$s">Run the Setup Wizard</a> to get started quickly, <a href="%2$s">visit settings</a>, or <a href="%3$s" target="_blank">read the documentation</a>.', 'native-content-relationships' ) ),
+					esc_url( $wizard_url ),
 					esc_url( $settings_url ),
 					esc_url( $docs_url )
 				);

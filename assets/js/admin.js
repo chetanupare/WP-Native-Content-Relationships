@@ -62,6 +62,9 @@
 					}
 				}
 			);
+
+			// Relationship metadata - save on blur
+			$( document ).on( 'blur', '.naticore-meta-role, .naticore-meta-note', this.handleSaveMeta );
 		},
 
 		handleSearch: function (e) {
@@ -131,22 +134,33 @@
 						nonce: naticoreData.nonce,
 						current_post_id: currentPostId
 					},
-					success: function ( response ) {
-						if ( response.success && response.data.length > 0 ) {
-							var html = '';
-							$.each(
-								response.data,
-								function ( i, item ) {
-									html += '<div class="naticore-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
-									html += '<strong>' + item.title + '</strong> <small>(' + item.type + ')</small>';
-									html += '</div>';
-								}
-							);
-							$results.html( html );
-						} else {
-							$results.html( '<div class="naticore-no-results">' + ( naticoreData.strings.noSuggestions || 'No suggestions.' ) + '</div>' );
+				success: function ( response ) {
+					if ( response.success && response.data.length > 0 ) {
+						// Check if any suggestions came from AI
+						var hasAI = response.data.some(function(item) { return item.source === 'ai'; });
+						var html = '';
+						if (hasAI) {
+							html += '<div class="naticore-ai-badge" style="padding: 4px 8px; background: #e7f3ff; border: 1px solid #2271b1; border-radius: 3px; font-size: 11px; margin-bottom: 8px; color: #2271b1;">AI Powered Suggestions</div>';
 						}
-					},
+						$.each(
+							response.data,
+							function ( i, item ) {
+								html += '<div class="naticore-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
+								if (item.thumbnail) {
+									html += '<img src="' + item.thumbnail + '" alt="" />';
+								}
+								html += '<div><strong>' + item.title + '</strong> <small>(' + item.type + ')</small>';
+								if (item.source === 'ai') {
+									html += ' <span style="color: #2271b1; font-size: 10px;">AI</span>';
+								}
+								html += '</div></div>';
+							}
+						);
+						$results.html( html );
+					} else {
+						$results.html( '<div class="naticore-no-results">' + ( naticoreData.strings.noSuggestions || 'No suggestions.' ) + '</div>' );
+					}
+				},
 					error: function () {
 						$results.html( '<div class="naticore-error">Error loading suggestions.</div>' );
 					}
@@ -175,7 +189,10 @@
 								response.data,
 								function (i, item) {
 									html += '<div class="naticore-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
-									html += '<strong>' + item.title + '</strong> <small>(' + item.type + ')</small>';
+									if (item.thumbnail) {
+										html += '<img src="' + item.thumbnail + '" alt="" />';
+									}
+									html += '<div><strong>' + item.title + '</strong> <small>(' + item.type + ')</small></div>';
 									html += '</div>';
 								}
 							);
@@ -212,11 +229,14 @@
 								response.data,
 								function (i, item) {
 									html += '<div class="naticore-search-result" data-id="' + item.id + '" data-type="' + item.type + '">';
-									html += '<strong>' + item.title + '</strong>';
+									if (item.thumbnail) {
+										html += '<img src="' + item.thumbnail + '" alt="" />';
+									}
+									html += '<div><strong>' + item.title + '</strong>';
 									if (item.sku) {
 										html += ' <small>(SKU: ' + item.sku + ')</small>';
 									}
-									html += '</div>';
+									html += '</div></div>';
 								}
 							);
 							$results.html( html );
@@ -311,6 +331,33 @@
 					},
 					error: function () {
 						alert( 'Error removing relationship.' );
+					}
+				}
+			);
+		},
+
+		handleSaveMeta: function (e) {
+			var $input      = $( this );
+			var relationId  = $input.data( 'relation-id' );
+			var metaKey     = $input.data( 'meta-key' );
+			var metaValue   = $input.val();
+
+			if ( ! relationId ) {
+				return;
+			}
+
+			$.post(
+				naticoreData.ajaxUrl,
+				{
+					action: 'naticore_save_relation_meta',
+					nonce: naticoreData.nonce,
+					relation_id: relationId,
+					meta_key: metaKey,
+					meta_value: metaValue
+				},
+				function (response) {
+					if ( ! response.success ) {
+						console.error( 'Failed to save metadata:', response.data );
 					}
 				}
 			);

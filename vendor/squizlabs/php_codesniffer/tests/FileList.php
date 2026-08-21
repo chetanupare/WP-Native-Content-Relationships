@@ -13,80 +13,86 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
 
-class FileList {
+class FileList
+{
+
+    /**
+     * The path to the project root directory.
+     *
+     * @var string
+     */
+    protected $rootPath;
+
+    /**
+     * Recursive directory iterator.
+     *
+     * @var \DirectoryIterator
+     */
+    public $fileIterator;
+
+    /**
+     * Base regex to use if no filter regex is provided.
+     *
+     * Matches based on:
+     * - File path starts with the project root (replacement done in constructor).
+     * - Don't match .git/ files.
+     * - Don't match dot files, i.e. "." or "..".
+     * - Don't match backup files.
+     * - Match everything else in a case-insensitive manner.
+     *
+     * @var string
+     */
+    private $baseRegex = '`^%s(?!\.git/)(?!(.*/)?\.+$)(?!.*\.(bak|orig)).*$`Dix';
 
 
-	/**
-	 * The path to the project root directory.
-	 *
-	 * @var string
-	 */
-	protected $rootPath;
+    /**
+     * Constructor.
+     *
+     * @param string $directory The directory to examine.
+     * @param string $rootPath  Path to the project root.
+     * @param string $filter    PCRE regular expression to filter the file list with.
+     */
+    public function __construct($directory, $rootPath='', $filter='')
+    {
+        $this->rootPath = $rootPath;
 
-	/**
-	 * Recursive directory iterator.
-	 *
-	 * @var \DirectoryIterator
-	 */
-	public $fileIterator;
+        $directory = new RecursiveDirectoryIterator(
+            $directory,
+            RecursiveDirectoryIterator::UNIX_PATHS
+        );
+        $flattened = new RecursiveIteratorIterator(
+            $directory,
+            RecursiveIteratorIterator::LEAVES_ONLY,
+            RecursiveIteratorIterator::CATCH_GET_CHILD
+        );
 
-	/**
-	 * Base regex to use if no filter regex is provided.
-	 *
-	 * Matches based on:
-	 * - File path starts with the project root (replacement done in constructor).
-	 * - Don't match .git/ files.
-	 * - Don't match dot files, i.e. "." or "..".
-	 * - Don't match backup files.
-	 * - Match everything else in a case-insensitive manner.
-	 *
-	 * @var string
-	 */
-	private $baseRegex = '`^%s(?!\.git/)(?!(.*/)?\.+$)(?!.*\.(bak|orig)).*$`Dix';
+        if ($filter === '') {
+            $filter = sprintf($this->baseRegex, preg_quote($this->rootPath));
+        }
 
+        $this->fileIterator = new RegexIterator($flattened, $filter);
 
-	/**
-	 * Constructor.
-	 *
-	 * @param string $directory The directory to examine.
-	 * @param string $rootPath  Path to the project root.
-	 * @param string $filter    PCRE regular expression to filter the file list with.
-	 */
-	public function __construct( $directory, $rootPath = '', $filter = '' ) {
-		$this->rootPath = $rootPath;
+        return $this;
 
-		$directory = new RecursiveDirectoryIterator(
-			$directory,
-			RecursiveDirectoryIterator::UNIX_PATHS
-		);
-		$flattened = new RecursiveIteratorIterator(
-			$directory,
-			RecursiveIteratorIterator::LEAVES_ONLY,
-			RecursiveIteratorIterator::CATCH_GET_CHILD
-		);
-
-		if ( $filter === '' ) {
-			$filter = sprintf( $this->baseRegex, preg_quote( $this->rootPath ) );
-		}
-
-		$this->fileIterator = new RegexIterator( $flattened, $filter );
-
-		return $this;
-	}//end __construct()
+    }//end __construct()
 
 
-	/**
-	 * Retrieve the filtered file list as an array.
-	 *
-	 * @return array
-	 */
-	public function getList() {
-		$fileList = array();
+    /**
+     * Retrieve the filtered file list as an array.
+     *
+     * @return array
+     */
+    public function getList()
+    {
+        $fileList = [];
 
-		foreach ( $this->fileIterator as $file ) {
-			$fileList[] = str_replace( $this->rootPath, '', $file );
-		}
+        foreach ($this->fileIterator as $file) {
+            $fileList[] = str_replace($this->rootPath, '', $file);
+        }
 
-		return $fileList;
-	}//end getList()
+        return $fileList;
+
+    }//end getList()
+
+
 }//end class

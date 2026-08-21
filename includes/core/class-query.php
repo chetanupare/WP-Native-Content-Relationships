@@ -22,11 +22,12 @@
  */
 
 // Exit if accessed directly
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
-class NATICORE_Query {
+class NATICORE_Query
+{
 
 	/**
 	 * Instance
@@ -39,20 +40,49 @@ class NATICORE_Query {
 	private $debug_data = array();
 
 	/**
+	 * Get instance
+	 */
+	public static function get_instance()
+	{
+		if (null === self::$instance) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
 	 * Constructor
 	 */
-	private function __construct() {
-		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
-		add_filter( 'posts_join', array( $this, 'posts_join' ), 10, 2 );
-		add_filter( 'posts_where', array( $this, 'posts_where' ), 10, 2 );
-		add_filter( 'posts_distinct', array( $this, 'posts_distinct' ), 10, 2 );
+	private function __construct()
+	{
+		add_filter('query_vars', array($this, 'register_query_vars'));
+		add_filter('posts_join', array($this, 'posts_join'), 10, 2);
+		add_filter('posts_where', array($this, 'posts_where'), 10, 2);
+		add_filter('posts_distinct', array($this, 'posts_distinct'), 10, 2);
 
 		// Debug mode
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			add_filter( 'posts_request', array( $this, 'log_query_debug' ), 10, 2 );
-			add_action( 'wp_footer', array( $this, 'output_debug_info' ) );
-			add_action( 'admin_footer', array( $this, 'output_debug_info' ) );
+		if (defined('WP_DEBUG') && WP_DEBUG) {
+			add_filter('posts_request', array($this, 'log_query_debug'), 10, 2);
+			add_action('wp_footer', array($this, 'output_debug_info'));
+			add_action('admin_footer', array($this, 'output_debug_info'));
 		}
+	}
+
+	/**
+	 * Check if the query vars contain a complex content relation query
+	 */
+	public function is_complex_query($query_vars)
+	{
+		if (!isset($query_vars['content_relation']) || !is_array($query_vars['content_relation'])) {
+			return false;
+		}
+		// Is complex if there is a 'relation' key or multiple numeric index arrays
+		foreach ($query_vars['content_relation'] as $key => $val) {
+			if (is_numeric($key) && is_array($val)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -63,7 +93,8 @@ class NATICORE_Query {
 	 * @param array $vars Existing query vars.
 	 * @return array
 	 */
-	public function register_query_vars( $vars ) {
+	public function register_query_vars($vars)
+	{
 		$vars[] = 'content_relation';
 		$vars[] = 'wpcr';
 		$vars[] = 'related_to';
@@ -74,21 +105,23 @@ class NATICORE_Query {
 	/**
 	 * Add JOIN clause for relationship queries
 	 */
-	public function posts_join( $join, $query ) {
+	public function posts_join($join, $query)
+	{
 		global $wpdb;
 
 		// Allow another implementation (e.g. future core API) to handle relationship queries.
-		if ( apply_filters( 'ncr_skip_relationship_query', false, $query ) ) {
+		if (apply_filters('ncr_skip_relationship_query', false, $query)) {
 			return $join;
 		}
 
 		// Support all query formats
-		$has_relation = isset( $query->query_vars['related_to'] )
-			|| isset( $query->query_vars['content_relation'] )
-			|| isset( $query->query_vars['wpcr'] )
-			|| isset( $query->query_vars['relation_type'] );
+		$has_legacy_relation = isset($query->query_vars['related_to'])
+			|| (isset($query->query_vars['content_relation']) && !$this->is_complex_query($query->query_vars))
+			|| (isset($query->query_vars['content_relation']) && isset($query->query_vars['content_relation']['post_id'])) // simple assoc array
+			|| isset($query->query_vars['wpcr'])
+			|| isset($query->query_vars['relation_type']);
 
-		if ( ! $has_relation ) {
+		if (!$has_legacy_relation) {
 			return $join;
 		}
 
@@ -100,98 +133,128 @@ class NATICORE_Query {
 	/**
 	 * Add WHERE clause for relationship queries
 	 */
-	public function posts_where( $where, $query ) {
+	public function posts_where($where, $query)
+	{
 		global $wpdb;
 
 		// Allow another implementation (e.g. future core API) to handle relationship queries.
-		if ( apply_filters( 'ncr_skip_relationship_query', false, $query ) ) {
+		if (apply_filters('ncr_skip_relationship_query', false, $query)) {
 			return $where;
 		}
 
 		// Support new cleaner syntax: 'wpcr' => array(...)
-		if ( isset( $query->query_vars['wpcr'] ) && is_array( $query->query_vars['wpcr'] ) ) {
-			$wpcr    = $query->query_vars['wpcr'];
-			$post_id = isset( $wpcr['from'] ) ? $wpcr['from'] : ( isset( $wpcr['post_id'] ) ? $wpcr['post_id'] : null );
+		if (isset($query->query_vars['wpcr']) && is_array($query->query_vars['wpcr'])) {
+			$wpcr = $query->query_vars['wpcr'];
+			$post_id = isset($wpcr['from']) ? $wpcr['from'] : (isset($wpcr['post_id']) ? $wpcr['post_id'] : null);
 
-			if ( $post_id ) {
+			if ($post_id) {
 				// Support single ID or array of IDs
-				if ( is_array( $post_id ) ) {
-					$ids          = array_map( 'absint', $post_id );
-					$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+				if (is_array($post_id)) {
+					$ids = array_map('absint', $post_id);
+					$placeholders = implode(',', array_fill(0, count($ids), '%d'));
 					// Build WHERE clause part with placeholders
 					$where_part = " AND naticore_rel.from_id IN ($placeholders)";
-					$where     .= call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $where_part ), $ids ) );
+					$where .= call_user_func_array(array($wpdb, 'prepare'), array_merge(array($where_part), $ids));
 				} else {
-					$post_id = absint( $post_id );
-					$where  .= $wpdb->prepare( ' AND naticore_rel.from_id = %d', $post_id );
+					$post_id = absint($post_id);
+					$where .= $wpdb->prepare(' AND naticore_rel.from_id = %d', $post_id);
 				}
 
 				// Type filter
-				if ( isset( $wpcr['type'] ) ) {
-					$type   = sanitize_text_field( $wpcr['type'] );
-					$where .= $wpdb->prepare( ' AND naticore_rel.type = %s', $type );
+				if (isset($wpcr['type'])) {
+					if (is_array($wpcr['type'])) {
+						$types = array_map('sanitize_text_field', $wpcr['type']);
+						$placeholders = implode(',', array_fill(0, count($types), '%s'));
+						$where_part = " AND naticore_rel.type IN ($placeholders)";
+						$where .= call_user_func_array(array($wpdb, 'prepare'), array_merge(array($where_part), $types));
+					} else {
+						$type = sanitize_text_field($wpcr['type']);
+						$where .= $wpdb->prepare(' AND naticore_rel.type = %s', $type);
+					}
 				}
 
 				// Direction filter
-				if ( isset( $wpcr['direction'] ) && 'incoming' === $wpcr['direction'] ) {
+				if (isset($wpcr['direction']) && 'incoming' === $wpcr['direction']) {
 					// For incoming, swap the join
 					// $wpdb->posts is safe - it's a WordPress core table name
-					$where = str_replace( "`{$wpdb->posts}`.ID = naticore_rel.to_id", "`{$wpdb->posts}`.ID = naticore_rel.from_id", $where );
-					$where = str_replace( 'naticore_rel.from_id', 'naticore_rel.to_id', $where );
+					$where = str_replace("`{$wpdb->posts}`.ID = naticore_rel.to_id", "`{$wpdb->posts}`.ID = naticore_rel.from_id", $where);
+					$where = str_replace('naticore_rel.from_id', 'naticore_rel.to_id', $where);
 				}
 			}
 		}
-		// New format: content_relation array
-		elseif ( isset( $query->query_vars['content_relation'] ) && is_array( $query->query_vars['content_relation'] ) ) {
+		// Complex format: content_relation array with AND/OR
+		elseif (isset($query->query_vars['content_relation']) && is_array($query->query_vars['content_relation']) && $this->is_complex_query($query->query_vars)) {
+			$sql = $this->get_sql_for_clause($query->query_vars['content_relation']);
+			if ($sql) {
+				$where .= " AND ($sql) ";
+			}
+		}
+		// New format: content_relation simple array
+		elseif (isset($query->query_vars['content_relation']) && is_array($query->query_vars['content_relation'])) {
 			$relation = $query->query_vars['content_relation'];
-			$post_id  = isset( $relation['post_id'] ) ? $relation['post_id'] : ( isset( $relation['from_id'] ) ? $relation['from_id'] : null );
+			$post_id = isset($relation['post_id']) ? $relation['post_id'] : (isset($relation['from_id']) ? $relation['from_id'] : null);
 
-			if ( $post_id ) {
+			if ($post_id) {
 				// Support single ID or array of IDs
-				if ( is_array( $post_id ) ) {
-					$ids          = array_map( 'absint', $post_id );
-					$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+				if (is_array($post_id)) {
+					$ids = array_map('absint', $post_id);
+					$placeholders = implode(',', array_fill(0, count($ids), '%d'));
 					// Build WHERE clause part with placeholders
 					$where_part = " AND naticore_rel.from_id IN ($placeholders)";
-					$where     .= call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $where_part ), $ids ) );
+					$where .= call_user_func_array(array($wpdb, 'prepare'), array_merge(array($where_part), $ids));
 				} else {
-					$post_id = absint( $post_id );
-					$where  .= $wpdb->prepare( ' AND naticore_rel.from_id = %d', $post_id );
+					$post_id = absint($post_id);
+					$where .= $wpdb->prepare(' AND naticore_rel.from_id = %d', $post_id);
 				}
 
 				// Type filter
-				if ( isset( $relation['type'] ) ) {
-					$type   = sanitize_text_field( $relation['type'] );
-					$where .= $wpdb->prepare( ' AND naticore_rel.type = %s', $type );
+				if (isset($relation['type'])) {
+					if (is_array($relation['type'])) {
+						$types = array_map('sanitize_text_field', $relation['type']);
+						$placeholders = implode(',', array_fill(0, count($types), '%s'));
+						$where_part = " AND naticore_rel.type IN ($placeholders)";
+						$where .= call_user_func_array(array($wpdb, 'prepare'), array_merge(array($where_part), $types));
+					} else {
+						$type = sanitize_text_field($relation['type']);
+						$where .= $wpdb->prepare(' AND naticore_rel.type = %s', $type);
+					}
+				}
+
+				// Type exclusion filter
+				if (isset($relation['type__not_in']) && is_array($relation['type__not_in']) && !empty($relation['type__not_in'])) {
+					$not_types = array_map('sanitize_text_field', $relation['type__not_in']);
+					$placeholders = implode(',', array_fill(0, count($not_types), '%s'));
+					$where_part = " AND naticore_rel.type NOT IN ($placeholders)";
+					$where .= call_user_func_array(array($wpdb, 'prepare'), array_merge(array($where_part), $not_types));
 				}
 
 				// Direction filter
-				if ( isset( $relation['direction'] ) && 'incoming' === $relation['direction'] ) {
+				if (isset($relation['direction']) && 'incoming' === $relation['direction']) {
 					// For incoming, swap the join
-					$where = str_replace( "`{$wpdb->posts}`.ID = naticore_rel.to_id", "`{$wpdb->posts}`.ID = naticore_rel.from_id", $where );
-					$where = str_replace( 'naticore_rel.from_id', 'naticore_rel.to_id', $where );
+					$where = str_replace("`{$wpdb->posts}`.ID = naticore_rel.to_id", "`{$wpdb->posts}`.ID = naticore_rel.from_id", $where);
+					$where = str_replace('naticore_rel.from_id', 'naticore_rel.to_id', $where);
 				}
 			}
 		}
 		// Old format: related_to (backward compatibility)
-		elseif ( isset( $query->query_vars['related_to'] ) ) {
+		elseif (isset($query->query_vars['related_to'])) {
 			$related_to = $query->query_vars['related_to'];
 
 			// Support single ID or array of IDs
-			if ( is_array( $related_to ) ) {
-				$ids          = array_map( 'absint', $related_to );
-				$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+			if (is_array($related_to)) {
+				$ids = array_map('absint', $related_to);
+				$placeholders = implode(',', array_fill(0, count($ids), '%d'));
 				// Build WHERE clause part with placeholders
 				$where_part = " AND naticore_rel.from_id IN ($placeholders)";
-				$where     .= call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $where_part ), $ids ) );
+				$where .= call_user_func_array(array($wpdb, 'prepare'), array_merge(array($where_part), $ids));
 			} else {
-				$related_to = absint( $related_to );
-				$where     .= $wpdb->prepare( ' AND naticore_rel.from_id = %d', $related_to );
+				$related_to = absint($related_to);
+				$where .= $wpdb->prepare(' AND naticore_rel.from_id = %d', $related_to);
 			}
 
-			if ( isset( $query->query_vars['relation_type'] ) ) {
-				$relation_type = sanitize_text_field( $query->query_vars['relation_type'] );
-				$where        .= $wpdb->prepare( ' AND naticore_rel.type = %s', $relation_type );
+			if (isset($query->query_vars['relation_type'])) {
+				$relation_type = sanitize_text_field($query->query_vars['relation_type']);
+				$where .= $wpdb->prepare(' AND naticore_rel.type = %s', $relation_type);
 			}
 		}
 
@@ -199,15 +262,119 @@ class NATICORE_Query {
 	}
 
 	/**
+	 * Parse complex relation clauses into EXISTS SQL subqueries
+	 */
+	private function get_sql_for_clause($clause)
+	{
+		global $wpdb;
+		$relation = isset($clause['relation']) && strtoupper($clause['relation']) === 'OR' ? 'OR' : 'AND';
+
+		$sql_parts = array();
+		foreach ($clause as $key => $subclause) {
+			if ('relation' === $key) {
+				continue;
+			}
+			if (!is_array($subclause)) {
+				continue;
+			}
+
+			// Is this a nested clause?
+			$is_nested = false;
+			foreach ($subclause as $sub_key => $sub_value) {
+				if (is_numeric($sub_key) && is_array($sub_value)) {
+					$is_nested = true;
+					break;
+				}
+			}
+
+			if ($is_nested) {
+				$sub_sql = $this->get_sql_for_clause($subclause);
+				if ($sub_sql) {
+					$sql_parts[] = "($sub_sql)";
+				}
+			} else {
+				// Base clause
+				$post_id = isset($subclause['post_id']) ? $subclause['post_id'] : (isset($subclause['from_id']) ? $subclause['from_id'] : null);
+				if (!$post_id) {
+					continue;
+				}
+
+				$direction = isset($subclause['direction']) && 'incoming' === $subclause['direction'] ? 'incoming' : 'outgoing';
+				$from_col = 'outgoing' === $direction ? 'from_id' : 'to_id';
+				$to_col = 'outgoing' === $direction ? 'to_id' : 'from_id';
+
+				$sub_where = array();
+				$params = array();
+
+				// Handle array of IDs
+				if (is_array($post_id)) {
+					$ids = array_map('absint', $post_id);
+					$placeholders = implode(',', array_fill(0, count($ids), '%d'));
+					$sub_where[] = "$from_col IN ($placeholders)";
+					$params = array_merge($params, $ids);
+				} else {
+					$sub_where[] = "$from_col = %d";
+					$params[] = absint($post_id);
+				}
+
+				if (isset($subclause['type'])) {
+					if (is_array($subclause['type'])) {
+						$types = array_map('sanitize_text_field', $subclause['type']);
+						$placeholders = implode(',', array_fill(0, count($types), '%s'));
+						$sub_where[] = "type IN ($placeholders)";
+						$params = array_merge($params, $types);
+					} else {
+						$sub_where[] = "type = %s";
+						$params[] = sanitize_text_field($subclause['type']);
+					}
+				}
+
+				if (isset($subclause['type__not_in']) && is_array($subclause['type__not_in']) && !empty($subclause['type__not_in'])) {
+					$not_types = array_map('sanitize_text_field', $subclause['type__not_in']);
+					$placeholders = implode(',', array_fill(0, count($not_types), '%s'));
+					$sub_where[] = "type NOT IN ($placeholders)";
+					$params = array_merge($params, $not_types);
+				}
+
+				$where_sql = implode(' AND ', $sub_where);
+
+				// Build EXISTS subquery
+				// Matches wp_posts.ID against the relation table
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Safe core tables and validated strings
+				$subquery = "SELECT 1 FROM `{$wpdb->prefix}content_relations` WHERE $where_sql AND $to_col = `{$wpdb->posts}`.ID";
+
+				// Handle limits inside EXISTS (needs a hack or just don't limit in exists)
+				$subquery .= " LIMIT 1";
+
+				if (!empty($params)) {
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared dynamically
+					$subquery = call_user_func_array(array($wpdb, 'prepare'), array_merge(array($subquery), $params));
+				}
+
+				$sql_parts[] = "EXISTS ($subquery)";
+			}
+		}
+
+		if (empty($sql_parts)) {
+			return '';
+		}
+
+		return implode(" $relation ", $sql_parts);
+	}
+
+	/**
 	 * Add DISTINCT to prevent duplicates
 	 */
-	public function posts_distinct( $distinct, $query ) {
-		if ( apply_filters( 'ncr_skip_relationship_query', false, $query ) ) {
+	public function posts_distinct($distinct, $query)
+	{
+		if (apply_filters('ncr_skip_relationship_query', false, $query)) {
 			return $distinct;
 		}
-		if ( isset( $query->query_vars['related_to'] )
-			|| isset( $query->query_vars['content_relation'] )
-			|| isset( $query->query_vars['wpcr'] ) ) {
+		if (
+			isset($query->query_vars['related_to'])
+			|| isset($query->query_vars['content_relation'])
+			|| isset($query->query_vars['wpcr'])
+		) {
 			return 'DISTINCT';
 		}
 		return $distinct;
@@ -216,56 +383,57 @@ class NATICORE_Query {
 	/**
 	 * Log query debug information
 	 */
-	public function log_query_debug( $request, $query ) {
+	public function log_query_debug($request, $query)
+	{
 		$settings = NATICORE_Settings::get_instance();
-		if ( ! $settings->get_setting( 'query_debug', 0 ) ) {
+		if (!$settings->get_setting('query_debug', 0)) {
 			return $request;
 		}
 
 		// Check if this is a relationship query
-		$has_relation = isset( $query->query_vars['related_to'] )
-			|| isset( $query->query_vars['content_relation'] )
-			|| isset( $query->query_vars['wpcr'] )
-			|| isset( $query->query_vars['relation_type'] );
+		$has_relation = isset($query->query_vars['related_to'])
+			|| isset($query->query_vars['content_relation'])
+			|| isset($query->query_vars['wpcr'])
+			|| isset($query->query_vars['relation_type']);
 
-		if ( ! $has_relation ) {
+		if (!$has_relation) {
 			return $request;
 		}
 
 		// Extract relationship info
 		$relation_type = null;
-		if ( isset( $query->query_vars['wpcr'] ) && is_array( $query->query_vars['wpcr'] ) ) {
-			$relation_type = isset( $query->query_vars['wpcr']['type'] ) ? $query->query_vars['wpcr']['type'] : null;
-		} elseif ( isset( $query->query_vars['content_relation'] ) && is_array( $query->query_vars['content_relation'] ) ) {
-			$relation_type = isset( $query->query_vars['content_relation']['type'] ) ? $query->query_vars['content_relation']['type'] : null;
-		} elseif ( isset( $query->query_vars['relation_type'] ) ) {
+		if (isset($query->query_vars['wpcr']) && is_array($query->query_vars['wpcr'])) {
+			$relation_type = isset($query->query_vars['wpcr']['type']) ? $query->query_vars['wpcr']['type'] : null;
+		} elseif (isset($query->query_vars['content_relation']) && is_array($query->query_vars['content_relation'])) {
+			$relation_type = isset($query->query_vars['content_relation']['type']) ? $query->query_vars['content_relation']['type'] : null;
+		} elseif (isset($query->query_vars['relation_type'])) {
 			$relation_type = $query->query_vars['relation_type'];
 		}
 
 		// Determine index used
 		$index_used = 'from_id';
-		if ( isset( $query->query_vars['wpcr']['direction'] ) && 'incoming' === $query->query_vars['wpcr']['direction'] ) {
+		if (isset($query->query_vars['wpcr']['direction']) && 'incoming' === $query->query_vars['wpcr']['direction']) {
 			$index_used = 'to_id';
-		} elseif ( isset( $query->query_vars['content_relation']['direction'] ) && 'incoming' === $query->query_vars['content_relation']['direction'] ) {
+		} elseif (isset($query->query_vars['content_relation']['direction']) && 'incoming' === $query->query_vars['content_relation']['direction']) {
 			$index_used = 'to_id';
 		}
-		if ( $relation_type ) {
+		if ($relation_type) {
 			$index_used .= '_type';
 		}
 
 		// Store debug info
 		$debug_info = array(
-			'type'      => $relation_type ?: 'all',
-			'sql'       => $request,
-			'index'     => $index_used,
-			'timestamp' => microtime( true ),
+			'type' => $relation_type ?: 'all',
+			'sql' => $request,
+			'index' => $index_used,
+			'timestamp' => microtime(true),
 		);
 
 		$this->debug_data[] = $debug_info;
 
 		// Fire action for query execution
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility
-		do_action( 'wpcr_query_executed', $debug_info, $query );
+		do_action('wpcr_query_executed', $debug_info, $query);
 
 		return $request;
 	}
@@ -273,40 +441,41 @@ class NATICORE_Query {
 	/**
 	 * Output debug information
 	 */
-	public function output_debug_info() {
+	public function output_debug_info()
+	{
 		$settings = NATICORE_Settings::get_instance();
-		if ( ! $settings->get_setting( 'query_debug', 0 ) || empty( $this->debug_data ) ) {
+		if (!$settings->get_setting('query_debug', 0) || empty($this->debug_data)) {
 			return;
 		}
 
 		// Build debug script content
-		$script_lines   = array();
+		$script_lines = array();
 		$script_lines[] = "console.group('NCR Query Debug');";
 
-		$start_time = ! empty( $this->debug_data ) ? $this->debug_data[0]['timestamp'] : 0;
-		foreach ( $this->debug_data as $index => $debug ) {
-			$time           = $index > 0 ? ( $debug['timestamp'] - $start_time ) * 1000 : 0;
-			$script_lines[] = "console.log('Type: " . esc_js( $debug['type'] ) . "');";
-			$script_lines[] = "console.log('Index: " . esc_js( $debug['index'] ) . "');";
-			$script_lines[] = "console.log('Time: " . esc_js( number_format( $time, 2 ) ) . "ms');";
-			$script_lines[] = "console.log('SQL: " . esc_js( substr( $debug['sql'], 0, 200 ) ) . "...');";
+		$start_time = !empty($this->debug_data) ? $this->debug_data[0]['timestamp'] : 0;
+		foreach ($this->debug_data as $index => $debug) {
+			$time = $index > 0 ? ($debug['timestamp'] - $start_time) * 1000 : 0;
+			$script_lines[] = "console.log('Type: " . esc_js($debug['type']) . "');";
+			$script_lines[] = "console.log('Index: " . esc_js($debug['index']) . "');";
+			$script_lines[] = "console.log('Time: " . esc_js(number_format($time, 2)) . "ms');";
+			$script_lines[] = "console.log('SQL: " . esc_js(substr($debug['sql'], 0, 200)) . "...');";
 		}
 
 		$script_lines[] = 'console.groupEnd();';
 
-		$script = implode( "\n", $script_lines );
-		wp_add_inline_script( 'naticore-admin', $script );
+		$script = implode("\n", $script_lines);
+		wp_add_inline_script('naticore-admin', $script);
 
 		// Also log to error log
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			foreach ( $this->debug_data as $debug ) {
+		if (defined('WP_DEBUG') && WP_DEBUG) {
+			foreach ($this->debug_data as $debug) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging only when enabled
 				error_log(
 					sprintf(
 						'NCR Query Debug - Type: %s, Index: %s, SQL: %s',
 						$debug['type'],
 						$debug['index'],
-						substr( $debug['sql'], 0, 200 )
+						substr($debug['sql'], 0, 200)
 					)
 				);
 			}

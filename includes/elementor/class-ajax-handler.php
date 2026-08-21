@@ -53,7 +53,7 @@ class NATICORE_Elementor_Ajax_Handler {
 	public function get_relationship_types() {
 		// Verify nonce
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'naticore_elementor_nonce' ) ) {
+		if ( ! $nonce || ! hash_equals( wp_create_nonce( 'naticore_elementor_nonce' ), $nonce ) ) {
 			wp_send_json_error(
 				array(
 					'success' => false,

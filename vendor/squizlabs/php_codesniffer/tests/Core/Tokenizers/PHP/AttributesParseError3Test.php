@@ -10,63 +10,67 @@ namespace PHP_CodeSniffer\Tests\Core\Tokenizers\PHP;
 
 use PHP_CodeSniffer\Tests\Core\Tokenizers\AbstractTokenizerTestCase;
 
-final class AttributesParseError3Test extends AbstractTokenizerTestCase {
+final class AttributesParseError3Test extends AbstractTokenizerTestCase
+{
 
 
+    /**
+     * Test that invalid attribute (or comment starting with #[ and without ]) are parsed correctly
+     * and that tokens "within" the attribute are not removed.
+     *
+     * @covers PHP_CodeSniffer\Tokenizers\PHP::tokenize
+     * @covers PHP_CodeSniffer\Tokenizers\PHP::findCloser
+     * @covers PHP_CodeSniffer\Tokenizers\PHP::parsePhpAttribute
+     *
+     * @return void
+     */
+    public function testInvalidAttribute()
+    {
+        $tokens = $this->phpcsFile->getTokens();
 
-	/**
-	 * Test that invalid attribute (or comment starting with #[ and without ]) are parsed correctly
-	 * and that tokens "within" the attribute are not removed.
-	 *
-	 * @covers PHP_CodeSniffer\Tokenizers\PHP::tokenize
-	 * @covers PHP_CodeSniffer\Tokenizers\PHP::findCloser
-	 * @covers PHP_CodeSniffer\Tokenizers\PHP::parsePhpAttribute
-	 *
-	 * @return void
-	 */
-	public function testInvalidAttribute() {
-		$tokens = $this->phpcsFile->getTokens();
+        $attribute = $this->getTargetToken('/* testLiveCoding */', T_ATTRIBUTE);
 
-		$attribute = $this->getTargetToken( '/* testLiveCoding */', T_ATTRIBUTE );
+        $this->assertArrayHasKey('attribute_closer', $tokens[$attribute]);
+        $this->assertNull($tokens[$attribute]['attribute_closer']);
 
-		$this->assertArrayHasKey( 'attribute_closer', $tokens[ $attribute ] );
-		$this->assertNull( $tokens[ $attribute ]['attribute_closer'] );
+        $expectedTokenCodes = [
+            'T_ATTRIBUTE',
+            'T_STRING',
+            'T_OPEN_PARENTHESIS',
+            'T_LNUMBER',
+            'T_CLOSE_PARENTHESIS',
+            'T_COMMA',
+            'T_WHITESPACE',
+            'T_STRING',
+            'T_OPEN_PARENTHESIS',
+            'T_WHITESPACE',
+            'T_WHITESPACE',
+            'T_PUBLIC',
+            'T_WHITESPACE',
+            'T_FINAL',
+            'T_WHITESPACE',
+            'T_FUNCTION',
+        ];
 
-		$expectedTokenCodes = array(
-			'T_ATTRIBUTE',
-			'T_STRING',
-			'T_OPEN_PARENTHESIS',
-			'T_LNUMBER',
-			'T_CLOSE_PARENTHESIS',
-			'T_COMMA',
-			'T_WHITESPACE',
-			'T_STRING',
-			'T_OPEN_PARENTHESIS',
-			'T_WHITESPACE',
-			'T_WHITESPACE',
-			'T_PUBLIC',
-			'T_WHITESPACE',
-			'T_FINAL',
-			'T_WHITESPACE',
-			'T_FUNCTION',
-		);
+        $length = count($expectedTokenCodes);
 
-		$length = count( $expectedTokenCodes );
+        $map = array_map(
+            function ($token) {
+                if ($token['code'] === T_ATTRIBUTE) {
+                    $this->assertArrayHasKey('attribute_closer', $token);
+                    $this->assertNull($token['attribute_closer']);
+                } else {
+                    $this->assertArrayNotHasKey('attribute_closer', $token);
+                }
 
-		$map = array_map(
-			function ( $token ) {
-				if ( $token['code'] === T_ATTRIBUTE ) {
-					$this->assertArrayHasKey( 'attribute_closer', $token );
-					$this->assertNull( $token['attribute_closer'] );
-				} else {
-					$this->assertArrayNotHasKey( 'attribute_closer', $token );
-				}
+                return $token['type'];
+            },
+            array_slice($tokens, $attribute, $length)
+        );
 
-				return $token['type'];
-			},
-			array_slice( $tokens, $attribute, $length )
-		);
+        $this->assertSame($expectedTokenCodes, $map);
 
-		$this->assertSame( $expectedTokenCodes, $map );
-	}//end testInvalidAttribute()
+    }//end testInvalidAttribute()
+
+
 }//end class

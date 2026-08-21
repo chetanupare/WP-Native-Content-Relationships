@@ -12,44 +12,50 @@ namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Arrays;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
-class DisallowShortArraySyntaxSniff implements Sniff {
+class DisallowShortArraySyntaxSniff implements Sniff
+{
 
 
+    /**
+     * Registers the tokens that this sniff wants to listen for.
+     *
+     * @return array<int|string>
+     */
+    public function register()
+    {
+        return [T_OPEN_SHORT_ARRAY];
 
-	/**
-	 * Registers the tokens that this sniff wants to listen for.
-	 *
-	 * @return array<int|string>
-	 */
-	public function register() {
-		return array( T_OPEN_SHORT_ARRAY );
-	}//end register()
+    }//end register()
 
 
-	/**
-	 * Processes this test, when one of its tokens is encountered.
-	 *
-	 * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-	 * @param int                         $stackPtr  The position of the current token
-	 *                                               in the stack passed in $tokens.
-	 *
-	 * @return void
-	 */
-	public function process( File $phpcsFile, $stackPtr ) {
-		$phpcsFile->recordMetric( $stackPtr, 'Short array syntax used', 'yes' );
+    /**
+     * Processes this test, when one of its tokens is encountered.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
+     *
+     * @return void
+     */
+    public function process(File $phpcsFile, $stackPtr)
+    {
+        $phpcsFile->recordMetric($stackPtr, 'Short array syntax used', 'yes');
 
-		$error = 'Short array syntax is not allowed';
-		$fix   = $phpcsFile->addFixableError( $error, $stackPtr, 'Found' );
+        $error = 'Short array syntax is not allowed';
+        $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'Found');
 
-		if ( $fix === true ) {
-			$tokens = $phpcsFile->getTokens();
-			$opener = $tokens[ $stackPtr ]['bracket_opener'];
-			$closer = $tokens[ $stackPtr ]['bracket_closer'];
+        if ($fix === true) {
+            $tokens = $phpcsFile->getTokens();
+            $opener = $tokens[$stackPtr]['bracket_opener'];
+            $closer = $tokens[$stackPtr]['bracket_closer'];
 
-			$phpcsFile->fixer->beginChangeset();
-			$phpcsFile->fixer->replaceToken( $opener, 'array(' );
-			$phpcsFile->fixer->replaceToken( $closer, ')' );
-			$phpcsFile->fixer->endChangeset();
-		}
-	}//end process()
+            $phpcsFile->fixer->beginChangeset();
+            $phpcsFile->fixer->replaceToken($opener, 'array(');
+            $phpcsFile->fixer->replaceToken($closer, ')');
+            $phpcsFile->fixer->endChangeset();
+        }
+
+    }//end process()
+
+
 }//end class

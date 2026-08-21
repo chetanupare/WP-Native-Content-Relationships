@@ -53,7 +53,8 @@ class NATICORE_Settings {
 			return;
 		}
 
-		add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
+		// Menu registration removed — replaced by NATICORE_Stitch_Admin
+		// add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ), 20 );
 		add_filter( 'plugin_action_links_' . NATICORE_PLUGIN_BASENAME, array( $this, 'add_settings_link' ) );
 
@@ -140,7 +141,7 @@ class NATICORE_Settings {
 	 * @return array Modified plugin action links
 	 */
 	public function add_settings_link( $links ) {
-		$settings_link = '<a href="' . admin_url( 'options-general.php?page=naticore-settings' ) . '">' . __( 'Settings', 'native-content-relationships' ) . '</a>';
+		$settings_link = '<a href="' . admin_url( 'admin.php?page=naticore-settings' ) . '">' . __( 'Settings', 'native-content-relationships' ) . '</a>';
 		array_unshift( $links, $settings_link );
 		return $links;
 	}
@@ -250,6 +251,14 @@ class NATICORE_Settings {
 			'naticore_behavior'
 		);
 
+		add_settings_field(
+			'bidirectional_sync',
+			'',
+			array( $this, 'render_bidirectional_sync' ),
+			$page,
+			'naticore_behavior'
+		);
+
 		// Cleanup Section
 		add_settings_section(
 			'naticore_cleanup',
@@ -286,6 +295,22 @@ class NATICORE_Settings {
 			'auto_relation_enabled',
 			'', // No title, will be rendered manually
 			array( $this, 'render_auto_relation' ),
+			$page,
+			'naticore_limits'
+		);
+
+		add_settings_field(
+			'enable_ai_suggestions',
+			'', // No title, will be rendered manually
+			array( $this, 'render_enable_ai_suggestions' ),
+			$page,
+			'naticore_limits'
+		);
+
+		add_settings_field(
+			'enable_auto_link',
+			'', // No title, will be rendered manually
+			array( $this, 'render_enable_auto_link' ),
 			$page,
 			'naticore_limits'
 		);
@@ -458,8 +483,8 @@ class NATICORE_Settings {
 	 * Render Get started / onboarding tab: checklist and quick links.
 	 */
 	private function render_get_started_tab() {
-		$settings_url    = admin_url( 'options-general.php?page=naticore-settings&tab=general' );
-		$types_url       = admin_url( 'options-general.php?page=naticore-settings&tab=relationship_types' );
+		$settings_url    = admin_url( 'admin.php?page=naticore-settings&tab=general' );
+		$types_url       = admin_url( 'admin.php?page=naticore-settings&tab=relationship_types' );
 		$new_post_url    = admin_url( 'post-new.php' );
 		$docs_url        = 'https://chetanupare.github.io/WP-Native-Content-Relationships/';
 		$enabled_types   = $this->get_setting( 'enabled_post_types', array( 'post', 'page' ) );
@@ -529,7 +554,7 @@ class NATICORE_Settings {
 
 			<?php if ( ! $onboarding_done ) : ?>
 			<p class="naticore-get-started-dismiss">
-				<a href="<?php echo esc_url( add_query_arg( 'naticore_onboarding_done', '1', admin_url( 'options-general.php?page=naticore-settings&tab=get_started' ) ) ); ?>" class="button button-secondary">
+				<a href="<?php echo esc_url( add_query_arg( 'naticore_onboarding_done', '1', admin_url( 'admin.php?page=naticore-settings&tab=get_started' ) ) ); ?>" class="button button-secondary">
 					<?php esc_html_e( "I've completed the setup", 'native-content-relationships' ); ?>
 				</a>
 			</p>
@@ -748,7 +773,7 @@ class NATICORE_Settings {
 		echo '<nav class="nav-tab-wrapper" role="tablist">';
 
 		foreach ( $tabs as $tab_id => $tab_label ) {
-			$url    = add_query_arg( 'tab', $tab_id, admin_url( 'options-general.php?page=naticore-settings' ) );
+			$url    = add_query_arg( 'tab', $tab_id, admin_url( 'admin.php?page=naticore-settings' ) );
 			$active = $tab_id === $current_tab ? 'nav-tab-active' : '';
 
 			printf(
@@ -802,6 +827,12 @@ class NATICORE_Settings {
 
 		// Auto relation
 		$sanitized['auto_relation_enabled'] = isset( $input['auto_relation_enabled'] ) ? 1 : 0;
+
+		// AI suggestions
+		$sanitized['enable_ai_suggestions'] = isset( $input['enable_ai_suggestions'] ) ? 1 : 0;
+
+		// Auto-link on publish
+		$sanitized['enable_auto_link'] = isset( $input['enable_auto_link'] ) ? 1 : 0;
 
 		// Prevent circular
 		$sanitized['prevent_circular'] = isset( $input['prevent_circular'] ) ? 1 : 0;
@@ -936,6 +967,24 @@ class NATICORE_Settings {
 	}
 
 	/**
+	 * Render bidirectional sync field
+	 */
+	public function render_bidirectional_sync() {
+		$settings = $this->get_settings();
+		$enabled  = isset( $settings['bidirectional_sync'] ) ? (int) $settings['bidirectional_sync'] : 1;
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Bidirectional Auto-Sync', 'native-content-relationships' ); ?></h3>
+			<label class="naticore-checkbox-item">
+				<input type="checkbox" name="<?php echo esc_attr( $this->option_name ); ?>[bidirectional_sync]" value="1" <?php checked( $enabled, 1 ); ?>>
+				<span class="naticore-checkbox-label"><?php esc_html_e( 'Automatically sync metadata between bidirectional relationships', 'native-content-relationships' ); ?></span>
+			</label>
+			<p class="description"><?php esc_html_e( 'When enabled, metadata (role, notes, etc.) is automatically synced between bidirectional relationships. If you add a "Speaker" role on one side, the reverse automatically gets the same role.', 'native-content-relationships' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Render cleanup on delete field
 	 */
 	public function render_cleanup_on_delete() {
@@ -1016,6 +1065,96 @@ class NATICORE_Settings {
 	}
 
 	/**
+	 * Render AI suggestions field
+	 */
+	public function render_enable_ai_suggestions() {
+		$settings = $this->get_settings();
+		$enabled  = isset( $settings['enable_ai_suggestions'] ) ? $settings['enable_ai_suggestions'] : 0;
+
+		// Check AI availability
+		$ai_suggestions = NATICORE_AI_Suggestions::get_instance();
+		$status         = $ai_suggestions->get_status();
+		$ai_available   = $status['ai_available'];
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'AI-Powered Suggestions', 'native-content-relationships' ); ?></h3>
+			
+			<?php if ( $ai_available ) : ?>
+				<label>
+					<input 
+						type="checkbox" 
+						name="<?php echo esc_attr( $this->option_name ); ?>[enable_ai_suggestions]" 
+						value="1" 
+						<?php checked( $enabled, 1 ); ?>
+					>
+					<?php esc_html_e( 'Enable AI-powered relationship suggestions', 'native-content-relationships' ); ?>
+				</label>
+				
+				<p class="description"><?php esc_html_e( 'Uses WordPress 7.0 AI Client to analyze content and suggest relevant relationships based on semantic similarity.', 'native-content-relationships' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Requires an AI provider configured in Settings > Connectors.', 'native-content-relationships' ); ?></p>
+			<?php else : ?>
+				<div class="naticore-notice" style="background: #fef7e7; border-left-color: #dba617;">
+					<p>
+						<?php
+						printf(
+							/* translators: 1: WordPress version, 2: AI Client function */
+							esc_html__( 'AI suggestions require WordPress 7.0+ with the AI Client. Current version: %1$s. The %2$s function was not found.', 'native-content-relationships' ),
+							esc_html( get_bloginfo( 'version' ) ),
+							'<code>wp_ai_client_prompt()</code>'
+						);
+						?>
+					</p>
+				</div>
+				<p class="description"><?php esc_html_e( 'When AI is not available, the plugin falls back to category/tag-based suggestions.', 'native-content-relationships' ); ?></p>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render auto-link on publish field
+	 */
+	public function render_enable_auto_link() {
+		$settings = $this->get_settings();
+		$enabled  = isset( $settings['enable_auto_link'] ) ? $settings['enable_auto_link'] : 0;
+
+		// Check AI availability
+		$ai_suggestions = NATICORE_AI_Suggestions::get_instance();
+		$ai_enabled     = $ai_suggestions->is_enabled();
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Auto-Link on Publish', 'native-content-relationships' ); ?></h3>
+			
+			<?php if ( $ai_enabled ) : ?>
+				<label>
+					<input 
+						type="checkbox" 
+						name="<?php echo esc_attr( $this->option_name ); ?>[enable_auto_link]" 
+						value="1" 
+						<?php checked( $enabled, 1 ); ?>
+					>
+					<?php esc_html_e( 'Automatically create relationships when publishing', 'native-content-relationships' ); ?>
+				</label>
+				
+				<p class="description"><?php esc_html_e( 'When enabled, the plugin analyzes your content on publish and automatically creates relationships with the most relevant existing posts.', 'native-content-relationships' ); ?></p>
+				<p class="description"><?php esc_html_e( 'You will see a notice after publishing showing how many relationships were created.', 'native-content-relationships' ); ?></p>
+			<?php else : ?>
+				<label>
+					<input 
+						type="checkbox" 
+						disabled 
+					>
+					<?php esc_html_e( 'Automatically create relationships when publishing', 'native-content-relationships' ); ?>
+				</label>
+				<div class="naticore-notice" style="background: #fef7e7; border-left-color: #dba617;">
+					<p><?php esc_html_e( 'Requires AI suggestions to be enabled above and WordPress 7.0+ with an AI provider configured.', 'native-content-relationships' ); ?></p>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Render prevent circular field
 	 */
 	public function render_prevent_circular() {
@@ -1036,6 +1175,28 @@ class NATICORE_Settings {
 			</label>
 			
 			<p class="description"><?php esc_html_e( 'Stops infinite loops (Product A → B → A). Self-links are always blocked.', 'native-content-relationships' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render developer debug tools section header
+	 */
+	public function render_developer_debug_tools() {
+		?>
+		<div class="naticore-card">
+			<h3><?php esc_html_e( 'Debug Tools', 'native-content-relationships' ); ?></h3>
+			<p class="description"><?php esc_html_e( 'Tools for debugging and troubleshooting relationship issues.', 'native-content-relationships' ); ?></p>
+
+			<?php if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
+				<div style="margin-top: 12px;">
+					<p><strong><?php esc_html_e( 'WP_DEBUG is enabled.', 'native-content-relationships' ); ?></strong></p>
+				</div>
+			<?php else : ?>
+				<div class="notice notice-warning" style="margin-top: 12px;">
+					<p><?php esc_html_e( 'WP_DEBUG is disabled. Enable it in wp-config.php for full debugging.', 'native-content-relationships' ); ?></p>
+				</div>
+			<?php endif; ?>
 		</div>
 		<?php
 	}
