@@ -1,162 +1,75 @@
 # Native Content Relationships
 
-![WP Version](https://img.shields.io/wordpress/plugin/v/native-content-relationships)
-![Active Installs](https://img.shields.io/wordpress/plugin/installs/native-content-relationships)
-![WP Tested](https://img.shields.io/wordpress/plugin/tested/native-content-relationships)
-![PHP](https://img.shields.io/badge/PHP-7.4%2B-blue)
-![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
+**A structured, scalable relationship layer for WordPress.**
 
-> A native, scalable relationship layer for WordPress that supports structured relationships between posts, users, and terms. Escape technical debt and meta-based performance walls.
+Native Content Relationships gives WordPress a dedicated way to connect posts, users, and terms through meaningful, queryable relationships — without relying on post meta or taxonomy workarounds.
+
+Built for developers and teams who need relationships to remain **fast, maintainable, and scalable** as their content grows.
 
 ---
 
-## Why this plugin exists (Escape Meta-Data Technical Debt)
+## Why Native Content Relationships?
 
-WordPress has no first-class way to model real relationships between content items.  
-Most sites rely on post meta or taxonomies, which break down as content and queries grow. **If you've outgrown ACF relationship fields or post meta arrays, Native Content Relationships provides a clean, predictable, and highly performant foundation.**
+WordPress provides powerful content types, taxonomies, and metadata, but it does not provide a general-purpose relationship layer for connecting content objects.
 
----
+Native Content Relationships fills that gap.
 
-## Core capabilities
+Instead of storing relationship data as serialized post meta, the plugin uses a **dedicated indexed relationship table** and exposes that relationship layer through PHP, WP_Query, REST API, WP-CLI, Gutenberg, and Elementor.
 
-| Capability | Description |
-|---------|-------------|
-| Relationship types | Semantic, validated relationship definitions |
-| Direction | One-way or bidirectional |
-| Data storage | Dedicated indexed database table |
-| Querying | WP_Query, REST API, WP-CLI |
-| Scope | Posts, Users, Terms |
-| Compatibility | Multilingual, headless, WooCommerce |
-| Headless readiness | Embed relationships directly in REST API responses |
+The result is a relationship system that remains independent from your theme, page builder, or custom-field framework.
 
 ---
 
-## Architecture & Performance Advantage
+# Core Features
 
-> Built for enterprise scale, not shortcuts.
+### Structured Relationships
 
-- **No post meta or taxonomy abuse**: Uses a dedicated, highly optimized relational table.
-- **Index Optimization**: Built with composite covering indexes (`type_lookup`) and a smart query planner.
-- **Micro-Optimized Validations**: SQL-native validations ensure sub-2ms P95 latency even at 1M+ rows.
-- **Performance Diagnostics**: Ships with a powerful CLI diagnostic utility to check and fix integrity without UI bloat.
-- **Object Cache Integration**: Full compatibility with object cache (group isolation, relationship cache invalidation, and bulk priming strategies).
+Create meaningful relationships between:
 
----
+* Posts ↔ Posts
+* Posts ↔ Users
+* Posts ↔ Terms
+* Users ↔ Posts
+* Terms ↔ Posts
 
-## Developer API & Advanced Features
+Relationships can be one-way or bidirectional and can use semantic relationship types such as:
 
-The plugin is designed to be an infrastructure-grade modeling layer:
-
-- **Relationship Type Registration API**: Register semantic types programmatically and enforce directional logic.
-- **Relationship Constraints**: Define modeling rules like 1:1, 1:N, M:N, enforce max counts per type, and strictly prevent duplicates.
-- **Advanced Query Arguments**: Use `content_relation` in `WP_Query` with deep support for multiple types, excluded types, `OR`/`AND` relations, and min/max counts. Depth querying planned for future graph potential.
-- **Bulk Operations API**: Performance-optimized endpoints and WP-CLI commands for bulk attach, bulk detach, and data import operations.
-- **Graph Utility Layer (Minimal)**: CLI and API tools to retrieve relationship counts, identify the most connected posts, or pinpoint orphaned items.
-- **Lightweight Relationship Metadata**: Add optional context to relationships (e.g., *Weight*, *Order*, *Role*, *Timestamp* overrides) cleanly without altering core architecture.
+* `related_to`
+* `favorite_posts`
+* `authored_by`
+* `categorized_as`
 
 ---
 
-## Headless & REST Readiness
+### Dedicated Relationship Storage
 
-Native Content Relationships is built for headless and decoupled applications:
+Relationships are stored in a dedicated database table with indexes designed for relationship queries.
 
-- **Lazy Relationship Loading in REST**: Simply append `?naticore_relations=1` or `?_embed=relations` to core WordPress API endpoints to lazy-load and embed relationships inline without additional round-trips.
-
----
-
-## ACF Migration
-
-If you are using Advanced Custom Fields relationship fields, you can seamlessly migrate to Native Content Relationships to unlock these performance advantages immediately. 
-
-A dedicated one-time migration guide and script is provided in the [docs/migration/from-acf.md](docs/migration/from-acf.md) file to quickly transition `meta`-based relationships to the dedicated relational table.
+This avoids using post meta as a substitute for relational storage and keeps the relationship layer independent from custom-field plugins.
 
 ---
 
-## Supported relationships
+### Developer-First API
 
-| From | To |
-|----|----|
-| Post | Post |
-| Post | User |
-| Post | Term |
-| User | Post |
-| Term | Post |
-
----
-
-## Common use cases
-
-### Content modeling
-- Products → Accessories
-- Courses → Lessons
-- Articles → Related content
-
-### User interactions
-- Favorite posts
-- Bookmarks
-- Multiple authors or contributors
-
-### Taxonomy extensions
-- Featured categories
-- Curated collections
-- Semantic groupings beyond default taxonomies
-
----
-
-## Admin experience
-
-- Relationship management in post editor
-- Relationship management in user profiles
-- Relationship management in term editors
-- AJAX-powered search for large datasets
-- UI aligned with WordPress core patterns
-
----
-
-## Integrations
-
-| Area | Support |
-|----|--------|
-| WooCommerce | Product relationships |
-| Multilingual | WPML, Polylang |
-| Page builders | Gutenberg, Elementor |
-| ACF | One-time relationship migration |
-
----
-
-## Installation
-
-### WordPress.org
-1. Plugins → Add New
-2. Search **Native Content Relationships**
-3. Install and activate
-
-### GitHub
-```bash
-cd wp-content/plugins
-git clone https://github.com/chetanupare/WP-Native-Content-Relationships.git
-```
-
----
-
-## Quick start
+Manage relationships programmatically using a simple PHP API:
 
 ```php
-// Add a relationship
 wp_add_relation( $from_id, $to_id, 'related_to' );
 
-// Get related items
 $related = wp_get_related( $from_id, 'related_to' );
 
-// Check relationship
-if ( wp_is_related( $from_id, $to_id, 'related_to' ) ) {
-    // Do something
-}
+wp_is_related( $from_id, $to_id, 'related_to' );
+
+wp_remove_relation( $from_id, $to_id, 'related_to' );
 ```
+
+The API is designed to remain independent from the presentation layer.
 
 ---
 
-## Query integration
+# WP_Query Integration
+
+Query WordPress content through its relationships:
 
 ```php
 $query = new WP_Query( array(
@@ -169,68 +82,358 @@ $query = new WP_Query( array(
 ) );
 ```
 
+This allows relationship-driven content to participate in normal WordPress querying rather than requiring a separate query system.
+
 ---
 
-## REST & CLI access
+# REST API
 
-**REST API**
-```
+Relationships are available through:
+
+```text
 /wp-json/naticore/v1/
 ```
 
-**WP-CLI**
-```bash
-wp naticore list --post=123
-wp naticore add --from=123 --to=456 --type=related_to
-wp naticore remove --from=123 --to=456 --type=related_to
+Use the API for:
+
+* Headless WordPress
+* Custom applications
+* JavaScript interfaces
+* External integrations
+* Relationship management
+
+All relationship data remains inside your WordPress installation.
+
+---
+
+# WP-CLI
+
+Manage relationships from the command line.
+
+Available operations include:
+
+* List relationships
+* Add relationships
+* Remove relationships
+* Run integrity checks
+
+This makes bulk operations and maintenance practical for developers and larger installations.
+
+---
+
+# WordPress Admin
+
+Manage relationships directly from WordPress.
+
+### Post Editor
+
+* Search posts with AJAX
+* Search users and terms
+* Create relationships
+* Manage relationship direction
+* Manage existing connections
+
+### User Profiles
+
+Manage relationships associated with users.
+
+### Term Editors
+
+Manage relationships associated with taxonomy terms.
+
+The interface follows WordPress admin patterns and does not require a separate application.
+
+---
+
+# Gutenberg
+
+Native Content Relationships provides a **Related Content** block for displaying relationship-driven content.
+
+Use relationships as a data source while keeping presentation inside the WordPress block editor.
+
+---
+
+# Elementor
+
+When Elementor is active, Native Content Relationships provides Dynamic Tags for:
+
+* Related Posts
+* Related Users
+* Related Terms
+
+Supported output can include:
+
+* IDs
+* Titles
+* Links
+* Names
+* Avatars
+* Counts
+
+Relationship direction can also be controlled where applicable.
+
+Elementor remains an **optional integration** and is loaded only when Elementor is available.
+
+---
+
+# Multilingual Support
+
+Native Content Relationships is designed to work with multilingual WordPress installations.
+
+Supported integrations include:
+
+* WPML
+* Polylang
+
+Relationship handling can account for translated content without making multilingual plugins a core dependency.
+
+---
+
+# WooCommerce
+
+WooCommerce support allows products to participate in relationship-driven content models.
+
+Examples:
+
+* Product → Accessories
+* Product → Guides
+* Product → Related Products
+* Product → Supporting Content
+
+WooCommerce remains an optional integration rather than becoming part of the plugin's core architecture.
+
+---
+
+# ACF Migration
+
+Already using relationship data stored through Advanced Custom Fields?
+
+Native Content Relationships provides a migration path for moving supported ACF relationship data into the dedicated relationship layer.
+
+This allows existing sites to adopt structured relationship storage without rebuilding their content.
+
+---
+
+# Import & Export
+
+The plugin provides relationship import/export functionality for moving and managing relationship data.
+
+Useful for:
+
+* Development → staging migrations
+* Staging → production deployments
+* Data backups
+* Bulk relationship management
+* Site migrations
+
+---
+
+# Relationship Overview
+
+The Relationship Overview provides a central place to inspect the relationship data managed by the plugin.
+
+It helps developers understand whether relationships exist and identify content that may require attention.
+
+---
+
+# Performance
+
+Native Content Relationships is designed around a simple principle:
+
+> **Relationships should be stored and queried as relationships.**
+
+The architecture uses:
+
+* Dedicated database storage
+* Indexed relationship queries
+* Object-cache compatibility
+* WordPress database APIs
+* No external services for core functionality
+* Optional integrations isolated from the core
+
+The plugin is designed to remain lightweight and suitable for both shared hosting and larger WordPress installations.
+
+---
+
+# What Native Content Relationships Is Not
+
+Native Content Relationships is intentionally **not**:
+
+* A custom-field framework
+* A page builder
+* A custom post-type builder
+* A theme framework
+* A visual schema builder
+* A CRM
+* A replacement for WordPress taxonomies
+* A replacement for WooCommerce product relationships
+
+Its responsibility is narrower:
+
+> **Provide WordPress with a reliable relationship layer.**
+
+---
+
+# Designed to Work With Your Existing Stack
+
+Native Content Relationships does not require you to rebuild your WordPress architecture.
+
+It can work alongside:
+
+* ACF
+* Pods
+* Meta Box
+* Elementor
+* Gutenberg
+* WooCommerce
+* WPML
+* Polylang
+* Custom themes
+* Headless applications
+
+Your fields remain fields.
+
+Your taxonomies remain taxonomies.
+
+Your relationships become relationships.
+
+---
+
+# Common Use Cases
+
+### Content
+
+* Articles → Related Articles
+* Products → Accessories
+* Courses → Lessons
+* Authors → Articles
+* Documentation → Related Documentation
+
+### Users
+
+* Users → Favorite Posts
+* Users → Bookmarked Content
+* Posts → Contributors
+* Authors → Content
+
+### Terms
+
+* Posts → Curated Collections
+* Content → Featured Categories
+* Terms → Related Content
+* Semantic groupings beyond standard taxonomy assignment
+
+---
+
+# Why Choose Native Content Relationships?
+
+| Capability                     | Native Content Relationships | ACF                                  | Pods                     | MB Relationships     |
+| ------------------------------ | ---------------------------- | ------------------------------------ | ------------------------ | -------------------- |
+| Dedicated relationship storage | ✓                            | —                                    | Depends on configuration | ✓                    |
+| Post ↔ Post                    | ✓                            | ✓                                    | ✓                        | ✓                    |
+| Post ↔ User                    | ✓                            | ✓*                                   | ✓                        | ✓                    |
+| Post ↔ Term                    | ✓                            | ✓*                                   | ✓                        | ✓                    |
+| Semantic relationship types    | ✓                            | Field-based                          | Field-based              | ✓                    |
+| WP_Query integration           | ✓                            | Meta-based                           | Framework-dependent      | ✓                    |
+| REST API                       | ✓                            | Available through WordPress/ACF APIs | Available                | ✓                    |
+| WP-CLI                         | ✓                            | —                                    | —                        | —                    |
+| Gutenberg integration          | ✓                            | —                                    | —                        | —                    |
+| Elementor integration          | ✓                            | ✓                                    | ✓                        | Via ecosystem        |
+| Multilingual-ready             | ✓                            | ✓                                    | ✓                        | ✓                    |
+| ACF migration                  | ✓                            | —                                    | —                        | —                    |
+| Optional integrations          | ✓                            | —                                    | —                        | ✓                    |
+| Developer-first architecture   | ✓                            | —                                    | —                        | ✓                    |
+| Free core plugin               | ✓                            | ✓                                    | ✓                        | Depends on extension |
+
+* Relationship capabilities depend on the field configuration and implementation.
+
+---
+
+# Developer Guide
+
+## Core API
+
+### Add a relationship
+
+```php
+wp_add_relation( $from_id, $to_id, $type );
+```
+
+### Get related content
+
+```php
+wp_get_related( $id, $type );
+```
+
+### Check a relationship
+
+```php
+wp_is_related( $from_id, $to_id, $type );
+```
+
+### Remove a relationship
+
+```php
+wp_remove_relation( $from_id, $to_id, $type );
 ```
 
 ---
 
-## Comparison
+## Hooks
 
-| Feature | Native Content Relationships | Posts 2 Posts | MB Relationships |
-|------|------------------------------|---------------|------------------|
-| Posts ↔ Posts | Yes | Yes | Yes |
-| Posts ↔ Users | Yes | No | No |
-| Posts ↔ Terms | Yes | No | No |
-| Semantic types | Yes | No | No |
-| REST API | Yes | No | Yes |
-| Active maintenance | Yes | No | Yes |
+### Actions
 
----
+```text
+naticore_relation_added
+naticore_relation_removed
+```
 
-## Contributing
+### Filters
 
-Contributions are welcome.
-
-1. Fork the repository  
-2. Create a feature branch  
-3. Add tests where applicable  
-4. Submit a Pull Request  
-
-Repository:  
-https://github.com/chetanupare/WP-Native-Content-Relationships
+```text
+naticore_relation_is_allowed
+naticore_get_related_args
+```
 
 ---
 
-## License
+# Stability & Compatibility
 
-GPLv2 or later
+Native Content Relationships is built with long-term WordPress compatibility in mind.
+
+The project prioritizes:
+
+* WordPress core APIs
+* Stable public interfaces
+* Backward compatibility
+* Minimal dependencies
+* Isolated integrations
+* Database migration safety
+* Performance over unnecessary abstraction
+
+The goal is not to constantly add features.
+
+The goal is to provide a relationship layer that developers can confidently build on.
 
 ---
 
-## Links
+# The Philosophy
 
-- WordPress.org  
-  https://wordpress.org/plugins/native-content-relationships/
+Most WordPress sites do not need another framework.
 
-- GitHub  
-  https://github.com/chetanupare/WP-Native-Content-Relationships
+They need better infrastructure.
 
-- Issues  
-  https://github.com/chetanupare/WP-Native-Content-Relationships/issues
+Native Content Relationships focuses on one problem and solves it at the appropriate architectural level:
+
+> **Model relationships as relationships — not as fields pretending to be relationships.**
+
+That keeps WordPress flexible while giving relationship-heavy sites a structured foundation.
 
 ---
 
-If this plugin helps your project, consider starring the repository.
+## Project
+
+**WordPress.org:** Native Content Relationships
+**GitHub:** `chetanupare/WP-Native-Content-Relationships`
+
+**License:** GPLv2 or later
