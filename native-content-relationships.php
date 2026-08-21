@@ -306,7 +306,6 @@ class NATICORE_Plugin
 		require_once NATICORE_PLUGIN_DIR . 'includes/core/class-webhooks.php';
 		require_once NATICORE_PLUGIN_DIR . 'includes/core/class-cache.php';
 		require_once NATICORE_PLUGIN_DIR . 'includes/core/class-stitch-admin.php';
-		require_once NATICORE_PLUGIN_DIR . 'includes/core/class-sidebar.php';
 		require_once NATICORE_PLUGIN_DIR . 'includes/core/class-wizard.php';
 	}
 
